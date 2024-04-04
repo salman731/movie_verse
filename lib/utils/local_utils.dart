@@ -1,0 +1,91 @@
+
+
+import 'dart:convert';
+import 'dart:math';
+import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
+
+class LocalUtils
+{
+  static String getUpMoviesSearchURL(String movieName,{bool isLoadMore = false,int page = 1})
+  {
+    movieName = movieName.trim();
+
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+      {
+        if(movieName[i] == " ")
+          {
+            queryMovieName.write("+");
+          }
+        else
+          {
+            queryMovieName.write(movieName[i]);
+          }
+      }
+    String searchURL;
+    if (!isLoadMore) {
+       searchURL = "https://upmovies.net/search-movies/$queryMovieName.html";
+    } else {
+       searchURL = "https://upmovies.net/search-movies/$queryMovieName/page-${page}.html";
+    }
+    return searchURL;
+  }
+
+  static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
+  {
+    dom.Document document = await HtmlParsingUtils.getDomFromURL(pageUrl);
+    List<dom.Element> list = document.getElementsByClassName("player-iframe animation");
+    String? encodedData = list[0].querySelector("script")!.text!;
+    String encodedEmbededUrl = LocalUtils.getStringBetweenTwoStrings("document.write(Base64.decode(", "));", encodedData);
+    String iframe = String.fromCharCodes(base64Decode(encodedEmbededUrl.replaceAll("\"", "")));
+    dom.Document document2 = parser.parse(iframe);
+    String iframeUrl = document2.querySelector("iframe")!.attributes["src"]!.replaceAll(":///", "://")!;
+    return iframeUrl;
+  }
+
+ static String getStringBetweenTwoStrings(String start,String end,String str)
+  {
+
+    final startIndex = str.indexOf(start);
+    final endIndex = str.indexOf(end, startIndex + start.length);
+
+    return str.substring(startIndex + start.length, endIndex); // brown fox jumps
+  }
+
+  static String getStringfromStartToEnd(String start,String str)
+  {
+    final startIndex = str.indexOf(start);
+
+    return str.substring(startIndex, str.length-1);
+  }
+
+  static String getStringAfterStartStringToEnd(String start,String str)
+  {
+    final startIndex = str.indexOf(start);
+
+    return str.substring(startIndex + start.length, str.length);
+  }
+
+  static String getDoodHashValue()
+  {
+    String a = '';
+    String t = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    int n = t.length;
+    for (int o = 0; o < 10; o++) {
+      a += t[Random().nextInt(n)];
+    }
+    return a;
+  }
+
+  static void openAndPlayVideoWithMxPlayer_Android(String videoUrl,String title,String referer,String mime)
+  {
+    MethodChannel intentMethodChannel = MethodChannel("INTENT_CHANNEL");
+    intentMethodChannel.invokeMethod("openMxPlayer",{"videoUrl":videoUrl,"title":title,"referer":referer,"mime":mime});
+  }
+
+
+}

@@ -14,6 +14,8 @@ class ServerListDialog
 {
   static bool? isLoaderShowing = false;
   static String? title;
+  static bool decodeIframe = false;
+  static bool isVideotoEmbededAllowed = false;
 
   static stopServerListDialog()
   {
@@ -23,10 +25,12 @@ class ServerListDialog
     }
   }
 
-  static showServerListDialog(BuildContext context,Map<String,List<String>> map,String movieTitle){
+  static showServerListDialog(BuildContext context,Map<String,List<String>> map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false}){
 
     isLoaderShowing = true;
     title = movieTitle;
+    decodeIframe = decodeiframe;
+    isVideotoEmbededAllowed = videotoIframeAllowed;
     AlertDialog alert=AlertDialog(
       title: Text("Select Server"),
       actions: [
@@ -87,37 +91,46 @@ class ServerListDialog
 
   static Future<void> playVideo(String pageUrl,String server) async
   {
-    String providerUrl = await LocalUtils.decodeUpMoviesIframeEmbedUrl(pageUrl);
+    String providerUrl;
+    if (decodeIframe) {
+      providerUrl = await LocalUtils.decodeUpMoviesIframeEmbedUrl(pageUrl);
+    }
+    else
+      {
+        providerUrl = (await WebUtils.getOriginalUrl(pageUrl))!;
+      }
     VideoHosterEnum videoHosterEnum = VideoHosterEnum.values.firstWhere((e) => e.toString() == 'VideoHosterEnum.' + server);
     switch(videoHosterEnum)
     {
-      case VideoHosterEnum.VoeSX:
-        await VideoHostProviderUtils.getM3U8UrlFromVoeSX(providerUrl, title!);
+      case VideoHosterEnum.Voe:
+        await VideoHostProviderUtils.getM3U8UrlFromVoeSX(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.Vidoza:
-        await VideoHostProviderUtils.getMp4UrlFromVidoza(providerUrl, title!);
+        await VideoHostProviderUtils.getMp4UrlFromVidoza(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.VidMoly:
-        await VideoHostProviderUtils.getM3U8UrlFromVidMoly(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlFromVidMoly(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.UpStream:
-        await VideoHostProviderUtils.getM3U8UrlfromUpStream(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlfromUpStream(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.StreamWish:
-        await VideoHostProviderUtils.getM3U8UrlFromStreamWish(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlFromStreamWish(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.StreamVid:
-        await VideoHostProviderUtils.getM3U8UrlFromStreamVid(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlFromStreamVid(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.StreamTape:
-        await VideoHostProviderUtils.getMp4UrlFromStreamTape(providerUrl, title!);
+        await VideoHostProviderUtils.getMp4UrlFromStreamTape(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.MixDrop:
-        await VideoHostProviderUtils.getMp4UrlfromMixDrop(providerUrl, title!);
+        await VideoHostProviderUtils.getMp4UrlfromMixDrop(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.FileLions:
-        await VideoHostProviderUtils.getM3U8UrlFromFileLions(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlFromFileLions(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.DropLoad:
-        await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!);
+        await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.Dood:
-        await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!);
-      case VideoHosterEnum.VTubeTo:
-        await VideoHostProviderUtils.getM3U8UrlfromVTube(providerUrl, title!);
+        await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
+      case VideoHosterEnum.VTube:
+        await VideoHostProviderUtils.getM3U8UrlfromVTube(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.ePlayVid:
         await VideoHostProviderUtils.getMp4UrlFromePlayVid(providerUrl, title!);
       default:
     }
   }
+
+
 }

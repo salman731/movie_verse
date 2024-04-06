@@ -1,10 +1,18 @@
 
 
+import 'dart:convert';
+
+import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
+import 'package:Movieverse/dialogs/server_list_dialog.dart';
+import 'package:Movieverse/enums/video_hoster_enum.dart';
+import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
+import 'package:Movieverse/screens/primewire_movie_detail_screen.dart';
 import 'package:Movieverse/utils/html_parsing_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
-import 'package:Movieverse/screens/movie_detail_screen.dart';
+import 'package:Movieverse/screens/up_movie_detail_screen.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,21 +20,32 @@ import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:open_file/open_file.dart';
 import 'package:Movieverse/main.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 
 class MainScreenController extends GetxController
 {
    final String UPMOVIES_SERVER_URL = "https://www.upmovies.net";
+   final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
+   final String PRIMEWIRE_HOST_SERVER_URL = "https://www.primewire.tf/links/go/";
    List<UpMoviesCover> upMoviesSearchList  = [];
+   List<PrimeWireCover> primeWireSearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
-   RxBool isMoreUpMoviesLoading = false.obs;
+   RxBool isPrimeWireSourceLoading = false.obs;
+   RxBool isUpMovieMoreUpMoviesLoading = false.obs;
+   RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
+   String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
+   ScrollController primeWireScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
+   int primeWireCurrentPage = 1;
+   late final WebViewController webViewController;
+   String? primewireMovieTitle;
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
    {
-     dom.Document document = await HtmlParsingUtils.getDomFromURL(pageUrl);
+     dom.Document document = await WebUtils.getDomFromURL(pageUrl);
      List<UpMoviesCover> upMoviesCoverList = [];
      List<dom.Element>  listItems = document.getElementsByClassName("shortItem listItem");
      for (int i = 1; i<listItems.length;i++)
@@ -55,10 +74,10 @@ class MainScreenController extends GetxController
      String searchUpMoviesURL = LocalUtils.getUpMoviesSearchURL(movieName,isLoadMore: loadMore,page: upMoviesCurrentPage);
      if(loadMore)
        {
-         isMoreUpMoviesLoading.value = true;
+         isUpMovieMoreUpMoviesLoading.value = true;
          List<UpMoviesCover> list  = await searchMovieInUpMovies(searchUpMoviesURL,loadMore: loadMore);
          upMoviesSearchList.addAll(list);
-         isMoreUpMoviesLoading.value = false;
+         isUpMovieMoreUpMoviesLoading.value = false;
        }
      else
        {
@@ -68,10 +87,161 @@ class MainScreenController extends GetxController
        }
    }
 
-
-   getUpMovieSearchPagesInfo()
+   Future<List<PrimeWireCover>> getPrimeWireMoviesList(String htmlorPageUrl,{bool isLoadMore = false}) async
    {
+     List<PrimeWireCover> primewireList = [];
+     dom.Document document;
+     if(isLoadMore)
+       {
+         document = await WebUtils.getDomFromURL(htmlorPageUrl);
+       }
+     else
+       {
+         document = WebUtils.getDomfromHtml(htmlorPageUrl);
+       }
+     List<dom.Element> list = document.querySelectorAll(".index_item.index_item_ie");
+     for(dom.Element element in list)
+       {
+         String? title = element.querySelectorAll("a")[0].attributes["title"];
+         String? url = PRIMEWIRE_SERVER_URL + element.querySelectorAll("a")[0].attributes["href"]!;
+         String? posterUrl = PRIMEWIRE_SERVER_URL + element.querySelectorAll("a img")[0].attributes["src"]!;
+         primewireList.add(PrimeWireCover(title: title,url: url,imageURL: posterUrl));
+       }
+     return primewireList;
+   }
 
+   loadPrimeWireMovies(String movieName,{bool isLoadMore = false}) async
+   {
+     if (!isLoadMore) {
+       isPrimeWireSourceLoading.value = true;
+       primeWireCurrentPage = 1;
+       await webViewController.runJavaScript(""
+                "document.getElementById(\"search_term\").value = \"${movieName}\";"
+                "const bton = document.querySelector(\".search_container button\");"
+                "bton.click();");
+     } else {
+       primeWireCurrentPage += 1;
+       String searchUrl = LocalUtils.getPrimeWireSearchURL(movieName, primeWireCurrentPage, primeWireSearchHash!);
+       isPrimeWireMoreUpMoviesLoading.value = true;
+       List<PrimeWireCover> list = await getPrimeWireMoviesList(searchUrl,isLoadMore:isLoadMore);
+       primeWireSearchList.addAll(list);
+       isPrimeWireMoreUpMoviesLoading.value = false;
+     }
+   }
+
+   initWebViewController()
+   {
+     webViewController = WebViewController()
+       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+       ..setBackgroundColor(const Color(0x00000000))
+       ..setNavigationDelegate(
+         NavigationDelegate(
+           onProgress: (int progress) {
+             // Update loading bar.
+           },
+           onPageStarted: (String url) {
+
+           },
+           onPageFinished: (String url) async {
+
+           if(url.contains("https://www.primewire.tf/filter"))
+             {
+               Uri uri = Uri.parse(url);
+               primeWireSearchHash = uri.queryParameters["ds"];
+               String? decodedString =  await getHtmlFromPrimewire();
+               primeWireSearchList = await getPrimeWireMoviesList(decodedString!);
+               isPrimeWireSourceLoading.value = false;
+             }
+           else if(url.contains("https://www.primewire.tf/movie"))
+             {
+               Map<String,List<String>> map = await getServerPages();
+               LoaderDialog.stopLoaderDialog();
+               ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,primewireMovieTitle!,decodeiframe: false,videotoIframeAllowed: true);
+             }
+           },
+           onWebResourceError: (WebResourceError error) {},
+           onNavigationRequest: (NavigationRequest request) {
+             return NavigationDecision.navigate;
+           },
+         ),
+       )
+       ..loadRequest(Uri.parse('https://primewire.tf'));
+
+     //webViewController.runJavaScript(javaScript)
+   }
+
+   Future<String?> getHtmlFromPrimewire() async
+   {
+       Object html = await webViewController.runJavaScriptReturningResult("window.document.getElementsByTagName('html')[0].outerHTML;");
+       String decodedHtml = json.decode(html.toString());
+       return decodedHtml;
+
+   }
+
+   Future<Map<String,List<String>> >getServerPages() async
+   {
+     String? html = await getHtmlFromPrimewire();
+     dom.Document document = WebUtils.getDomfromHtml(html!);
+     Map <String,List<String>> map = Map();
+     List<dom.Element> list = document.querySelectorAll(".actual_tab .movie_version");
+
+     for(dom.Element element in list)
+     {
+       String source = element.querySelector(".version-host")!.text;
+       String sourceUrl = PRIMEWIRE_HOST_SERVER_URL + element.querySelector(".go-link.propper-link.popper.ico-btn")!.attributes["key"]!;
+       _addServerPage(source!,VideoHosterEnum.ePlayVid.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.Dood.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.DropLoad.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.FileLions.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.MixDrop.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.StreamTape.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.StreamVid.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.StreamWish.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.UpStream.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.VidMoly.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.Vidoza.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.Voe.name,map,sourceUrl!);
+       _addServerPage(source!,VideoHosterEnum.VTube.name,map,sourceUrl!);
+     }
+
+     print(map);
+
+     /*for(int i = 0;i<list.length;i++)
+    {
+      String? providerLogoImageUrl = list[i].querySelector(".server_version img")!.attributes["src"];
+      String? providerPageUrl = list[i].querySelector(".server_version a")!.attributes["href"];
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.ePlayVid.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Dood.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.DropLoad.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.FileLions.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.MixDrop.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamTape.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamVid.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamWish.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.UpStream.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VidMoly.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Vidoza.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VoeSX.name,map,providerPageUrl!);
+      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VTubeTo.name,map,providerPageUrl!);
+    }*/
+     return map;
+   }
+
+   void _addServerPage(String providerName,String hostProvider,Map<String,List<String>> map,String pageServerUrl)
+   {
+     if(providerName.toLowerCase()!.contains(hostProvider.toLowerCase()))
+     {
+       if(map[hostProvider] == null)
+       {
+         List<String> list = [];
+         list.add(pageServerUrl!);
+         map[hostProvider] = list;
+       }
+       else
+       {
+         map[hostProvider]!.add(pageServerUrl!);
+       }
+     }
    }
 
    /*Future<String?> playVIPServerUrlFromUpMoviesPage(String pageUrl,String title) async

@@ -26,6 +26,4 @@ class UpMovieDetail extends UpMoviesCover
       this.actors,
       this.duration,
       this.description}):super(title: title,url: url,imageURL: coverUrl,year: year);
-
-
 }

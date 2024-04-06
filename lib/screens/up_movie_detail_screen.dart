@@ -1,5 +1,5 @@
 
-import 'package:Movieverse/controllers/movie_detail_controller.dart';
+import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
@@ -8,21 +8,21 @@ import 'package:Movieverse/utils/colors_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MovieDetailScreen extends StatefulWidget {
+class UpMovieDetailScreen extends StatefulWidget {
   UpMoviesCover upMoviesCover;
-  MovieDetailScreen(this.upMoviesCover,{super.key});
+  UpMovieDetailScreen(this.upMoviesCover,{super.key});
 
   @override
-  State<MovieDetailScreen> createState() => _MovieDetailScreenState();
+  State<UpMovieDetailScreen> createState() => _UpMovieDetailScreenState();
 }
 
-class _MovieDetailScreenState extends State<MovieDetailScreen> {
+class _UpMovieDetailScreenState extends State<UpMovieDetailScreen> {
 
-  MovieDetailController movieDetailController = Get.put(MovieDetailController());
+  UpMovieDetailController movieDetailController = Get.put(UpMovieDetailController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("M. Detail"),),
+      appBar: AppBar(title: Text(widget.upMoviesCover.title!),),
       body: FutureBuilder<UpMovieDetail>(
         future: movieDetailController.getMovieDetail(widget.upMoviesCover!)!,
         builder: (context, snapshot) {

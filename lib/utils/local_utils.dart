@@ -35,9 +35,26 @@ class LocalUtils
     return searchURL;
   }
 
+  static String getPrimeWireSearchURL (String movieName,int page,String hash)
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    return "https://www.primewire.tf/filter?ds=${hash}&page=${page}&s=${queryMovieName}";
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
-    dom.Document document = await HtmlParsingUtils.getDomFromURL(pageUrl);
+    dom.Document document = await WebUtils.getDomFromURL(pageUrl);
     List<dom.Element> list = document.getElementsByClassName("player-iframe animation");
     String? encodedData = list[0].querySelector("script")!.text!;
     String encodedEmbededUrl = LocalUtils.getStringBetweenTwoStrings("document.write(Base64.decode(", "));", encodedData);

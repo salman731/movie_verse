@@ -46,6 +46,7 @@ dependencies:
   fluttertoast: ^8.2.4
   flutter_js: ^0.8.0
   show_loader_dialog: ^0.0.2
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:

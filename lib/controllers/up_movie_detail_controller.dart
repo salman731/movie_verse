@@ -7,7 +7,7 @@ import 'package:Movieverse/utils/local_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
-class MovieDetailController extends GetxController
+class UpMovieDetailController extends GetxController
 {
   late dom.Document moviePageDocument;
   late dom.Document episodePageDocument;
@@ -16,7 +16,7 @@ class MovieDetailController extends GetxController
   bool checkifEpisodeExist = false;
   Future<UpMovieDetail>? getMovieDetail(UpMoviesCover upMoviesCover) async
   {
-    moviePageDocument = await HtmlParsingUtils.getDomFromURL(upMoviesCover.url!);
+    moviePageDocument = await WebUtils.getDomFromURL(upMoviesCover.url!);
     List<dom.Element> list = moviePageDocument.querySelectorAll(".film-detail-right .film-detail .about .features ul li");
     String genre = LocalUtils.getStringAfterStartStringToEnd("Genres: ", list[0].text);
     String country = LocalUtils.getStringAfterStartStringToEnd("Country: ", list[1].text);
@@ -40,7 +40,7 @@ class MovieDetailController extends GetxController
     List<dom.Element> list;
     if(isSeries)
       {
-        episodePageDocument = await HtmlParsingUtils.getDomFromURL(episodePageUrl!);
+        episodePageDocument = await WebUtils.getDomFromURL(episodePageUrl!);
         list = episodePageDocument.getElementsByClassName("server_line");
       }
     else
@@ -63,8 +63,8 @@ class MovieDetailController extends GetxController
          _addServerPage(providerLogoImageUrl!,VideoHosterEnum.UpStream.name,map,providerPageUrl!);
          _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VidMoly.name,map,providerPageUrl!);
          _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Vidoza.name,map,providerPageUrl!);
-         _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VoeSX.name,map,providerPageUrl!);
-         _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VTubeTo.name,map,providerPageUrl!);
+         _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Voe.name,map,providerPageUrl!);
+         _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VTube.name,map,providerPageUrl!);
       }
     return map;
   }

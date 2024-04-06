@@ -7,6 +7,7 @@ import 'package:Movieverse/utils/html_parsing_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -27,30 +28,33 @@ class ServerListDialog
 
   static showServerListDialog(BuildContext context,Map<String,List<String>> map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false}){
 
-    isLoaderShowing = true;
-    title = movieTitle;
-    decodeIframe = decodeiframe;
-    isVideotoEmbededAllowed = videotoIframeAllowed;
-    AlertDialog alert=AlertDialog(
-      title: Text("Select Server"),
-      actions: [
-        TextButton(onPressed: (){
-          Get.back();
-        }, child: Text("Cancel"))
-      ],
-      content: SingleChildScrollView(
-        child: new Column(
-          children: populateServerButtons(map)
-
-          ,),
-      ),
-    );
-    showDialog(barrierDismissible: false,
-      context:context,
-      builder:(BuildContext context){
-        return alert;
-      },
-    );
+    if (map.isNotEmpty) {
+      isLoaderShowing = true;
+      title = movieTitle;
+      decodeIframe = decodeiframe;
+      isVideotoEmbededAllowed = videotoIframeAllowed;
+      AlertDialog alert=AlertDialog(
+        title: Text("Select Server"),
+        actions: [
+          TextButton(onPressed: (){
+            Get.back();
+          }, child: Text("Cancel"))
+        ],
+        content: SingleChildScrollView(
+          child: new Column(
+            children: populateServerButtons(map),),
+        ),
+      );
+      showDialog(barrierDismissible: false,
+        context:context,
+        builder:(BuildContext context){
+          return alert;
+        },
+      );
+    }
+    else{
+      Fluttertoast.showToast(msg: "No servers found.Try different sources....",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
   }
 
   static Widget getServerButton(String server,String pageUrl,int index)

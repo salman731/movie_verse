@@ -115,6 +115,8 @@ class MainScreenController extends GetxController
      if (!isLoadMore) {
        isPrimeWireSourceLoading.value = true;
        primeWireCurrentPage = 1;
+      // await loginIntoPrimeWire();
+       //await Future.delayed(Duration(seconds: 3));
        await webViewController.runJavaScript(""
                 "document.getElementById(\"search_term\").value = \"${movieName}\";"
                 "const bton = document.querySelector(\".search_container button\");"
@@ -157,6 +159,10 @@ class MainScreenController extends GetxController
                Map<String,List<String>> map = await getServerPages();
                LoaderDialog.stopLoaderDialog();
                ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,primewireMovieTitle!,decodeiframe: false,videotoIframeAllowed: true);
+             }
+           else if (url == "https://www.primewire.tf/" )
+             {
+               await loginIntoPrimeWire();
              }
            },
            onWebResourceError: (WebResourceError error) {},
@@ -242,6 +248,18 @@ class MainScreenController extends GetxController
          map[hostProvider]!.add(pageServerUrl!);
        }
      }
+   }
+
+   loginIntoPrimeWire() async
+   {
+     String email = "salmanilyas731@gmail.com";
+     String password = "internet50";
+     await webViewController.runJavaScript(""
+         "document.getElementById(\"session_email\").value = \"${email}\";"
+         "document.getElementById(\"session_password\").value = \"${password}\";"
+         "const form = document.querySelector(\".secure\");"
+         "form.submit();");
+
    }
 
    /*Future<String?> playVIPServerUrlFromUpMoviesPage(String pageUrl,String title) async

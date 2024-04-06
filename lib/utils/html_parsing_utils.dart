@@ -26,16 +26,20 @@ class WebUtils
    }
 
    static Future<String?> getOriginalUrl(url) async {
-     final client = HttpClient();
-     var uri = Uri.parse(url);
-     var request = await client.getUrl(uri);
-     request.followRedirects = false;
-     var response = await request.close();
-     if(response.isRedirect)
-       {
-         response.drain();
-         return response.headers.value(HttpHeaders.locationHeader);
-       }
+     try {
+       final client = HttpClient();
+       var uri = Uri.parse(url);
+       var request = await client.getUrl(uri);
+       request.followRedirects = false;
+       var response = await request.close();
+       if(response.isRedirect)
+              {
+                response.drain();
+                return response.headers.value(HttpHeaders.locationHeader);
+              }
+     } catch (e) {
+       print(e);
+     }
      /*while () {
        response.drain();
        final location = response.headers.value(HttpHeaders.locationHeader);

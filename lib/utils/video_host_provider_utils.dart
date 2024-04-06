@@ -1,5 +1,4 @@
 
-
 import 'package:Movieverse/utils/html_parsing_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
@@ -136,7 +135,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl);
       List<dom.Element> list = document.querySelectorAll("script");
-      String encryptedJavaScript = list[9].text;
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
       String decodedEval = evalStr.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();
@@ -160,12 +159,16 @@ class VideoHostProviderUtils
   static Future<String?> getM3U8UrlFromVidMoly(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
   {
     if (isVideotoEmbededAllowed) {
+      if(!embededUrl.contains("/w/"))
+      {
       embededUrl = embededUrl.replaceAll("https://vidmoly.to/", "https://vidmoly.to/embed-");
+
+      }
     }
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String javaScriptText = list[8].text;
+      String javaScriptText = embededUrl.contains("/w/") ? list[9].text :list[8].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
       ExternalVideoPlayerLauncher.launchMxPlayer(
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -247,7 +250,9 @@ class VideoHostProviderUtils
 
   static Future<String?> getMp4UrlFromDood(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
   {
+
     if (isVideotoEmbededAllowed) {
+      embededUrl = (await WebUtils.getOriginalUrl(embededUrl))!;
       embededUrl = embededUrl.replaceAll("/d/", "/e/");
     }
     try {
@@ -275,7 +280,7 @@ class VideoHostProviderUtils
   static Future<String?> getM3U8UrlfromUpStream(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
   {
     if (isVideotoEmbededAllowed) {
-      embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-");
+      embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
     }
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl);

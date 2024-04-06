@@ -142,7 +142,10 @@ class MainScreenController extends GetxController
              // Update loading bar.
            },
            onPageStarted: (String url) {
-
+             if (url == "https://www.primewire.tf/" )
+               {
+                 LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
+               }
            },
            onPageFinished: (String url) async {
 
@@ -163,6 +166,8 @@ class MainScreenController extends GetxController
            else if (url == "https://www.primewire.tf/" )
              {
                await loginIntoPrimeWire();
+               LoaderDialog.stopLoaderDialog();
+
              }
            },
            onWebResourceError: (WebResourceError error) {},

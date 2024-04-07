@@ -6,6 +6,8 @@ import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
+import 'package:Movieverse/models/film_1k_cover.dart';
+import 'package:Movieverse/models/film_1k_detail.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
@@ -30,16 +32,21 @@ class MainScreenController extends GetxController
    final String PRIMEWIRE_HOST_SERVER_URL = "https://www.primewire.tf/links/go/";
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
+   List<Film1kCover> film1kSearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
+   RxBool isFilm1kSourceLoading = false.obs;
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
+   RxBool isFilm1kMoreUpMoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
    ScrollController primeWireScrollController = ScrollController();
+   ScrollController film1kScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
+   int film1kCurrentPage = 1;
    late final WebViewController webViewController;
    String? primewireMovieTitle;
 
@@ -131,6 +138,47 @@ class MainScreenController extends GetxController
      }
    }
 
+  Future<List<Film1kCover>> getFilm1MoviesList(String pageUrl) async
+   {
+     dom.Document document = await WebUtils.getDomFromURL(pageUrl);
+     List<Film1kCover> film1kList = [];
+     List<dom.Element> list = document.querySelectorAll(".loop-post.vdeo.snow-b.sw03.pd08.por.ovh");
+     for(dom.Element element in list)
+       {
+         try {
+           String? imageUrl = element.querySelector(".thumb.por .por.ovh img")!.attributes["src"];
+           String? title = element.querySelector(".mt08 h2")!.text;
+           String? url = element.querySelector(".lka")!.attributes["href"];
+           film1kList.add(Film1kCover(imageURL: imageUrl,title: title,url: url));
+         } catch (e) {
+           print(e);
+         }
+       }
+     return film1kList;
+   }
+
+
+   Future<void> loadFilm1KMovies(String movieName,{bool isLoadMore = false}) async
+   {
+     if(isLoadMore)
+       {
+         film1kCurrentPage += 1;
+         isFilm1kMoreUpMoviesLoading.value = true;
+         String searchUrl = LocalUtils.getFilm1kSearchUrl(movieName,isLoadMore: isLoadMore,pageNo: film1kCurrentPage);
+         List<Film1kCover> list = await getFilm1MoviesList(searchUrl);
+         film1kSearchList.addAll(list);
+         isFilm1kMoreUpMoviesLoading.value = false;
+       }
+     else
+       {
+         film1kCurrentPage = 1;
+         isFilm1kSourceLoading.value = true;
+         String searchUrl = LocalUtils.getFilm1kSearchUrl(movieName);
+         film1kSearchList = await getFilm1MoviesList(searchUrl);
+         isFilm1kSourceLoading.value = false;
+       }
+   }
+
    initWebViewController()
    {
      webViewController = WebViewController()
@@ -157,7 +205,7 @@ class MainScreenController extends GetxController
                primeWireSearchList = await getPrimeWireMoviesList(decodedString!);
                isPrimeWireSourceLoading.value = false;
              }
-           else if(url.contains("https://www.primewire.tf/movie"))
+           else if(url.contains("https://www.primewire.tf/movie") || url.contains("https://www.primewire.tf/tv"))
              {
                Map<String,List<String>> map = await getServerPages();
                LoaderDialog.stopLoaderDialog();

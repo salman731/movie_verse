@@ -52,6 +52,31 @@ class LocalUtils
     return "https://www.primewire.tf/filter?ds=${hash}&page=${page}&s=${queryMovieName}";
   }
 
+  static String getFilm1kSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+      {
+        return "https://www.film1k.com/page/${pageNo}?s=${queryMovieName}";
+      }
+    else
+      {
+        return "https://www.film1k.com/?s=${queryMovieName}";
+      }
+
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
     dom.Document document = await WebUtils.getDomFromURL(pageUrl);

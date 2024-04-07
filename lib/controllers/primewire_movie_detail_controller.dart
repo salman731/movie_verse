@@ -1,6 +1,7 @@
 
 import 'package:Movieverse/controllers/main_screen_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
+import 'package:Movieverse/enums/media_type_enum.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
@@ -16,9 +17,13 @@ import 'package:html/dom.dart' as dom;
 class PrimeWireMovieDetailController extends GetxController
 {
   late dom.Document movieTvDocument;
+  RxString selectedSeason = "1".obs;
+  Rx<PrimewireSeasonEpisode> selectedEpisode = PrimewireSeasonEpisode().obs;
   MainScreenController mainScreenController = Get.put(MainScreenController());
+  MediaTypeEnum? mediaTypeEnum;
   Future<PrimeWireDetail> getMovieDetail(PrimeWireCover primeWireCover) async
   {
+    Map<String,List<PrimewireSeasonEpisode>> map = Map();
     movieTvDocument = await WebUtils.getDomFromURL(primeWireCover.url!);
     List<dom.Element> list = movieTvDocument.querySelectorAll(".movie_info table tbody tr");
     String? description = list[0].querySelector("td p")!.text.trim();
@@ -80,7 +85,16 @@ class PrimeWireMovieDetailController extends GetxController
       }
     if(primeWireCover.url!.contains("/tv/"))
       {
-        Map<String,List<PrimewireSeasonEpisode>> map = getSeasonsAndEpisodeList();
+        mediaTypeEnum = MediaTypeEnum.TV;
+        map = getSeasonsAndEpisodeList();
+        selectedSeason.value = map.keys.first;
+        List<PrimewireSeasonEpisode>? plist= map[map.keys.first];
+        selectedEpisode.value = plist!.first;
+
+      }
+    else
+      {
+        mediaTypeEnum = MediaTypeEnum.Movie;
       }
     return PrimeWireDetail(url: primeWireCover.url,title: primeWireCover.title,genre: genre,duration: runtime,description: description,coverUrl: primeWireCover.imageURL,country: countries,actors: cast,ratings: ratings,releasedDate: releasedDate,company: company,crew: crew,seasonEpisodesMap: map);
   }

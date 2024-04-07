@@ -4,9 +4,11 @@ import 'package:Movieverse/controllers/main_screen_controller.dart';
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
+import 'package:Movieverse/enums/media_type_enum.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/prime_wire_detail.dart';
+import 'package:Movieverse/models/primewire_season_episode.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/utils/colors_utils.dart';
@@ -65,33 +67,60 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                     getTextWidget("Description : ",snapshot.data!.description!),
 
                   ],),
-                // if(movieDetailController.checkifEpisodeExist)...[
-                //   Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
-                //     child: Align(alignment: Alignment.centerLeft,child: Text("Select Episode :")),
-                //   ),
-                //   Obx(()=> SizedBox(
-                //     width: MediaQuery.of(context).size.width / 1.15,
-                //     child: DropdownButton<int>(
-                //       isExpanded:true,
-                //       value: movieDetailController.selectedEpisode.value,
-                //       items: movieDetailController.episodeMap.keys.map((int value) {
-                //         return DropdownMenuItem<int>(
-                //           value: value,
-                //           child: Text("${value}"),
-                //         );
-                //       }).toList(),
-                //       onChanged: (value) {
-                //         movieDetailController.selectedEpisode.value = value!;
-                //       },
-                //     ),
-                //   ),
-                //   ),
-                // ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
+                  child: Align(alignment: Alignment.centerLeft,child: Text("Select Season :")),
+                ),
+                Obx(()=> SizedBox(
+                  width: MediaQuery.of(context).size.width / 1.15,
+                  child: DropdownButton<String>(
+                    isExpanded:true,
+                    value: primeWireMovieDetailController.selectedSeason.value,
+                    items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text("Season ${value}"),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![value]![0];
+                      primeWireMovieDetailController.selectedSeason.value = value!;
+                    },
+                  ),
+                ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
+                  child: Align(alignment: Alignment.centerLeft,child: Text("Select Episode :")),
+                ),
+                Obx(()=> SizedBox(
+                  width: MediaQuery.of(context).size.width / 1.15,
+                  child: DropdownButton<PrimewireSeasonEpisode>(
+                    isExpanded:true,
+                    value: primeWireMovieDetailController.selectedEpisode.value,
+                    items: snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
+                      return DropdownMenuItem<PrimewireSeasonEpisode>(
+                        value: value,
+                        child: Text("${value.episodeNo} ${value.episodeTitle}"),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      primeWireMovieDetailController.selectedEpisode.value = value!;
+                    },
+                  ),
+                ),
+                ),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.15,
                   child: OutlinedButton(onPressed: () async {
-                    primeWireMovieDetailController.loadMovieInWebView(widget.primeWireCover.url);
+                    if(primeWireMovieDetailController.mediaTypeEnum == MediaTypeEnum.Movie)
+                      {
+                        primeWireMovieDetailController.loadMovieInWebView(widget.primeWireCover.url);
+                      }
+                    else
+                      {
+                        primeWireMovieDetailController.loadMovieInWebView(primeWireMovieDetailController.selectedEpisode.value.episodeUrl);
+                      }
                     // if(!movieDetailController.checkifEpisodeExist)
                     // {
                     //   ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(),widget.upMoviesCover.title!);

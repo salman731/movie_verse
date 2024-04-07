@@ -44,6 +44,12 @@ class _MainScreenState extends State<MainScreen> {
         mainScreenController.loadPrimeWireMovies(searchEditingController.text,isLoadMore: true);
       }
     });
+
+    mainScreenController.film1kScrollController.addListener(() {
+      if (mainScreenController.film1kScrollController.position.extentAfter == 0) {
+        mainScreenController.loadFilm1KMovies(searchEditingController.text,isLoadMore: true);
+      }
+    });
   }
 
   @override
@@ -166,6 +172,48 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         )) ,
+                      ),
+                      Align(alignment:Alignment.centerLeft,child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Film1k",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                      )),
+                      SizedBox(
+                        height: 200.0,
+                        child: Obx(()=> mainScreenController.isFilm1kSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,),) : Row(
+                          children: [
+                            Expanded(
+                              flex: 7,
+                              child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                controller: mainScreenController.film1kScrollController,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: mainScreenController.film1kSearchList.length,
+                                itemBuilder: (BuildContext context, int index) => SizedBox(
+                                  width: 100,
+                                  height: 200,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      /*PrimeWireMovieDetailController controller = Get.put(PrimeWireMovieDetailController());
+                                      controller.getMovieDetail(mainScreenController.primeWireSearchList[index]);*/
+                                     // Get.to(PrimeWireMovieDetailScreen(mainScreenController.primeWireSearchList[index]));
+                                      //await mainScreenController.getMovieDetail(mainScreenController.upMoviesSearchList[index]);
+
+                                    },
+                                    child: _movieSingleItem(mainScreenController.film1kSearchList[index].title!,mainScreenController.film1kSearchList[index].imageURL!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (mainScreenController.isFilm1kMoreUpMoviesLoading.value) Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                          ],
+                        )) ,
                       )
                     ],
                   ),
@@ -195,6 +243,7 @@ class _MainScreenState extends State<MainScreen> {
         mainScreenController.isSearchStarted.value = true;
         await mainScreenController.loadMoviesfromUpMovies(searchEditingController.text);
         await mainScreenController.loadPrimeWireMovies(searchEditingController.text);
+        await mainScreenController.loadFilm1KMovies(searchEditingController.text);
 
       },
       style: TextStyle(

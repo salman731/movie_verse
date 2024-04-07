@@ -1,5 +1,6 @@
 
 import 'package:Movieverse/models/prime_wire_cover.dart';
+import 'package:Movieverse/models/primewire_season_episode.dart';
 
 class PrimeWireDetail extends PrimeWireCover
 {
@@ -21,10 +22,13 @@ class PrimeWireDetail extends PrimeWireCover
 
   String? crew;
 
+  Map<String,List<PrimewireSeasonEpisode>>? seasonEpisodesMap;
+
   PrimeWireDetail(
       {String? title,
         String? url,
         String? coverUrl,
+        this.seasonEpisodesMap,
         this.genre,
         this.ratings,
         this.releasedDate,

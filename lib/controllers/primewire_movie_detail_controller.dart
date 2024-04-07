@@ -5,19 +5,22 @@ import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/prime_wire_detail.dart';
+import 'package:Movieverse/models/primewire_season_episode.dart';
 import 'package:Movieverse/utils/html_parsing_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
 class PrimeWireMovieDetailController extends GetxController
 {
-  late dom.Document movieDocument;
+  late dom.Document movieTvDocument;
   MainScreenController mainScreenController = Get.put(MainScreenController());
   Future<PrimeWireDetail> getMovieDetail(PrimeWireCover primeWireCover) async
   {
-    movieDocument = await WebUtils.getDomFromURL(primeWireCover.url!);
-    List<dom.Element> list = movieDocument.querySelectorAll(".movie_info table tbody tr");
+    movieTvDocument = await WebUtils.getDomFromURL(primeWireCover.url!);
+    List<dom.Element> list = movieTvDocument.querySelectorAll(".movie_info table tbody tr");
     String? description = list[0].querySelector("td p")!.text.trim();
     String? ratings = "",runtime = "",genre="",countries="",company="",cast="",crew="",releasedDate="";
     for(int i = 1;i<list.length;i++)
@@ -27,7 +30,16 @@ class PrimeWireMovieDetailController extends GetxController
 
         switch(rowTitle) {
           case "Ratings:":
-            ratings = rowList[1].text;
+            List<dom.Element> list1 = list[i].querySelectorAll("td strong")!;
+            if(list1.length > 1)
+              {
+                ratings = rowList[1].text;
+              }
+            else
+              {
+                ratings = list[i].querySelectorAll("td")[1].text.trim().replaceAll("\n", "").replaceAll("TVMaze:", "").trim();
+              }
+
           case "Released:":
             releasedDate = list[i].querySelectorAll("td")[1].text.trim();
           case "Runtime:":
@@ -66,8 +78,11 @@ class PrimeWireMovieDetailController extends GetxController
             break;
         }
       }
-    print(list);
-    return PrimeWireDetail(url: primeWireCover.url,title: primeWireCover.title,genre: genre,duration: runtime,description: description,coverUrl: primeWireCover.imageURL,country: countries,actors: cast,ratings: ratings,releasedDate: releasedDate,company: company,crew: crew);
+    if(primeWireCover.url!.contains("/tv/"))
+      {
+        Map<String,List<PrimewireSeasonEpisode>> map = getSeasonsAndEpisodeList();
+      }
+    return PrimeWireDetail(url: primeWireCover.url,title: primeWireCover.title,genre: genre,duration: runtime,description: description,coverUrl: primeWireCover.imageURL,country: countries,actors: cast,ratings: ratings,releasedDate: releasedDate,company: company,crew: crew,seasonEpisodesMap: map);
   }
 
 
@@ -77,6 +92,32 @@ class PrimeWireMovieDetailController extends GetxController
     await mainScreenController.webViewController.loadRequest(Uri.parse(pageUrl!));
   }
 
+ Map<String,List<PrimewireSeasonEpisode>> getSeasonsAndEpisodeList()
+  {
+    Map<String,List<PrimewireSeasonEpisode>> map = Map();
+    try {
+      List<dom.Element> list = movieTvDocument.querySelectorAll(".show_season");
+      for (dom.Element element in list)
+            {
+               List<dom.Element> list2 = element.querySelectorAll(".tv_episode_item.released");
+               List<PrimewireSeasonEpisode> listEpisodes = [];
+               String? seasonNo = element.attributes["data-id"];
+               for(dom.Element element2 in list2)
+                 {
+                    String? episodeNo = LocalUtils.getStringBetweenTwoStrings("\n", "\n", element2.querySelector("a")!.text);
+                    String? episodeTitle = element2.querySelector(".tv_episode_name")!.text;
+                    String? episodeUrl = mainScreenController.PRIMEWIRE_SERVER_URL + element2.querySelector("a")!.attributes["href"]!;
+                    listEpisodes.add(PrimewireSeasonEpisode(episodeNo: episodeNo!,episodeTitle:episodeTitle,episodeUrl: episodeUrl));
+                 }
+               map[seasonNo!] = listEpisodes;
+            }
+
+
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Primewire: Error while fetching episodes list",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+    return map;
+  }
   // Future<Map<String,List<String>> >getServerPages() async
   // {
   //   String? html = await mainScreenController.getHtmlFromPrimewire();

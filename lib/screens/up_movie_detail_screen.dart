@@ -117,11 +117,4 @@ class _UpMovieDetailScreenState extends State<UpMovieDetailScreen> {
     );
   }
 
-  List<Widget> getServerLinksButtons()
-  {
-    OutlinedButton(onPressed: (){
-
-    }, child: Text("Vip Server 1"));
-    return [];
-  }
 }

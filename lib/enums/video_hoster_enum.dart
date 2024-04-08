@@ -2,6 +2,7 @@
 
 enum VideoHosterEnum
 {
+  Films5k,
   ePlayVid,
   FileLions,
   StreamWish,
@@ -15,5 +16,7 @@ enum VideoHosterEnum
   VTube,
   Dood,
   UpStream,
+  VidHideVip,
+  FileMoon
 
 }

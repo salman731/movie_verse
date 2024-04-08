@@ -24,7 +24,6 @@ class Film1kDetail extends Film1kCover
       {String? title,
         String? url,
         String? coverUrl,
-        String? year,
         this.genre,
         this.director,
         this.country,

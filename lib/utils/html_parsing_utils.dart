@@ -7,9 +7,9 @@ import 'package:html/dom.dart' as dom;
 
 class WebUtils
 {
-   static Future<dom.Document> getDomFromURL (String url) async
+   static Future<dom.Document> getDomFromURL (String url,{Map<String,String>? headers}) async
    {
-     http.Response response = await http.Client().get(Uri.parse(url));
+     http.Response response = await http.Client().get(Uri.parse(url),headers: headers);
      return parser.parse(response.body);
    }
 

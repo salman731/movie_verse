@@ -10,13 +10,13 @@ import 'package:flutter_js/flutter_js.dart';
 // PowVideo and StreamPlay has captcha due to it can't scrape
 class VideoHostProviderUtils
 {
-  static Future<String?> getM3U8UrlFromFileLions(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlFromFileLions(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("/f/", "/v/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list[3].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -30,13 +30,13 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getM3U8UrlFromStreamWish(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlFromStreamWish(String embededUrl,String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("https://streamwish.to/", "https://streamwish.to/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list[3].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -50,15 +50,15 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getM3U8UrlFromVoeSX(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlFromVoeSX(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("https://voe.sx/", "https://voe.sx/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
-      String javaScriptText = list[14].text;
+      String javaScriptText = list.where((element) => element.text.contains("'hls': '")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("'hls': '","'," , javaScriptText);
       ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -69,14 +69,14 @@ class VideoHostProviderUtils
     }
   }
 
-  static Future<String?> getM3U8UrlFromStreamVid(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlFromStreamVid(String embededUrl, String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
 
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("https://streamvid.net/", "https://streamvid.net/embed-");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String encryptedJavascript = list[2].text;
       String decodedEval = encryptedJavascript.replaceAll("eval", "console.log");
@@ -98,13 +98,13 @@ class VideoHostProviderUtils
 
   }
   // s-delivery33.mxcontent.net/v/2be660b15a01ae9b99978689f9c7375f.mp4?s=TlzP_V6sith8EoW5TA5MUQ&e=1711974214&_t=1711955277
-  static Future<String?> getMp4UrlfromMixDrop(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getMp4UrlfromMixDrop(String embededUrl, String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("/f/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list[8].text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -127,13 +127,13 @@ class VideoHostProviderUtils
     }
   }
 
-  static Future<String?> getM3U8UrlfromDropLoad(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlfromDropLoad(String embededUrl, String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("https://dropload.io/", "https://dropload.io/e");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -156,7 +156,7 @@ class VideoHostProviderUtils
     }
   }
 
-  static Future<String?> getM3U8UrlFromVidMoly(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlFromVidMoly(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       if(!embededUrl.contains("/w/"))
@@ -166,7 +166,7 @@ class VideoHostProviderUtils
       }
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = embededUrl.contains("/w/") ? list[9].text :list[8].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -180,13 +180,13 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getMp4UrlFromStreamTape(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getMp4UrlFromStreamTape(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("/v/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       String? ideooLink = document.querySelector("#ideoolink")!.text;
       List<dom.Element> list = document.querySelectorAll("script");
       String? javaScript = list[6].text;
@@ -203,13 +203,13 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getMp4UrlFromVidoza(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getMp4UrlFromVidoza(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("https://vidoza.net/", "https://vidoza.net/embed-");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       String? dlUrl = document.querySelector("source")!.attributes["src"];
       ExternalVideoPlayerLauncher.launchMxPlayer(
           dlUrl!, MIME.applicationMp4, {
@@ -221,11 +221,11 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getM3U8UrlfromVTube(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlfromVTube(String embededUrl, String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     try {
       String filterUrl = embededUrl.replaceAll("embed-", "");
-      dom.Document document = await WebUtils.getDomFromURL(filterUrl);
+      dom.Document document = await WebUtils.getDomFromURL(filterUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list[7].text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -248,7 +248,7 @@ class VideoHostProviderUtils
     }
   }
 
-  static Future<String?> getMp4UrlFromDood(String embededUrl,String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getMp4UrlFromDood(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
 
     if (isVideotoEmbededAllowed) {
@@ -256,7 +256,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/d/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String javaScript = list[8].text;
       String baseUrl = Uri.parse(embededUrl).origin;
@@ -277,13 +277,13 @@ class VideoHostProviderUtils
 
   }
 
-  static Future<String?> getM3U8UrlfromUpStream(String embededUrl, String title,{bool isVideotoEmbededAllowed = false}) async
+  static Future<String?> getM3U8UrlfromUpStream(String embededUrl, String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String encryptedJavaScript = list[5].text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -304,6 +304,55 @@ class VideoHostProviderUtils
     } catch (e) {
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
+  }
+
+  static Future<String?> getM3U8UrlfromFileMoon(String embededUrl, String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
+  {
+    if (isVideotoEmbededAllowed) {
+      embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
+    }
+    try {
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      String encryptedJavaScript = list[8].text;
+      String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
+      String decodedEval = evalStr.replaceAll("eval", "console.log");
+      JavascriptRuntime flutterJs = getJavascriptRuntime();
+      late String mp4Url;
+      dynamic logFn(dynamic args) {
+        mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
+        ExternalVideoPlayerLauncher.launchMxPlayer(
+            mp4Url!, MIME.applicationVndAppleMpegurl, {
+          "title": title,
+        });
+      }
+      final channelCallbacks = JavascriptRuntime.channelFunctionsRegistered[flutterJs.getEngineInstanceId()];
+      channelCallbacks!["ConsoleLog"] = logFn;
+      JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
+
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+  }
+
+  static Future<String?> getM3U8UrlFromVidHideVip(String embededUrl,String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
+  {
+    if (isVideotoEmbededAllowed) {
+      embededUrl = embededUrl.replaceAll("https://vidhidevip.com/", "https://vidhidevip.com/");
+    }
+    try {
+      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      String javaScriptText = list[3].text;
+      String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
+      ExternalVideoPlayerLauncher.launchMxPlayer(
+          m3u8Url!, MIME.applicationVndAppleMpegurl, {
+        "title": title,
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+
   }
 
   static Future<String?> getMp4UrlFromePlayVid (String embededUrl,String title) async

@@ -157,11 +157,5 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
     );
   }
 
-  List<Widget> getServerLinksButtons()
-  {
-    OutlinedButton(onPressed: (){
 
-    }, child: Text("Vip Server 1"));
-    return [];
-  }
 }

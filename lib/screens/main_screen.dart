@@ -1,9 +1,12 @@
 
 
+
+import 'package:Movieverse/controllers/film_1k_detail_controller.dart';
 import 'package:Movieverse/controllers/main_screen_controller.dart';
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/main.dart';
+import 'package:Movieverse/screens/film_1k_movie_detail.dart';
 import 'package:Movieverse/screens/primewire_movie_detail_screen.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
@@ -57,16 +60,17 @@ class _MainScreenState extends State<MainScreen> {
     return Material(
         child: Scaffold(
           /*floatingActionButton: FloatingActionButton(onPressed: () async {
-
-            mainScreenController.webViewController.runJavaScript(""
-                "document.getElementById(\"search_term\").value = \"road\";"
-                "const bton = document.querySelector(\".search_container button\");"
-                "bton.click();");
+            String embededUrl = "https:\/\/vidhidevip.com\/v\/cssj8cpxssit";
+            VideoHostProviderUtils.getM3U8UrlFromVidHideVip(embededUrl, "title",headers: {"Referer":"https://www.film1k.com/"});
+            // mainScreenController.webViewController.runJavaScript(""
+            //     "document.getElementById(\"search_term\").value = \"road\";"
+            //     "const bton = document.querySelector(\".search_container button\");"
+            //     "bton.click();");
            // LoaderDialog.showLoaderDialog(navigatorKey.currentContext!);
            // await Future.delayed(Duration(seconds: 3));
            // LoaderDialog.stopLoaderDialog();
 
-          },child: Icon(Icons.add)),*/
+          },child: Icon(Icons.add))*/,
           appBar: AppBar(title: !_isSearching ? Text("Main Screen") : _searchTextField(),
           actions: !_isSearching ? [IconButton(
               icon: Icon(Icons.search),
@@ -194,11 +198,7 @@ class _MainScreenState extends State<MainScreen> {
                                   height: 200,
                                   child: InkWell(
                                     onTap: () async {
-                                      /*PrimeWireMovieDetailController controller = Get.put(PrimeWireMovieDetailController());
-                                      controller.getMovieDetail(mainScreenController.primeWireSearchList[index]);*/
-                                     // Get.to(PrimeWireMovieDetailScreen(mainScreenController.primeWireSearchList[index]));
-                                      //await mainScreenController.getMovieDetail(mainScreenController.upMoviesSearchList[index]);
-
+                                      Get.to(Film1kDetailScreen(mainScreenController.film1kSearchList[index]));
                                     },
                                     child: _movieSingleItem(mainScreenController.film1kSearchList[index].title!,mainScreenController.film1kSearchList[index].imageURL!),
                                   ),

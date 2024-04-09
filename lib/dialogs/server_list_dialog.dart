@@ -35,6 +35,7 @@ class ServerListDialog
       title = movieTitle;
       decodeIframe = decodeiframe;
       isDirectProviderLink1 = isDirectProviderLink;
+      isVideotoEmbededAllowed = videotoIframeAllowed;
       film1kHeaders = headers;
       AlertDialog alert=AlertDialog(
         title: Text("Select Server"),

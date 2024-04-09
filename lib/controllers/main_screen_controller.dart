@@ -49,6 +49,14 @@ class MainScreenController extends GetxController
    int film1kCurrentPage = 1;
    late final WebViewController webViewController;
    String? primewireMovieTitle;
+   bool isFilm1kMorePagesExist = false;
+
+  startShowingLoadingSources()
+  {
+    isUpMoviesSourceLoading.value = true;
+    isPrimeWireSourceLoading.value = true;
+    isFilm1kSourceLoading.value = true;
+  }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
    {
@@ -88,7 +96,7 @@ class MainScreenController extends GetxController
        }
      else
        {
-         isUpMoviesSourceLoading.value = true;
+
          upMoviesSearchList = await searchMovieInUpMovies(searchUpMoviesURL,loadMore: loadMore);
          isUpMoviesSourceLoading.value = false;
        }
@@ -120,7 +128,7 @@ class MainScreenController extends GetxController
    loadPrimeWireMovies(String movieName,{bool isLoadMore = false}) async
    {
      if (!isLoadMore) {
-       isPrimeWireSourceLoading.value = true;
+
        primeWireCurrentPage = 1;
       // await loginIntoPrimeWire();
        //await Future.delayed(Duration(seconds: 3));
@@ -143,6 +151,7 @@ class MainScreenController extends GetxController
      dom.Document document = await WebUtils.getDomFromURL(pageUrl);
      List<Film1kCover> film1kList = [];
      List<dom.Element> list = document.querySelectorAll(".loop-post.vdeo.snow-b.sw03.pd08.por.ovh");
+     isFilm1kMorePagesExist = document.querySelector(".nav-links") != null;
      for(dom.Element element in list)
        {
          try {
@@ -160,7 +169,7 @@ class MainScreenController extends GetxController
 
    Future<void> loadFilm1KMovies(String movieName,{bool isLoadMore = false}) async
    {
-     if(isLoadMore)
+     if(isLoadMore && isFilm1kMorePagesExist)
        {
          film1kCurrentPage += 1;
          isFilm1kMoreUpMoviesLoading.value = true;
@@ -169,10 +178,9 @@ class MainScreenController extends GetxController
          film1kSearchList.addAll(list);
          isFilm1kMoreUpMoviesLoading.value = false;
        }
-     else
+     else if(!isLoadMore)
        {
          film1kCurrentPage = 1;
-         isFilm1kSourceLoading.value = true;
          String searchUrl = LocalUtils.getFilm1kSearchUrl(movieName);
          film1kSearchList = await getFilm1MoviesList(searchUrl);
          isFilm1kSourceLoading.value = false;

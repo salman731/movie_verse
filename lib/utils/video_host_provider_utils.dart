@@ -18,7 +18,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String javaScriptText = list[3].text;
+      String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
       ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -38,7 +38,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String javaScriptText = list[3].text;
+      String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
       ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -78,7 +78,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String encryptedJavascript = list[2].text;
+      String encryptedJavascript = list.where((element) => element.text.contains("eval")).first.text;
       String decodedEval = encryptedJavascript.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();
       late String mp4Url;
@@ -106,7 +106,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
-      String encryptedJavaScript = list[8].text;
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
       String decodedEval = evalStr.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();
@@ -168,7 +168,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String javaScriptText = embededUrl.contains("/w/") ? list[9].text :list[8].text;
+      String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
       ExternalVideoPlayerLauncher.launchMxPlayer(
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -285,7 +285,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String encryptedJavaScript = list[5].text;
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
       String decodedEval = evalStr.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();

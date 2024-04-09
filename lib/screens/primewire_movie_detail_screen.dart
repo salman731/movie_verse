@@ -67,49 +67,51 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                     getTextWidget("Description : ",snapshot.data!.description!),
 
                   ],),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
-                  child: Align(alignment: Alignment.centerLeft,child: Text("Select Season :")),
-                ),
-                Obx(()=> SizedBox(
-                  width: MediaQuery.of(context).size.width / 1.15,
-                  child: DropdownButton<String>(
-                    isExpanded:true,
-                    value: primeWireMovieDetailController.selectedSeason.value,
-                    items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text("Season ${value}"),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![value]![0];
-                      primeWireMovieDetailController.selectedSeason.value = value!;
-                    },
+                if(widget.primeWireCover.url!.contains("/tv/"))...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
+                    child: Align(alignment: Alignment.centerLeft,child: Text("Select Season :")),
                   ),
-                ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
-                  child: Align(alignment: Alignment.centerLeft,child: Text("Select Episode :")),
-                ),
-                Obx(()=> SizedBox(
-                  width: MediaQuery.of(context).size.width / 1.15,
-                  child: DropdownButton<PrimewireSeasonEpisode>(
-                    isExpanded:true,
-                    value: primeWireMovieDetailController.selectedEpisode.value,
-                    items: snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
-                      return DropdownMenuItem<PrimewireSeasonEpisode>(
-                        value: value,
-                        child: Text("${value.episodeNo} ${value.episodeTitle}"),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      primeWireMovieDetailController.selectedEpisode.value = value!;
-                    },
+                  Obx(()=> SizedBox(
+                    width: MediaQuery.of(context).size.width / 1.15,
+                    child: DropdownButton<String>(
+                      isExpanded:true,
+                      value: primeWireMovieDetailController.selectedSeason.value,
+                      items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text("Season ${value}"),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![value]![0];
+                        primeWireMovieDetailController.selectedSeason.value = value!;
+                      },
+                    ),
                   ),
-                ),
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
+                    child: Align(alignment: Alignment.centerLeft,child: Text("Select Episode :")),
+                  ),
+                  Obx(()=> SizedBox(
+                    width: MediaQuery.of(context).size.width / 1.15,
+                    child: DropdownButton<PrimewireSeasonEpisode>(
+                      isExpanded:true,
+                      value: primeWireMovieDetailController.selectedEpisode.value,
+                      items: snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
+                        return DropdownMenuItem<PrimewireSeasonEpisode>(
+                          value: value,
+                          child: Text("${value.episodeNo} ${value.episodeTitle}"),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        primeWireMovieDetailController.selectedEpisode.value = value!;
+                      },
+                    ),
+                  ),
+                  ),
+                ],
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.15,
                   child: OutlinedButton(onPressed: () async {

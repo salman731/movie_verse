@@ -113,7 +113,7 @@ class PrimeWireMovieDetailController extends GetxController
       List<dom.Element> list = movieTvDocument.querySelectorAll(".show_season");
       for (dom.Element element in list)
             {
-               List<dom.Element> list2 = element.querySelectorAll(".tv_episode_item.released");
+               List<dom.Element> list2 = element.querySelectorAll(".tv_episode_item");
                List<PrimewireSeasonEpisode> listEpisodes = [];
                String? seasonNo = element.attributes["data-id"];
                for(dom.Element element2 in list2)

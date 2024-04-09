@@ -8,6 +8,7 @@ import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/screens/film_1k_movie_detail.dart';
 import 'package:Movieverse/screens/primewire_movie_detail_screen.dart';
+import 'package:Movieverse/utils/colors_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/screens/up_movie_detail_screen.dart';
@@ -70,7 +71,7 @@ class _MainScreenState extends State<MainScreen> {
            // await Future.delayed(Duration(seconds: 3));
            // LoaderDialog.stopLoaderDialog();
 
-          },child: Icon(Icons.add))*/,
+          },child: Icon(Icons.add)),*/
           appBar: AppBar(title: !_isSearching ? Text("Main Screen") : _searchTextField(),
           actions: !_isSearching ? [IconButton(
               icon: Icon(Icons.search),
@@ -128,7 +129,7 @@ class _MainScreenState extends State<MainScreen> {
                               flex: 1,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: CircularProgressIndicator(),
+                                child: Transform.scale(scale: 0.5,child: CircularProgressIndicator(color: AppColors.kPrimaryColor,)),
                               ),
                             ),
                           ],
@@ -171,7 +172,7 @@ class _MainScreenState extends State<MainScreen> {
                               flex: 1,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: CircularProgressIndicator(),
+                                child: Transform.scale(scale: 0.5,child: CircularProgressIndicator(color: AppColors.kPrimaryColor,)),
                               ),
                             ),
                           ],
@@ -209,7 +210,7 @@ class _MainScreenState extends State<MainScreen> {
                               flex: 1,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: CircularProgressIndicator(),
+                                child: Transform.scale(scale: 0.5,child: CircularProgressIndicator(color: AppColors.kPrimaryColor,)),
                               ),
                             ),
                           ],
@@ -241,6 +242,7 @@ class _MainScreenState extends State<MainScreen> {
       onSubmitted: (value) async
       {
         mainScreenController.isSearchStarted.value = true;
+        mainScreenController.startShowingLoadingSources();
         await mainScreenController.loadMoviesfromUpMovies(searchEditingController.text);
         await mainScreenController.loadPrimeWireMovies(searchEditingController.text);
         await mainScreenController.loadFilm1KMovies(searchEditingController.text);

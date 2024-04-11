@@ -1,14 +1,15 @@
 
-
-import 'package:Movieverse/controllers/main_screen_controller.dart';
-import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
+import 'package:Movieverse/controllers/all_movie_land_detail_controller.dart';
+import 'package:Movieverse/controllers/film_1k_detail_controller.dart';
 import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
-import 'package:Movieverse/enums/media_type_enum.dart';
 import 'package:Movieverse/main.dart';
-import 'package:Movieverse/models/prime_wire_cover.dart';
-import 'package:Movieverse/models/prime_wire_detail.dart';
-import 'package:Movieverse/models/primewire_season_episode.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_server_links.dart';
+import 'package:Movieverse/models/film_1k_cover.dart';
+import 'package:Movieverse/models/film_1k_detail.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/utils/colors_utils.dart';
@@ -16,24 +17,23 @@ import 'package:Movieverse/widgets/play_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PrimeWireMovieDetailScreen extends StatefulWidget {
-  PrimeWireCover primeWireCover;
-  PrimeWireMovieDetailScreen(this.primeWireCover,{super.key});
+class AllMovieLandDetailScreen extends StatefulWidget {
+  AllMovieLandCover allMovieLandCover;
+  AllMovieLandDetailScreen(this.allMovieLandCover,{super.key});
 
   @override
-  State<PrimeWireMovieDetailScreen> createState() => _PrimeWireMovieDetailScreenState();
+  State<AllMovieLandDetailScreen> createState() => _AllMovieLandDetailScreenState();
 }
 
-class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen> {
+class _AllMovieLandDetailScreenState extends State<AllMovieLandDetailScreen> {
 
-  PrimeWireMovieDetailController primeWireMovieDetailController = Get.put(PrimeWireMovieDetailController());
-  MainScreenController mainScreenController = Get.put(MainScreenController());
+  AllMovieLandDetailController allMovieLandDetailController = Get.put(AllMovieLandDetailController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.primeWireCover.title!),),
-      body: FutureBuilder<PrimeWireDetail>(
-        future: primeWireMovieDetailController.getMovieDetail(widget.primeWireCover!)!,
+      appBar: AppBar(title: Text(widget.allMovieLandCover.title!),),
+      body: FutureBuilder<AllMovieLandDetail>(
+        future: allMovieLandDetailController.getMovieDetail(widget.allMovieLandCover)!,
         builder: (context, snapshot) {
           if(snapshot.hasData)
           {
@@ -49,26 +49,24 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                   children: [
                     getTextWidget("Name : ",snapshot.data!.title!),
                     SizedBox(height: 5,),
-                    getTextWidget("Genre : ",snapshot.data!.genre!),
+                    getTextWidget("Orginal Name : ",snapshot.data!.orginalName!),
                     SizedBox(height: 5,),
                     getTextWidget("Country : ",snapshot.data!.country!),
                     SizedBox(height: 5,),
-                    getTextWidget("Crew : ",snapshot.data!.crew!),
+                    getTextWidget("Director : ",snapshot.data!.director!),
                     SizedBox(height: 5,),
-                    getTextWidget("Duration : ",snapshot.data!.duration!),
+                    getTextWidget("Duration : ",snapshot.data!.runtime!),
                     SizedBox(height: 5,),
                     getTextWidget("Actors : ",snapshot.data!.actors!),
                     SizedBox(height: 5,),
-                    getTextWidget("Realeased Date : ",snapshot.data!.releasedDate!),
+                    getTextWidget("Orginal Language : ",snapshot.data!.oringalLanguage!),
                     SizedBox(height: 5,),
-                    getTextWidget("Ratings : ",snapshot.data!.ratings!),
-                    SizedBox(height: 5,),
-                    getTextWidget("Companies : ",snapshot.data!.company!),
+                    getTextWidget("Translation Language : ",snapshot.data!.translationLanguage!),
                     SizedBox(height: 5,),
                     getTextWidget("Description : ",snapshot.data!.description!),
 
                   ],),
-                if(widget.primeWireCover.url!.contains("/tv/"))...[
+                if(allMovieLandDetailController.isSeries)...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 22,vertical: 8),
                     child: Align(alignment: Alignment.centerLeft,child: Text("Select Season :")),
@@ -77,16 +75,17 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                     width: MediaQuery.of(context).size.width / 1.15,
                     child: DropdownButton<String>(
                       isExpanded:true,
-                      value: primeWireMovieDetailController.selectedSeason.value,
-                      items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
+                      value: allMovieLandDetailController.selectedSeason.value,
+                      items: snapshot.data!.seasonEpisodeMap!.keys.map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text("Season ${value}"),
                         );
                       }).toList(),
                       onChanged: (value) {
-                        primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![value]![0];
-                        primeWireMovieDetailController.selectedSeason.value = value!;
+                        allMovieLandDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodeMap![value]![0];
+                        allMovieLandDetailController.selectedSeason.value = value!;
+                        allMovieLandDetailController.findSelectedSeasonEpisode();
                       },
                     ),
                   ),
@@ -97,17 +96,18 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                   ),
                   Obx(()=> SizedBox(
                     width: MediaQuery.of(context).size.width / 1.15,
-                    child: DropdownButton<PrimewireSeasonEpisode>(
+                    child: DropdownButton<String>(
                       isExpanded:true,
-                      value: primeWireMovieDetailController.selectedEpisode.value,
-                      items: snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
-                        return DropdownMenuItem<PrimewireSeasonEpisode>(
+                      value: allMovieLandDetailController.selectedEpisode.value,
+                      items: snapshot.data!.seasonEpisodeMap![allMovieLandDetailController.selectedSeason.value]?.map((String value) {
+                        return DropdownMenuItem<String>(
                           value: value,
-                          child: Text("${value.episodeNo} ${value.episodeTitle}"),
+                          child: Text("Episode ${value}"),
                         );
                       }).toList(),
                       onChanged: (value) {
-                        primeWireMovieDetailController.selectedEpisode.value = value!;
+                        allMovieLandDetailController.selectedEpisode.value = value!;
+                        allMovieLandDetailController.findSelectedSeasonEpisode();
                       },
                     ),
                   ),
@@ -115,16 +115,21 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
                 ],
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.15,
-                  child:PlayButton(onPress: () async {
-                    if(primeWireMovieDetailController.mediaTypeEnum == MediaTypeEnum.Movie)
-                    {
-                      primeWireMovieDetailController.loadMovieInWebView(widget.primeWireCover.url);
-                    }
+                  child: PlayButton(onPress: () async {
+                    LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links.....");
+                    List<AllMovieLandServerLinks> list = await allMovieLandDetailController.getServerLinks();
+                    LoaderDialog.stopLoaderDialog();
+                    String title = "";
+                    if(allMovieLandDetailController.isSeries)
+                      {
+                        title = widget.allMovieLandCover.title! + " Season ${allMovieLandDetailController.selectedSeason} Episode ${allMovieLandDetailController.selectedEpisode}";
+                      }
                     else
-                    {
-                      primeWireMovieDetailController.loadMovieInWebView(primeWireMovieDetailController.selectedEpisode.value.episodeUrl);
-                    }
-                  }),
+                      {
+                        title = widget.allMovieLandCover.title!;
+                      }
+                    ServerListDialog.showServerLinksDialog_AllMovieLand(navigatorKey.currentContext!,list , widget.allMovieLandCover.title!);
+                  },),
                 )
               ],),);
           }
@@ -146,6 +151,5 @@ class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen>
         ],),
     );
   }
-
 
 }

@@ -2,7 +2,7 @@
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
@@ -16,7 +16,7 @@ class UpMovieDetailController extends GetxController
   bool checkifEpisodeExist = false;
   Future<UpMovieDetail>? getMovieDetail(UpMoviesCover upMoviesCover) async
   {
-    moviePageDocument = await WebUtils.getDomFromURL(upMoviesCover.url!);
+    moviePageDocument = await WebUtils.getDomFromURL_Get(upMoviesCover.url!);
     List<dom.Element> list = moviePageDocument.querySelectorAll(".film-detail-right .film-detail .about .features ul li");
     String genre = LocalUtils.getStringAfterStartStringToEnd("Genres: ", list[0].text);
     String country = LocalUtils.getStringAfterStartStringToEnd("Country: ", list[1].text);
@@ -40,7 +40,7 @@ class UpMovieDetailController extends GetxController
     List<dom.Element> list;
     if(isSeries)
       {
-        episodePageDocument = await WebUtils.getDomFromURL(episodePageUrl!);
+        episodePageDocument = await WebUtils.getDomFromURL_Get(episodePageUrl!);
         list = episodePageDocument.getElementsByClassName("server_line");
       }
     else

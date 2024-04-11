@@ -7,9 +7,15 @@ import 'package:html/dom.dart' as dom;
 
 class WebUtils
 {
-   static Future<dom.Document> getDomFromURL (String url,{Map<String,String>? headers}) async
+   static Future<dom.Document> getDomFromURL_Get (String url,{Map<String,String>? headers}) async
    {
      http.Response response = await http.Client().get(Uri.parse(url),headers: headers);
+     return parser.parse(response.body);
+   }
+
+   static Future<dom.Document> getDomFromURL_Post (String url,Object body,{Map<String,String>? headers}) async
+   {
+     http.Response response = await http.Client().post(Uri.parse(url),body: body,headers: headers);
      return parser.parse(response.body);
    }
 
@@ -18,6 +24,12 @@ class WebUtils
    {
      http.Response response = await http.Client().get(Uri.parse(url),headers: headers);
      return response.body!;
+   }
+
+   static Future<String> makePostRequest (String url,Object body, {Map<String,String>? headers}) async
+   {
+     http.Response  response = await http.Client().post(Uri.parse(url),body: body,headers: headers);
+     return response.body;
    }
 
    static dom.Document getDomfromHtml (String html)

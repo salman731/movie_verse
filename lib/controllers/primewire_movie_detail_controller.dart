@@ -7,7 +7,7 @@ import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/prime_wire_detail.dart';
 import 'package:Movieverse/models/primewire_season_episode.dart';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -24,7 +24,7 @@ class PrimeWireMovieDetailController extends GetxController
   Future<PrimeWireDetail> getMovieDetail(PrimeWireCover primeWireCover) async
   {
     Map<String,List<PrimewireSeasonEpisode>> map = Map();
-    movieTvDocument = await WebUtils.getDomFromURL(primeWireCover.url!);
+    movieTvDocument = await WebUtils.getDomFromURL_Get(primeWireCover.url!);
     List<dom.Element> list = movieTvDocument.querySelectorAll(".movie_info table tbody tr");
     String? description = list[0].querySelector("td p")!.text.trim();
     String? ratings = "",runtime = "",genre="",countries="",company="",cast="",crew="",releasedDate="";

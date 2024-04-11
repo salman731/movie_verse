@@ -6,13 +6,16 @@ import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_search_request.dart';
 import 'package:Movieverse/models/film_1k_cover.dart';
 import 'package:Movieverse/models/film_1k_detail.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/screens/primewire_movie_detail_screen.dart';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/screens/up_movie_detail_screen.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
@@ -30,23 +33,30 @@ class MainScreenController extends GetxController
    final String UPMOVIES_SERVER_URL = "https://www.upmovies.net";
    final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
    final String PRIMEWIRE_HOST_SERVER_URL = "https://www.primewire.tf/links/go/";
+   final String ALLMOVIELAND_SEARCH_SERVER_URL = "https://allmovieland.fun/index.php?do=search";
+   final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
    List<Film1kCover> film1kSearchList  = [];
+   List<AllMovieLandCover> allMovieLandSearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
    RxBool isFilm1kSourceLoading = false.obs;
+   RxBool isAllMovieLandSourceLoading = false.obs;
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isFilm1kMoreUpMoviesLoading = false.obs;
+   RxBool isAllMovieLandMoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
    ScrollController primeWireScrollController = ScrollController();
    ScrollController film1kScrollController = ScrollController();
+   ScrollController allMovieLandScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
+   int allMovieLandCurrentPage = 1;
    late final WebViewController webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
@@ -56,11 +66,12 @@ class MainScreenController extends GetxController
     isUpMoviesSourceLoading.value = true;
     isPrimeWireSourceLoading.value = true;
     isFilm1kSourceLoading.value = true;
+    isAllMovieLandSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
    {
-     dom.Document document = await WebUtils.getDomFromURL(pageUrl);
+     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
      List<UpMoviesCover> upMoviesCoverList = [];
      List<dom.Element>  listItems = document.getElementsByClassName("shortItem listItem");
      for (int i = 1; i<listItems.length;i++)
@@ -108,7 +119,7 @@ class MainScreenController extends GetxController
      dom.Document document;
      if(isLoadMore)
        {
-         document = await WebUtils.getDomFromURL(htmlorPageUrl);
+         document = await WebUtils.getDomFromURL_Get(htmlorPageUrl);
        }
      else
        {
@@ -148,7 +159,7 @@ class MainScreenController extends GetxController
 
   Future<List<Film1kCover>> getFilm1MoviesList(String pageUrl) async
    {
-     dom.Document document = await WebUtils.getDomFromURL(pageUrl);
+     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
      List<Film1kCover> film1kList = [];
      List<dom.Element> list = document.querySelectorAll(".loop-post.vdeo.snow-b.sw03.pd08.por.ovh");
      isFilm1kMorePagesExist = document.querySelector(".nav-links") != null;
@@ -184,6 +195,40 @@ class MainScreenController extends GetxController
          String searchUrl = LocalUtils.getFilm1kSearchUrl(movieName);
          film1kSearchList = await getFilm1MoviesList(searchUrl);
          isFilm1kSourceLoading.value = false;
+       }
+   }
+
+   Future<List<AllMovieLandCover>> getAllMovieLandMoviesList(String movieName,int pageNo,{String resultFrom = "1"}) async
+   {
+     List<AllMovieLandCover> allMovieLandCoverList = [];
+     AllMovieLandSearchRequest allMovieLandSearchRequest = AllMovieLandSearchRequest(do_search: "search",full_search: "0",result_from: resultFrom,search_start:pageNo.toString(),story: movieName,subaction: "search" );
+     dom.Document document = await WebUtils.getDomFromURL_Post(ALLMOVIELAND_SEARCH_SERVER_URL, allMovieLandSearchRequest.toJson());
+     List<dom.Element> list = document.querySelectorAll(".short-mid.new-short");
+     for(dom.Element element in list)
+       {
+         String? title = element.querySelector(".new-short__title.hover-op")!.text;
+         String? url = element.querySelector(".new-short__title--link")!.attributes["href"];
+         String? posterUrl  = ALLMOVIELAND_HOST_SERVER_URL + element.querySelector(".new-short__poster .new-short__poster--link img")!.attributes["data-src"]!;
+         allMovieLandCoverList.add(AllMovieLandCover(title: title,url: url,imageURL: posterUrl));
+       }
+     return allMovieLandCoverList;
+   }
+
+   Future<void> loadAllMovieLand(String movieName,{bool loadMore = false}) async
+   {
+     if(loadMore)
+       {
+         allMovieLandCurrentPage += 1;
+         isAllMovieLandMoviesLoading.value = true;
+         List<AllMovieLandCover> list = await getAllMovieLandMoviesList(movieName, allMovieLandCurrentPage);
+         allMovieLandSearchList.addAll(list);
+         isAllMovieLandMoviesLoading.value = false;
+       }
+     else
+       {
+         allMovieLandCurrentPage = 1;
+         allMovieLandSearchList = await getAllMovieLandMoviesList(movieName, allMovieLandCurrentPage);
+         isAllMovieLandSourceLoading.value =false;
        }
    }
 

@@ -1,12 +1,14 @@
 
 
 
+import 'package:Movieverse/controllers/all_movie_land_detail_controller.dart';
 import 'package:Movieverse/controllers/film_1k_detail_controller.dart';
 import 'package:Movieverse/controllers/main_screen_controller.dart';
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/main.dart';
-import 'package:Movieverse/screens/film_1k_movie_detail.dart';
+import 'package:Movieverse/screens/all_movie_land_detail_screen.dart';
+import 'package:Movieverse/screens/film_1k_movie_detail_screen.dart';
 import 'package:Movieverse/screens/primewire_movie_detail_screen.dart';
 import 'package:Movieverse/utils/colors_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
@@ -54,15 +56,21 @@ class _MainScreenState extends State<MainScreen> {
         mainScreenController.loadFilm1KMovies(searchEditingController.text,isLoadMore: true);
       }
     });
+    mainScreenController.allMovieLandScrollController.addListener(() {
+      if (mainScreenController.allMovieLandScrollController.position.extentAfter == 0) {
+        mainScreenController.loadAllMovieLand(searchEditingController.text,loadMore: true);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-          /*floatingActionButton: FloatingActionButton(onPressed: () async {
-            String embededUrl = "https:\/\/vidhidevip.com\/v\/cssj8cpxssit";
-            VideoHostProviderUtils.getM3U8UrlFromVidHideVip(embededUrl, "title",headers: {"Referer":"https://www.film1k.com/"});
+          floatingActionButton: FloatingActionButton(onPressed: () async {
+            //await mainScreenController.getAllMovieLandMoviesList("migra", "1", 1);
+            // String embededUrl = "https:\/\/vidhidevip.com\/v\/cssj8cpxssit";
+            // VideoHostProviderUtils.getM3U8UrlFromVidHideVip(embededUrl, "title",headers: {"Referer":"https://www.film1k.com/"});
             // mainScreenController.webViewController.runJavaScript(""
             //     "document.getElementById(\"search_term\").value = \"road\";"
             //     "const bton = document.querySelector(\".search_container button\");"
@@ -71,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
            // await Future.delayed(Duration(seconds: 3));
            // LoaderDialog.stopLoaderDialog();
 
-          },child: Icon(Icons.add)),*/
+          },child: Icon(Icons.add)),
           appBar: AppBar(title: !_isSearching ? Text("Main Screen") : _searchTextField(),
           actions: !_isSearching ? [IconButton(
               icon: Icon(Icons.search),
@@ -215,6 +223,44 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ],
                         )) ,
+                      ),
+                      Align(alignment:Alignment.centerLeft,child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("AllMovieLand",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                      )),
+                      SizedBox(
+                        height: 200.0,
+                        child: Obx(()=> mainScreenController.isAllMovieLandSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,),) : Row(
+                          children: [
+                            Expanded(
+                              flex: 7,
+                              child: ListView.builder(
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                controller: mainScreenController.allMovieLandScrollController,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: mainScreenController.allMovieLandSearchList.length,
+                                itemBuilder: (BuildContext context, int index) => SizedBox(
+                                  width: 100,
+                                  height: 200,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      Get.to(AllMovieLandDetailScreen(mainScreenController.allMovieLandSearchList[index]));
+                                    },
+                                    child: _movieSingleItem(mainScreenController.allMovieLandSearchList[index].title!,mainScreenController.allMovieLandSearchList[index].imageURL!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (mainScreenController.isAllMovieLandMoviesLoading.value) Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Transform.scale(scale: 0.5,child: CircularProgressIndicator(color: AppColors.kPrimaryColor,)),
+                              ),
+                            ),
+                          ],
+                        )) ,
                       )
                     ],
                   ),
@@ -246,6 +292,7 @@ class _MainScreenState extends State<MainScreen> {
         await mainScreenController.loadMoviesfromUpMovies(searchEditingController.text);
         await mainScreenController.loadPrimeWireMovies(searchEditingController.text);
         await mainScreenController.loadFilm1KMovies(searchEditingController.text);
+        await mainScreenController.loadAllMovieLand(searchEditingController.text);
 
       },
       style: TextStyle(

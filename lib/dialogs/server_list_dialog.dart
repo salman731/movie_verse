@@ -3,9 +3,11 @@
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/main.dart';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_server_links.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
+import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -61,15 +63,59 @@ class ServerListDialog
     }
   }
 
-  static Widget getServerButton(String server,String pageUrl,int index)
+  static showServerLinksDialog_AllMovieLand(BuildContext buildContext,List<AllMovieLandServerLinks> allMovieLandServerLinks,String movieTitle)
   {
+    if (allMovieLandServerLinks != null && allMovieLandServerLinks.isNotEmpty) {
+      title = movieTitle;
+      AlertDialog alert=AlertDialog(
+            title: Text("Select Server"),
+            actions: [
+              TextButton(onPressed: (){
+                Get.back();
+              }, child: Text("Cancel"))
+            ],
+            content: SingleChildScrollView(
+              child: new Column(
+                children: populateServerButtons_AllMovieLand(allMovieLandServerLinks),),
+            ),
+          );
+      showDialog(barrierDismissible: false,
+        context:buildContext,
+        builder:(BuildContext context){
+          return alert;
+        },
+      );
+    }
+    else{
+      Fluttertoast.showToast(msg: "No servers found.Try different sources....",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+  }
+
+  static Widget getServerButton(String server,String pageUrl,{int? index,bool isSourceOwnServers = false})
+  {
+    String btnTitle = "";
+   if(index != null)
+     {
+       btnTitle = "Play (${server}" " ${index + 1})";
+     }
+   else
+     {
+       btnTitle = "Play (${server})";
+     }
    return SizedBox(
      width: 200,
      child: OutlinedButton(onPressed: () async{
        LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Playing.....");
-       await playVideo(pageUrl,server);
+       if (!isSourceOwnServers) {
+         await playVideo(pageUrl,server);
+       } else {
+         ExternalVideoPlayerLauncher.launchMxPlayer(
+             pageUrl!, MIME.applicationVndAppleMpegurl, {
+           "title": title,
+         });
+       }
        LoaderDialog.stopLoaderDialog();
-      }, child: Text("Play (${server}" " ${index + 1})"),style: OutlinedButton.styleFrom(
+      }, child: Text(btnTitle),style: OutlinedButton.styleFrom(
           backgroundColor: Colors.black12,
           foregroundColor: Colors.black,
           textStyle: TextStyle(fontSize: 15, fontStyle: FontStyle.italic,),
@@ -89,13 +135,28 @@ class ServerListDialog
               {
                 for(int i = 0;i<mapEntry.value.length;i++)
                   {
-                     btnList.add(getServerButton(mapEntry.key, mapEntry.value[i],i));
+                     btnList.add(getServerButton(mapEntry.key, mapEntry.value[i],index: i));
                   }
               }
           }
       }
     return btnList;
   }
+
+  static List<Widget> populateServerButtons_AllMovieLand(List<AllMovieLandServerLinks> list)
+  {
+    List<Widget> btnList =[];
+
+    for(AllMovieLandServerLinks allMovieLandServerLinks in list)
+      {
+         for(MapEntry<String,String> mapEntry in allMovieLandServerLinks.qualityM3u8LinksMap!.entries)
+           {
+              btnList.add(getServerButton(allMovieLandServerLinks.title! + "(${mapEntry.key})",mapEntry.value,isSourceOwnServers: true));
+           }
+      }
+     return btnList;
+  }
+
 
   static Future<void> playVideo(String pageUrl,String server) async
   {

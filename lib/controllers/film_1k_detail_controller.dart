@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/models/film_1k_cover.dart';
 import 'package:Movieverse/models/film_1k_detail.dart';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -18,7 +18,7 @@ class Film1kController extends GetxController
 
   Future<Film1kDetail> getMovieDetail(Film1kCover film1kCover) async
   {
-    movieDocument = await WebUtils.getDomFromURL(film1kCover.url!);
+    movieDocument = await WebUtils.getDomFromURL_Get(film1kCover.url!);
     dom.NodeList list = movieDocument.querySelectorAll(".entry.pd16.c-pd24 p")[0].nodes;
     String? directedby = "",released ="", runtime ="",geners="",country="",language="",actors="",description="";
     for (int i = 0;i<list.length;i++)

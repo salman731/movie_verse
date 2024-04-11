@@ -5,6 +5,7 @@ import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/utils/colors_utils.dart';
+import 'package:Movieverse/widgets/play_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -80,21 +81,17 @@ class _UpMovieDetailScreenState extends State<UpMovieDetailScreen> {
                   ],
                   SizedBox(
                     width: MediaQuery.of(context).size.width / 1.15,
-                    child: OutlinedButton(onPressed: () async {
+                    child:PlayButton(onPress: () async {
                       if(!movieDetailController.checkifEpisodeExist)
-                        {
-                          ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(),widget.upMoviesCover.title!);
-                        }
+                      {
+                        ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(),widget.upMoviesCover.title!);
+                      }
                       else
-                        {
-                          ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(episodePageUrl: movieDetailController.episodeMap[movieDetailController.selectedEpisode],isSeries: true),widget.upMoviesCover.title!);
-                        }
-                    }, child: Text("Play"),style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.black12,
-                        foregroundColor: Colors.black,
-                        textStyle: TextStyle(fontSize: 15, fontStyle: FontStyle.italic,),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)))),),
+                      {
+                        ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(episodePageUrl: movieDetailController.episodeMap[movieDetailController.selectedEpisode],isSeries: true),widget.upMoviesCover.title!);
+                      }
+                    }),
+
                   )
                 ],),);
             }

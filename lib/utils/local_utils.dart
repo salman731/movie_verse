@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'dart:math';
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html/dom.dart' as dom;
@@ -79,7 +79,7 @@ class LocalUtils
 
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
-    dom.Document document = await WebUtils.getDomFromURL(pageUrl);
+    dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
     List<dom.Element> list = document.getElementsByClassName("player-iframe animation");
     String? encodedData = list[0].querySelector("script")!.text!;
     String encodedEmbededUrl = LocalUtils.getStringBetweenTwoStrings("document.write(Base64.decode(", "));", encodedData);

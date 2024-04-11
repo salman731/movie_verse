@@ -1,5 +1,5 @@
 
-import 'package:Movieverse/utils/html_parsing_utils.dart';
+import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/f/", "/v/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -36,7 +36,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://streamwish.to/", "https://streamwish.to/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -56,7 +56,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://voe.sx/", "https://voe.sx/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String javaScriptText = list.where((element) => element.text.contains("'hls': '")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("'hls': '","'," , javaScriptText);
@@ -76,7 +76,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://streamvid.net/", "https://streamvid.net/embed-");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String encryptedJavascript = list.where((element) => element.text.contains("eval")).first.text;
       String decodedEval = encryptedJavascript.replaceAll("eval", "console.log");
@@ -104,7 +104,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/f/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -133,7 +133,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://dropload.io/", "https://dropload.io/e");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -166,7 +166,7 @@ class VideoHostProviderUtils
       }
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -186,7 +186,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/v/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       String? ideooLink = document.querySelector("#ideoolink")!.text;
       List<dom.Element> list = document.querySelectorAll("script");
       String? javaScript = list[6].text;
@@ -209,7 +209,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://vidoza.net/", "https://vidoza.net/embed-");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       String? dlUrl = document.querySelector("source")!.attributes["src"];
       ExternalVideoPlayerLauncher.launchMxPlayer(
           dlUrl!, MIME.applicationMp4, {
@@ -225,7 +225,7 @@ class VideoHostProviderUtils
   {
     try {
       String filterUrl = embededUrl.replaceAll("embed-", "");
-      dom.Document document = await WebUtils.getDomFromURL(filterUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(filterUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String encryptedJavaScript = list[7].text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -256,7 +256,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/d/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String javaScript = list[8].text;
       String baseUrl = Uri.parse(embededUrl).origin;
@@ -283,7 +283,7 @@ class VideoHostProviderUtils
       embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -312,7 +312,7 @@ class VideoHostProviderUtils
       embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String encryptedJavaScript = list[8].text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
@@ -341,7 +341,7 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("https://vidhidevip.com/", "https://vidhidevip.com/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL(embededUrl,headers: headers);
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list[3].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
@@ -358,7 +358,7 @@ class VideoHostProviderUtils
   static Future<String?> getMp4UrlFromePlayVid (String embededUrl,String title) async
   {
     try {
-      dom.Document iframeDocument = await WebUtils.getDomFromURL(embededUrl);
+      dom.Document iframeDocument = await WebUtils.getDomFromURL_Get(embededUrl);
       String? eplayMp4Url = iframeDocument.querySelector("source")!.attributes["src"];
       LocalUtils.openAndPlayVideoWithMxPlayer_Android(eplayMp4Url!, title, "https://eplayvid.net",MIME.applicationMp4);
     } catch (e) {

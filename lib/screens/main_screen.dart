@@ -31,7 +31,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  MainScreenController mainScreenController = Get.put(MainScreenController());
+  SearchScreenController mainScreenController = Get.put(SearchScreenController());
   TextEditingController searchEditingController = TextEditingController();
   TextEditingController _searchQueryController = TextEditingController();
   bool _isSearching = false;
@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
             child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height:0,width:0,child: WebViewWidget(controller: mainScreenController.webViewController,)),
+                      SizedBox(height:0,width:0,child: WebViewWidget(controller: mainScreenController.webViewController!,)),
                       Align(alignment:Alignment.centerLeft,child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text("Up Source",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),

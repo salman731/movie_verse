@@ -1,5 +1,6 @@
 
 
+import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/main.dart';
@@ -7,11 +8,13 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_server_links.dar
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
+import 'package:Movieverse/widgets/custom_button.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:sizer/sizer.dart';
 
 class ServerListDialog
 {
@@ -40,11 +43,12 @@ class ServerListDialog
       isVideotoEmbededAllowed = videotoIframeAllowed;
       film1kHeaders = headers;
       AlertDialog alert=AlertDialog(
+        backgroundColor: AppColors.black,
         title: Text("Select Server"),
         actions: [
           TextButton(onPressed: (){
             Get.back();
-          }, child: Text("Cancel"))
+          }, child: Text("Cancel",style: TextStyle(color: Colors.white),))
         ],
         content: SingleChildScrollView(
           child: new Column(
@@ -102,7 +106,22 @@ class ServerListDialog
      {
        btnTitle = "Play (${server})";
      }
-   return SizedBox(
+   return CustomButton(func: () async {
+      LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Playing.....");
+      if (!isSourceOwnServers) {
+        await playVideo(pageUrl,server);
+      } else {
+        ExternalVideoPlayerLauncher.launchMxPlayer(
+            pageUrl!, MIME.applicationVndAppleMpegurl, {
+          "title": title,
+        });
+      }
+      LoaderDialog.stopLoaderDialog();
+    }, title: btnTitle,
+      color: AppColors.red,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5)),);
+   /*return SizedBox(
      width: 200,
      child: OutlinedButton(onPressed: () async{
        LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Playing.....");
@@ -121,7 +140,7 @@ class ServerListDialog
           textStyle: TextStyle(fontSize: 15, fontStyle: FontStyle.italic,),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)))),),
-   );
+   );*/
   }
 
   static List<Widget> populateServerButtons(Map<String,List<String>> map)
@@ -135,7 +154,9 @@ class ServerListDialog
               {
                 for(int i = 0;i<mapEntry.value.length;i++)
                   {
+                      
                      btnList.add(getServerButton(mapEntry.key, mapEntry.value[i],index: i));
+                     btnList.add(SizedBox(height: 2.h,));
                   }
               }
           }

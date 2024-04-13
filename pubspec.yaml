@@ -48,6 +48,17 @@ dependencies:
   webview_flutter: ^4.7.0
   build_runner: ^2.4.9
   flutter_hls_parser: ^2.0.1
+  cached_network_image: ^3.3.1
+  sizer: ^2.0.15
+  carousel_slider: ^4.2.1
+  shimmer: ^3.0.0
+  equatable: ^2.0.5
+  internet_connection_checker: ^1.0.0+1
+  lottie: ^3.1.0
+  google_fonts: ^6.2.1
+  persistent_bottom_nav_bar: ^5.0.2
+  bottom_navy_bar: ^6.0.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +79,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/animations/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

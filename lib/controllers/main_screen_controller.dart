@@ -28,7 +28,7 @@ import 'package:Movieverse/main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 
-class MainScreenController extends GetxController
+class SearchScreenController extends GetxController
 {
    final String UPMOVIES_SERVER_URL = "https://www.upmovies.net";
    final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
@@ -57,9 +57,10 @@ class MainScreenController extends GetxController
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
    int allMovieLandCurrentPage = 1;
-   late final WebViewController webViewController;
+   WebViewController? webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
+   RxBool isUpMoviesReachedMax = false.obs;
 
   startShowingLoadingSources()
   {
@@ -100,10 +101,10 @@ class MainScreenController extends GetxController
      String searchUpMoviesURL = LocalUtils.getUpMoviesSearchURL(movieName,isLoadMore: loadMore,page: upMoviesCurrentPage);
      if(loadMore)
        {
-         isUpMovieMoreUpMoviesLoading.value = true;
          List<UpMoviesCover> list  = await searchMovieInUpMovies(searchUpMoviesURL,loadMore: loadMore);
          upMoviesSearchList.addAll(list);
          isUpMovieMoreUpMoviesLoading.value = false;
+
        }
      else
        {
@@ -143,14 +144,13 @@ class MainScreenController extends GetxController
        primeWireCurrentPage = 1;
       // await loginIntoPrimeWire();
        //await Future.delayed(Duration(seconds: 3));
-       await webViewController.runJavaScript(""
+       await webViewController!.runJavaScript(""
                 "document.getElementById(\"search_term\").value = \"${movieName}\";"
                 "const bton = document.querySelector(\".search_container button\");"
                 "bton.click();");
      } else {
        primeWireCurrentPage += 1;
        String searchUrl = LocalUtils.getPrimeWireSearchURL(movieName, primeWireCurrentPage, primeWireSearchHash!);
-       isPrimeWireMoreUpMoviesLoading.value = true;
        List<PrimeWireCover> list = await getPrimeWireMoviesList(searchUrl,isLoadMore:isLoadMore);
        primeWireSearchList.addAll(list);
        isPrimeWireMoreUpMoviesLoading.value = false;
@@ -182,8 +182,8 @@ class MainScreenController extends GetxController
    {
      if(isLoadMore && isFilm1kMorePagesExist)
        {
-         film1kCurrentPage += 1;
          isFilm1kMoreUpMoviesLoading.value = true;
+         film1kCurrentPage += 1;
          String searchUrl = LocalUtils.getFilm1kSearchUrl(movieName,isLoadMore: isLoadMore,pageNo: film1kCurrentPage);
          List<Film1kCover> list = await getFilm1MoviesList(searchUrl);
          film1kSearchList.addAll(list);
@@ -219,7 +219,6 @@ class MainScreenController extends GetxController
      if(loadMore)
        {
          allMovieLandCurrentPage += 1;
-         isAllMovieLandMoviesLoading.value = true;
          List<AllMovieLandCover> list = await getAllMovieLandMoviesList(movieName, allMovieLandCurrentPage);
          allMovieLandSearchList.addAll(list);
          isAllMovieLandMoviesLoading.value = false;
@@ -234,57 +233,60 @@ class MainScreenController extends GetxController
 
    initWebViewController()
    {
-     webViewController = WebViewController()
-       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-       ..setBackgroundColor(const Color(0x00000000))
-       ..setNavigationDelegate(
-         NavigationDelegate(
-           onProgress: (int progress) {
-             // Update loading bar.
-           },
-           onPageStarted: (String url) {
-             if (url == "https://www.primewire.tf/" )
-               {
-                 LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
-               }
-           },
-           onPageFinished: (String url) async {
 
-           if(url.contains("https://www.primewire.tf/filter"))
-             {
-               Uri uri = Uri.parse(url);
-               primeWireSearchHash = uri.queryParameters["ds"];
-               String? decodedString =  await getHtmlFromPrimewire();
-               primeWireSearchList = await getPrimeWireMoviesList(decodedString!);
-               isPrimeWireSourceLoading.value = false;
-             }
-           else if(url.contains("https://www.primewire.tf/movie") || url.contains("https://www.primewire.tf/tv"))
-             {
-               Map<String,List<String>> map = await getServerPages();
-               LoaderDialog.stopLoaderDialog();
-               ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,primewireMovieTitle!,decodeiframe: false,videotoIframeAllowed: true);
-             }
-           else if (url == "https://www.primewire.tf/" )
-             {
-               await loginIntoPrimeWire();
-               LoaderDialog.stopLoaderDialog();
+     if (webViewController == null) {
+       webViewController = WebViewController()
+              ..setJavaScriptMode(JavaScriptMode.unrestricted)
+              ..setBackgroundColor(const Color(0x00000000))
+              ..setNavigationDelegate(
+                NavigationDelegate(
+                  onProgress: (int progress) {
+                    // Update loading bar.
+                  },
+                  onPageStarted: (String url) {
+                    if (url == "https://www.primewire.tf/" )
+                      {
+                        LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
+                      }
+                  },
+                  onPageFinished: (String url) async {
 
-             }
-           },
-           onWebResourceError: (WebResourceError error) {},
-           onNavigationRequest: (NavigationRequest request) {
-             return NavigationDecision.navigate;
-           },
-         ),
-       )
-       ..loadRequest(Uri.parse('https://primewire.tf'));
+                  if(url.contains("https://www.primewire.tf/filter"))
+                    {
+                      Uri uri = Uri.parse(url);
+                      primeWireSearchHash = uri.queryParameters["ds"];
+                      String? decodedString =  await getHtmlFromPrimewire();
+                      primeWireSearchList = await getPrimeWireMoviesList(decodedString!);
+                      isPrimeWireSourceLoading.value = false;
+                    }
+                  else if(url.contains("https://www.primewire.tf/movie") || url.contains("https://www.primewire.tf/tv"))
+                    {
+                      Map<String,List<String>> map = await getServerPages();
+                      LoaderDialog.stopLoaderDialog();
+                      ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,primewireMovieTitle!,decodeiframe: false,videotoIframeAllowed: true);
+                    }
+                  else if (url == "https://www.primewire.tf/" )
+                    {
+                      await loginIntoPrimeWire();
+                      LoaderDialog.stopLoaderDialog();
+
+                    }
+                  },
+                  onWebResourceError: (WebResourceError error) {},
+                  onNavigationRequest: (NavigationRequest request) {
+                    return NavigationDecision.navigate;
+                  },
+                ),
+              )
+              ..loadRequest(Uri.parse('https://primewire.tf'));
+     }
 
      //webViewController.runJavaScript(javaScript)
    }
 
    Future<String?> getHtmlFromPrimewire() async
    {
-       Object html = await webViewController.runJavaScriptReturningResult("window.document.getElementsByTagName('html')[0].outerHTML;");
+       Object html = await webViewController!.runJavaScriptReturningResult("window.document.getElementsByTagName('html')[0].outerHTML;");
        String decodedHtml = json.decode(html.toString());
        return decodedHtml;
 
@@ -360,7 +362,7 @@ class MainScreenController extends GetxController
    {
      String email = "salmanilyas731@gmail.com";
      String password = "internet50";
-     await webViewController.runJavaScript(""
+     await webViewController!.runJavaScript(""
          "document.getElementById(\"session_email\").value = \"${email}\";"
          "document.getElementById(\"session_password\").value = \"${password}\";"
          "const form = document.querySelector(\".secure\");"

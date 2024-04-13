@@ -1,4 +1,5 @@
 
+import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/main.dart';
 import 'package:flutter/material.dart';
 
@@ -20,10 +21,11 @@ class LoaderDialog
     if (!isLoaderShowing!) {
       isLoaderShowing = true;
       AlertDialog alert=AlertDialog(
+        backgroundColor: AppColors.black,
         content: new Row(
           children: [
-            CircularProgressIndicator(),
-            Container(margin: EdgeInsets.only(left: 7),child:Text(text)),
+            CircularProgressIndicator(color: AppColors.red,),
+            Container(margin: EdgeInsets.only(left: 7),child:Text(text,style: TextStyle(color: AppColors.red),)),
           ],),
       );
       showDialog(barrierDismissible: false,

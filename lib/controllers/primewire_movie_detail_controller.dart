@@ -19,7 +19,7 @@ class PrimeWireMovieDetailController extends GetxController
   late dom.Document movieTvDocument;
   RxString selectedSeason = "1".obs;
   Rx<PrimewireSeasonEpisode> selectedEpisode = PrimewireSeasonEpisode().obs;
-  MainScreenController mainScreenController = Get.put(MainScreenController());
+  SearchScreenController searchScreenController = Get.put(SearchScreenController());
   MediaTypeEnum? mediaTypeEnum;
   Future<PrimeWireDetail> getMovieDetail(PrimeWireCover primeWireCover) async
   {
@@ -103,7 +103,7 @@ class PrimeWireMovieDetailController extends GetxController
   Future<void> loadMovieInWebView(String? pageUrl) async
   {
     LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links.....");
-    await mainScreenController.webViewController.loadRequest(Uri.parse(pageUrl!));
+    await searchScreenController.webViewController!.loadRequest(Uri.parse(pageUrl!));
   }
 
  Map<String,List<PrimewireSeasonEpisode>> getSeasonsAndEpisodeList()
@@ -120,7 +120,7 @@ class PrimeWireMovieDetailController extends GetxController
                  {
                     String? episodeNo = LocalUtils.getStringBetweenTwoStrings("\n", "\n", element2.querySelector("a")!.text);
                     String? episodeTitle = element2.querySelector(".tv_episode_name")!.text;
-                    String? episodeUrl = mainScreenController.PRIMEWIRE_SERVER_URL + element2.querySelector("a")!.attributes["href"]!;
+                    String? episodeUrl = searchScreenController.PRIMEWIRE_SERVER_URL + element2.querySelector("a")!.attributes["href"]!;
                     listEpisodes.add(PrimewireSeasonEpisode(episodeNo: episodeNo!,episodeTitle:episodeTitle,episodeUrl: episodeUrl));
                  }
                map[seasonNo!] = listEpisodes;

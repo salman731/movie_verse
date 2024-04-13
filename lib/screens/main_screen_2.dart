@@ -1,0 +1,87 @@
+import 'package:Movieverse/constants/app_colors.dart';
+import 'package:Movieverse/screens/details_screen/details_screen.dart';
+import 'package:Movieverse/screens/home_screen/home_screen.dart';
+import 'package:Movieverse/screens/search_screen/search_screen.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:flutter/material.dart';
+
+class MainScreen2 extends StatefulWidget {
+  const MainScreen2({Key? key}) : super(key: key);
+
+  @override
+  State<MainScreen2> createState() => _MainScreen2State();
+}
+
+class _MainScreen2State extends State<MainScreen2> {
+
+  int _currentIndex = 0;
+  PageController? _pageController;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+
+  @override
+  void dispose() {
+    _pageController!.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SizedBox.expand(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _currentIndex = index);
+          },
+          children: <Widget>[
+            HomeScreen(),
+            SearchScreen(),
+            Container(color: Colors.green,),
+            Container(color: Colors.blue,),
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavyBar(
+        backgroundColor: AppColors.black,
+
+        selectedIndex: _currentIndex,
+        onItemSelected: (index) {
+          setState(() => _currentIndex = index);
+          _pageController!.jumpToPage(index);
+        },
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+              activeColor: AppColors.red,
+              inactiveColor: AppColors.red.shade400,
+              title: Text('Home'),
+              icon: Icon(Icons.home)
+          ),
+          BottomNavyBarItem(
+              activeColor: AppColors.red,
+              inactiveColor: AppColors.red.shade400,
+              title: Text('Search'),
+              icon: Icon(Icons.search)
+          ),
+          BottomNavyBarItem(
+              activeColor: AppColors.red,
+              inactiveColor: AppColors.red.shade400,
+              title: Text('Settings'),
+              icon: Icon(Icons.settings)
+          ),
+          // BottomNavyBarItem(
+          //     activeColor: AppColors.red,
+          //     inactiveColor: AppColors.red.shade400,
+          //     title: Text('Item Four'),
+          //     icon: Icon(Icons.settings)
+          // ),
+        ],
+      ),
+    );
+  }
+}

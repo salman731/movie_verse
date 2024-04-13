@@ -96,7 +96,7 @@ class AllMovieLandDetailController extends GetxController
   {
     Map<String,List<String>> serverMap = Map();
     List<AllMovieLandServerLinks> allMovieLandServerLinks = [];
-    String mainUrl = Get.find<MainScreenController>().ALLMOVIELAND_HOST_SERVER_URL;
+    String mainUrl = Get.find<SearchScreenController>().ALLMOVIELAND_HOST_SERVER_URL;
     List<dom.Element> list = pageDocument.querySelectorAll("script");
     String? config = list.where((element) => element.text.contains("IndStreamPlayerConfigs")).first.text;
     String? srcID = LocalUtils.getStringBetweenTwoStrings("src: ", ",", config).replaceAll("'", "");
@@ -131,7 +131,7 @@ class AllMovieLandDetailController extends GetxController
   {
     Map<String,List<String>> serverMap = Map();
     List<AllMovieLandServerLinks> allMovieLandServerLinks = [];
-    String mainUrl = Get.find<MainScreenController>().ALLMOVIELAND_HOST_SERVER_URL;
+    String mainUrl = Get.find<SearchScreenController>().ALLMOVIELAND_HOST_SERVER_URL;
     List<dom.Element> list = pageDocument.querySelectorAll("script");
     String? config = list.where((element) => element.text.contains("IndStreamPlayerConfigs")).first.text;
     String? srcID = LocalUtils.getStringBetweenTwoStrings("src: ", ",", config).replaceAll("'", "");

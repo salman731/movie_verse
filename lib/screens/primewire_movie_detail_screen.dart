@@ -27,7 +27,7 @@ class PrimeWireMovieDetailScreen extends StatefulWidget {
 class _PrimeWireMovieDetailScreenState extends State<PrimeWireMovieDetailScreen> {
 
   PrimeWireMovieDetailController primeWireMovieDetailController = Get.put(PrimeWireMovieDetailController());
-  MainScreenController mainScreenController = Get.put(MainScreenController());
+  SearchScreenController searchScreenController = Get.put(SearchScreenController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

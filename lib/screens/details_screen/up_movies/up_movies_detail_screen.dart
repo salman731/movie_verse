@@ -19,15 +19,15 @@ import 'package:sizer/sizer.dart';
 
 
 
-class UpMoviesDetailScreen2 extends StatefulWidget {
+class UpMoviesDetailScreen extends StatefulWidget {
   UpMoviesCover upMoviesCover;
-  UpMoviesDetailScreen2({super.key, required this.upMoviesCover});
+  UpMoviesDetailScreen({super.key, required this.upMoviesCover});
 
   @override
-  State<UpMoviesDetailScreen2> createState() => _UpMoviesDetailScreen2State();
+  State<UpMoviesDetailScreen> createState() => _UpMoviesDetailScreenState();
 }
 
-class _UpMoviesDetailScreen2State extends State<UpMoviesDetailScreen2> {
+class _UpMoviesDetailScreenState extends State<UpMoviesDetailScreen> {
 
   UpMovieDetailController movieDetailController = Get.put(UpMovieDetailController());
   @override
@@ -118,6 +118,7 @@ class _UpMoviesDetailScreen2State extends State<UpMoviesDetailScreen2> {
                                               ],
                                             ),
                                           ),
+                                          SizedBox(height: 2.h,),
                                         if(movieDetailController.checkifEpisodeExist)...[
                                           RichText(
                                             maxLines: 15,

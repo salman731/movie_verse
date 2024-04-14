@@ -2,8 +2,10 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/main_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
-import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen_2.dart';
-import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen_2.dart';
+import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -36,23 +38,26 @@ class MovieListView extends StatelessWidget {
         itemCount: !hasReachedMax ? moviesList.length : moviesList.length + 1,
         itemBuilder: (context, index) {
           if (index < moviesList.length) {
-            return InkWell(
+            return GestureDetector(
               onTap: (){
                 switch (sourceEnum)
                 {
                   case SourceEnum.UpMovies:
-                    Get.to(UpMoviesDetailScreen2(upMoviesCover: Get.find<SearchScreenController>().upMoviesSearchList[index]));
+                    Get.to(UpMoviesDetailScreen(upMoviesCover: Get.find<SearchScreenController>().upMoviesSearchList[index]));
                   case SourceEnum.Primewire:
                     Get.find<SearchScreenController>().primewireMovieTitle = Get.find<SearchScreenController>().primeWireSearchList[index].title;
-                    Get.to(PrimewireDetailsScreen2(primeWireCover: Get.find<SearchScreenController>().primeWireSearchList[index]));
+                    Get.to(PrimewireDetailsScreen(primeWireCover: Get.find<SearchScreenController>().primeWireSearchList[index]));
                   case SourceEnum.Film1k:
+                    Get.to(Film1kDetailScreen(film1kCover: Get.find<SearchScreenController>().film1kSearchList[index]));
                   case SourceEnum.AllMovieLand:
+                    Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
+
                 }
               },
               child: MovieCard(
                 imgurl: moviesList[index].imageURL!,
                 title: moviesList[index].title!,
-                rate: 2.4,
+                //rate: 2.4,
               ),
             );
           } else {

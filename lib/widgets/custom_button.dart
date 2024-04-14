@@ -24,7 +24,6 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: func,
-
         style: ElevatedButton.styleFrom(
             shape: shape,
             backgroundColor: color,

@@ -1,4 +1,6 @@
 import 'package:Movieverse/constants/app_colors.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
+import 'package:Movieverse/models/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movie_detail.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,16 +10,16 @@ import 'package:sizer/sizer.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text.dart';
 
-class UpMoviesCustomFlexibleSpaceBar extends StatefulWidget {
-   UpMovieDetail upMovieDetail;
-   UpMoviesCustomFlexibleSpaceBar({super.key,required this.upMovieDetail});
+class AllMovieLandCustomFlexibleSpaceBar extends StatefulWidget {
+  AllMovieLandDetail allMovieLandDetail;
+  AllMovieLandCustomFlexibleSpaceBar({super.key,required this.allMovieLandDetail});
   @override
-  UpMoviesCustomFlexibleSpaceBarState createState() {
-    return UpMoviesCustomFlexibleSpaceBarState();
+  AllMovieLandCustomFlexibleSpaceBarState createState() {
+    return AllMovieLandCustomFlexibleSpaceBarState();
   }
 }
 
-class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSpaceBar> {
+class AllMovieLandCustomFlexibleSpaceBarState extends State<AllMovieLandCustomFlexibleSpaceBar> {
   ScrollPosition? _position;
   bool? _visible;
 
@@ -47,7 +49,7 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
 
   void _positionListener() {
     final FlexibleSpaceBarSettings? settings =
-        context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
+    context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
     bool visible =
         settings == null || settings.currentExtent <= settings.minExtent;
     if (_visible != visible) {
@@ -67,25 +69,26 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
         children: [
           CachedNetworkImage(
             imageUrl:
-                widget.upMovieDetail.imageURL!,
+            widget.allMovieLandDetail.imageURL!,
             fit: BoxFit.cover,
           ),
           Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
-                Theme.of(context).scaffoldBackgroundColor,
-              ],
-            )),
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ],
+                )),
           ),
+          SizedBox(height: 2.h),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CustomText(
-                title: widget.upMovieDetail.title!,
+                title: widget.allMovieLandDetail.title!,
                 maxlines: 4,
                 horizontalpadding: 20,
               ),
@@ -93,36 +96,77 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    widget.upMovieDetail.genre!.split(",").length,
-                    (index) => CustomText(
-                      title: widget.upMovieDetail.genre!.split(",")[index],
+                    widget.allMovieLandDetail.tags!.split(",").length,
+                        (index) => CustomText(
+                      title:  widget.allMovieLandDetail.tags!.split(",")[index] + " ",
                       color: Colors.grey,
                       size: 8,
                     ),
                   )),
               SizedBox(height: 2.h),
+              /*Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: List.generate(
+                        double.parse(widget.primeWireDetail.ratings!.split("/")[0]).toInt()+ 1,
+                            (index) => Icon(
+                          index == double.parse(widget.primeWireDetail.ratings!.split("/")[0]).toInt()
+                              ? Icons.star_half
+                              : Icons.star,
+                          color: Colors.amber,
+                          size: 15.sp,
+                        )),
+                  ),
+                  SizedBox(width: 1.w),
+                  Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.red,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: CustomText(
+                      title: widget.primeWireDetail.ratings!.split("/")[0],
+                      size: 8,
+                    ),
+                  )
+                ],
+              ),*/
+              SizedBox(height: 2.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildCoulmnInfo(
-                    title: 'Year',
-                    content: widget.upMovieDetail.year!,
+                    title: 'Orginal Language',
+                    content: widget.allMovieLandDetail.oringalLanguage!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.oringalLanguage! ,
                   ),
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
-                    title: 'Duration',
+                    title: 'Runtime',
                     content:
-                    widget.upMovieDetail.duration!,
+                    widget.allMovieLandDetail.runtime!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.runtime!,
+                  ),
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCoulmnInfo(
+                    title: 'Translation Language',
+                    content:widget.allMovieLandDetail.translationLanguage!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.translationLanguage!,
                   ),
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
                     title: 'Director',
-                    content: widget.upMovieDetail.director!,
+                    content:
+                    widget.allMovieLandDetail.director!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.director!,
                   ),
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
                     title: 'Country',
-                    content: widget.upMovieDetail.country!,
+                    content: widget.allMovieLandDetail.country!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.country!,
                   ),
                 ],
               ),

@@ -33,7 +33,7 @@ class AllMovieLandDetailController extends GetxController
     Map<String,List<String>> map = Map();
     pageDocument = await WebUtils.getDomFromURL_Get(allMovieLandCover.url!);
     List<dom.Element> list = pageDocument.querySelectorAll(".xfs__block")[0].querySelectorAll(".xfs__item_op");
-    String? orignalName = "",tags = "",director = "",country = "",actors = "",runtime = "",description = "", orginalLanguage = "",translationLanguage ="";
+    String? orignalName = "N/A",tags = "N/A",director = "N/A",country = "N/A",actors = "N/A",runtime = "N/A",description = "N/A", orginalLanguage = "N/A",translationLanguage ="N/A";
 
     for(dom.Element element in list)
       {
@@ -82,6 +82,11 @@ class AllMovieLandDetailController extends GetxController
                }
              map[allMovieLandSeason.id!] = allMovieLandMovieEpisodeList;
           }
+
+        selectedSeason.value = map.keys.first;
+        selectedEpisode.value = map[selectedSeason.value]!.first;
+        findSelectedSeasonEpisode();
+
       }
     else
       {
@@ -92,7 +97,7 @@ class AllMovieLandDetailController extends GetxController
     return AllMovieLandDetail(url: allMovieLandCover.url,title: allMovieLandCover.title,runtime: runtime,director: director,description: description,coverUrl: allMovieLandCover.imageURL,country: country,actors: actors,orginalName: orignalName,oringalLanguage: orginalLanguage,tags: tags,translationLanguage: translationLanguage,seasonEpisodeMap: map);
   }
 
-  Future<List<AllMovieLandServerLinks>> getMediaServerLinks() async
+ /* Future<List<AllMovieLandServerLinks>> getMediaServerLinks() async
   {
     Map<String,List<String>> serverMap = Map();
     List<AllMovieLandServerLinks> allMovieLandServerLinks = [];
@@ -124,7 +129,7 @@ class AllMovieLandDetailController extends GetxController
         allMovieLandServerLinks.add(AllMovieLandServerLinks(title: movieFileInfo.title,qualityM3u8LinksMap: linksMap));
       }
     return allMovieLandServerLinks;
-  }
+  }*/
 
 
   Future<String> getFileInfoJson() async
@@ -177,7 +182,6 @@ class AllMovieLandDetailController extends GetxController
 
   void findSelectedSeasonEpisode ()
   {
-
    selectedMovieFileInfo = allMovieLandSeasonList!.where((element) => element.id == selectedSeason.value).first.folder!.where((element) => element.episode == selectedEpisode.value).first.folder;
    print(selectedMovieFileInfo);
     /*for(AllMovieLandSeason allMovieLandSeason in allMovieLandSeasonList!)

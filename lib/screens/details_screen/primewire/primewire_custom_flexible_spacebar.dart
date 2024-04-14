@@ -216,7 +216,7 @@ class PrimewireCustomFlexibleSpaceBarState extends State<PrimewireCustomFlexible
       title: Visibility(
         visible: (_visible ?? false),
         child: const CustomText(
-          title: 'Movie Finder',
+          title: 'Movieverse',
           color: AppColors.red,
         ),
       ),

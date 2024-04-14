@@ -13,10 +13,10 @@ import 'package:sizer/sizer.dart';
 class MovieCard extends StatelessWidget {
   final String imgurl;
   final String title;
-  final double rate;
+  //final double rate;
   const MovieCard({
     required this.imgurl,
-    required this.rate,
+    //required this.rate,
     required this.title,
     Key? key,
   }) : super(key: key);
@@ -62,7 +62,8 @@ class MovieCard extends StatelessWidget {
                                 image: imageProvider, fit: BoxFit.cover)),
                       ),
                     ),
-                    Positioned(
+                    // rating tag
+                    /*Positioned(
                       left: 15,
                       top: 10,
                       child: Container(
@@ -78,7 +79,7 @@ class MovieCard extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                    ),
+                    ),*/
 
                   ],
                 );

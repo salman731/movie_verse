@@ -72,11 +72,12 @@ class ServerListDialog
     if (allMovieLandServerLinks != null && allMovieLandServerLinks.isNotEmpty) {
       title = movieTitle;
       AlertDialog alert=AlertDialog(
+            backgroundColor: AppColors.black,
             title: Text("Select Server"),
             actions: [
               TextButton(onPressed: (){
                 Get.back();
-              }, child: Text("Cancel"))
+              }, child: Text("Cancel",style: TextStyle(color: Colors.white),))
             ],
             content: SingleChildScrollView(
               child: new Column(
@@ -173,6 +174,7 @@ class ServerListDialog
          for(MapEntry<String,String> mapEntry in allMovieLandServerLinks.qualityM3u8LinksMap!.entries)
            {
               btnList.add(getServerButton(allMovieLandServerLinks.title! + "(${mapEntry.key})",mapEntry.value,isSourceOwnServers: true));
+              btnList.add(SizedBox(height: 2.h,));
            }
       }
      return btnList;

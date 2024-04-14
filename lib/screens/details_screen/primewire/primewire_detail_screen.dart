@@ -19,15 +19,15 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 
-class PrimewireDetailsScreen2 extends StatefulWidget {
+class PrimewireDetailsScreen extends StatefulWidget {
   PrimeWireCover primeWireCover;
-  PrimewireDetailsScreen2({super.key, required this.primeWireCover});
+  PrimewireDetailsScreen({super.key, required this.primeWireCover});
 
   @override
-  State<PrimewireDetailsScreen2> createState() => _PrimewireDetailsScreen2State();
+  State<PrimewireDetailsScreen> createState() => _PrimewireDetailsScreenState();
 }
 
-class _PrimewireDetailsScreen2State extends State<PrimewireDetailsScreen2> {
+class _PrimewireDetailsScreenState extends State<PrimewireDetailsScreen> {
 
   PrimeWireMovieDetailController primeWireMovieDetailController = Get.put(PrimeWireMovieDetailController());
   SearchScreenController searchScreenController = Get.put(SearchScreenController());

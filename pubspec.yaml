@@ -59,6 +59,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   bottom_navy_bar: ^6.0.0
   font_awesome_flutter: ^10.7.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

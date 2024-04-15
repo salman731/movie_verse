@@ -3,6 +3,7 @@ import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/screens/details_screen/details_screen.dart';
 import 'package:Movieverse/screens/home_screen/main_home_screen.dart';
 import 'package:Movieverse/screens/search_screen/search_screen.dart';
+import 'package:Movieverse/utils/shared_prefs_utils.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,10 +38,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: (){
-        homeScreenController.loadPrimewireHomeScreen();
-
-      },child: Icon(Icons.add),),
       body: SizedBox.expand(
         child: PageView(
           controller: _pageController,

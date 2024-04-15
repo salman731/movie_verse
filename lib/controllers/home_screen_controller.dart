@@ -1,9 +1,11 @@
 
 
 import 'package:Movieverse/constants/priwewire_category_urls_contants.dart';
+import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/utils/web_utils.dart';
@@ -14,15 +16,16 @@ class HomeScreenController extends GetxController
 {
   final String UPMOVIES_SERVER_URL = "https://www.upmovies.net";
   final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
-  late dom.Document sourceDocument;
+  final String AllMOVIELAND_SERVER_URL = "https://allmovieland.fun";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
-  SourceEnum selectedSource = SourceEnum.Primewire;
+  Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
+  Rx<SourceEnum> selectedSource = SourceEnum.AllMovieLand.obs;
 
 
   Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
    {
-     sourceDocument = await WebUtils.getDomFromURL_Get(UPMOVIES_SERVER_URL);
+     dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(UPMOVIES_SERVER_URL);
      // Load Slider Movies (New Movies)
      List<dom.Element> list = sourceDocument.querySelectorAll(".swiper-slide.smallItem.shortItem.listItem.beforeLoad .itemBody");
      List<UpMoviesCover> newMoviesList = [];
@@ -132,5 +135,61 @@ class HomeScreenController extends GetxController
       return primewireCategoryListMap;
    }
 
+  Future<Map<String,List<AllMovieLandCover>>> loadAllMovieLandHomeScreen() async
+  {
+    dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(AllMOVIELAND_SERVER_URL);
+    List<dom.Element> list = sourceDocument.querySelectorAll(".owl-carousel.main__block--carousel-big .short-big.new-short");
+    List<AllMovieLandCover> featuredList = [];
 
+    for(dom.Element element in list)
+      {
+        String? title = element.querySelector(".new-short__poster a h3")!.text;
+        String? url = element.querySelectorAll(".new-short__poster a")[1].attributes["href"];
+        String? posterUrl = element.querySelectorAll(".new-short__poster a img")[0].attributes["data-src"];
+        featuredList.add(AllMovieLandCover(title: title,url: url,imageURL: posterUrl));
+      }
+
+    allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Featured.name] = featuredList;
+    
+    List<dom.Element> list2 = sourceDocument.querySelectorAll(".main__block");
+    for(int i = 1;i<list2.length;i++)
+      {
+        String? title = list2[i].querySelector(".main__block-title .main__block-title--text")!.text;
+
+        switch(title)
+        {
+          case "Bollywood":
+            allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Bollywood.name] = getAllMovieLandCategorisList(list2[i]);
+          case "Hollywood":
+            allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Hollywood.name] = getAllMovieLandCategorisList(list2[i]);
+          case "TV Series":
+            allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.TvSeries.name] = getAllMovieLandCategorisList(list2[i]);
+          case "Cartoons":
+            allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Cartoons.name] = getAllMovieLandCategorisList(list2[i]);
+        }
+      }
+
+    return allMovieLandCategoryListMap;
+
+  }
+  
+  List<AllMovieLandCover> getAllMovieLandCategorisList(dom.Element element)
+  {
+    List<AllMovieLandCover> coverList = [];
+    List<dom.Element> list = element.querySelectorAll(".short-mid.new-short");
+
+    for(int i = 0;i<list.length - 1;i++)
+      {
+        String? title = list[i].querySelector(".new-short__title.hover-op")!.text;
+        String? url = list[i].querySelector(".new-short__poster--link")!.attributes["href"];
+        String? posterUrl = AllMOVIELAND_SERVER_URL + list[i].querySelector(".new-short__poster--link img")!.attributes["data-src"]!;
+        coverList.add(AllMovieLandCover(title:title,imageURL: posterUrl,url: url));
+      }
+    return coverList;
+  }
+
+  updateSource()
+  {
+    update(["updateHomeScreen"]);
+  }
 }

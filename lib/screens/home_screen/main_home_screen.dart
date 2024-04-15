@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
+import 'package:Movieverse/dialogs/source_list_dialog.dart';
 import 'package:Movieverse/enums/source_enum.dart';
+import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/carousel_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
+import 'package:Movieverse/utils/shared_prefs_utils.dart';
 import 'package:Movieverse/widgets/custom_error_widget.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +65,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     // _popularmoviescontroller.addListener(_onPopularMovieScroll);
     // _recentmoviescontroller.addListener(_onRecentMovieScroll);
     // _upcomingmoviescontroller.addListener(_onUpcomingMovieScroll);
+    Get.find<HomeScreenController>().selectedSource.value = SourceEnum.values.firstWhere((e) => e.toString() == 'SourceEnum.' + SharedPrefsUtil.getString(SharedPrefsUtil.KEY_SELECTED_SOURCE,defaultValue: SourceEnum.UpMovies.name));
     listener = _checker.onStatusChange.listen((status) {
       switch (status) {
         case InternetConnectionStatus.connected:
@@ -95,7 +100,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       id: "updateHomeScreen",
       builder: (_){
         return Scaffold(
-            body:getSource(homeScreenController.selectedSource),
+          floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
+              SourceListDialog.showSourceListDialog(context);
+            }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
+          ),
+            body:getSource(homeScreenController.selectedSource.value),
         );
       },
 
@@ -111,9 +120,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       case SourceEnum.Primewire:
         return PrimewireHomeScreenWidget();
       case SourceEnum.Film1k:
-        // TODO: Handle this case.
+
       case SourceEnum.AllMovieLand:
-        // TODO: Handle this case.
+        return AllMovieLandHomeScreenWidget();
     }
     return Container();
   }

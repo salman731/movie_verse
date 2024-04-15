@@ -1,5 +1,5 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/controllers/main_screen_controller.dart';
+import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
 import 'package:Movieverse/screens/search_screen/screen_layout.dart';

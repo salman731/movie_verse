@@ -1,5 +1,5 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/controllers/main_screen_controller.dart';
+import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/enums/media_type_enum.dart';
 import 'package:Movieverse/models/prime_wire_cover.dart';

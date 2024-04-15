@@ -1,5 +1,6 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/controllers/main_screen_controller.dart';
+import 'package:Movieverse/controllers/home_screen_controller.dart';
+import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
@@ -19,13 +20,14 @@ class MovieListView extends StatelessWidget {
     required this.hasReachedMax,
     required this.sourceEnum,
     required this.moviesList,
-    required
+    this.isHomeScreen = false,
   }) : super(key: key);
 
   final ScrollController controller;
   final bool hasReachedMax;
   final SourceEnum sourceEnum;
   final List<dynamic> moviesList;
+  final bool isHomeScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -40,18 +42,35 @@ class MovieListView extends StatelessWidget {
           if (index < moviesList.length) {
             return GestureDetector(
               onTap: (){
-                switch (sourceEnum)
-                {
-                  case SourceEnum.UpMovies:
-                    Get.to(UpMoviesDetailScreen(upMoviesCover: Get.find<SearchScreenController>().upMoviesSearchList[index]));
-                  case SourceEnum.Primewire:
-                    Get.find<SearchScreenController>().primewireMovieTitle = Get.find<SearchScreenController>().primeWireSearchList[index].title;
-                    Get.to(PrimewireDetailsScreen(primeWireCover: Get.find<SearchScreenController>().primeWireSearchList[index]));
-                  case SourceEnum.Film1k:
-                    Get.to(Film1kDetailScreen(film1kCover: Get.find<SearchScreenController>().film1kSearchList[index]));
-                  case SourceEnum.AllMovieLand:
-                    Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
 
+                if (!isHomeScreen) {
+                  switch (sourceEnum)
+                   {
+                     case SourceEnum.UpMovies:
+                       Get.to(UpMoviesDetailScreen(upMoviesCover: Get.find<SearchScreenController>().upMoviesSearchList[index]));
+                     case SourceEnum.Primewire:
+                       Get.find<SearchScreenController>().primewireMovieTitle = Get.find<SearchScreenController>().primeWireSearchList[index].title;
+                       Get.to(PrimewireDetailsScreen(primeWireCover: Get.find<SearchScreenController>().primeWireSearchList[index]));
+                     case SourceEnum.Film1k:
+                       Get.to(Film1kDetailScreen(film1kCover: Get.find<SearchScreenController>().film1kSearchList[index]));
+                     case SourceEnum.AllMovieLand:
+                       Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
+
+                   }
+                } else {
+                  switch (sourceEnum)
+                  {
+                    case SourceEnum.UpMovies:
+                      Get.to(UpMoviesDetailScreen(upMoviesCover: moviesList[index]));
+                    case SourceEnum.Primewire:
+                      Get.find<SearchScreenController>().primewireMovieTitle =  moviesList[index].title;
+                      Get.to(PrimewireDetailsScreen(primeWireCover: moviesList[index]));
+                    case SourceEnum.Film1k:
+                      Get.to(Film1kDetailScreen(film1kCover: moviesList[index]));
+                    case SourceEnum.AllMovieLand:
+                      Get.to(AllMovieLandDetailsScreen(allMovieLandCover: moviesList[index]));
+
+                  }
                 }
               },
               child: MovieCard(

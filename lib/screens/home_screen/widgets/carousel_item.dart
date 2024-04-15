@@ -8,7 +8,7 @@ import 'package:sizer/sizer.dart';
 class CarouselItem extends StatelessWidget {
   final String avatar;
   final String title;
-  final List<int> genre;
+  final String additionalInfo;
   final void Function() onTap;
   final void Function() onTapList;
 
@@ -16,7 +16,7 @@ class CarouselItem extends StatelessWidget {
     super.key,
     required this.avatar,
     required this.title,
-    required this.genre,
+    required this.additionalInfo,
     required this.onTap,
     required this.onTapList,
   });
@@ -29,7 +29,7 @@ class CarouselItem extends StatelessWidget {
         children: <Widget>[
           CachedNetworkImage(
             width: 100.w,
-            imageUrl: 'https://picsum.photos/200/300',
+            imageUrl: avatar,
             fit: BoxFit.cover,
           ),
           Container(
@@ -63,7 +63,7 @@ class CarouselItem extends StatelessWidget {
                   ),
                   CustomText(
                     headline: false,
-                    title: _generateGenre(genre),
+                    title: additionalInfo,
                     size: 10,
                     textalign: TextAlign.left,
                     color: Colors.grey.shade100,
@@ -74,7 +74,7 @@ class CarouselItem extends StatelessWidget {
                   Row(
                     children: [
                       SizedBox(
-                          width: 23.w,
+                          width: 30.w,
                           height: 4.h,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -87,7 +87,7 @@ class CarouselItem extends StatelessWidget {
                               color: Colors.white,
                             ),
                           )),
-                      SizedBox(
+                      /*SizedBox(
                         width: 3.w,
                       ),
                       SizedBox(
@@ -101,7 +101,7 @@ class CarouselItem extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                      ),
+                      ),*/
                     ],
                   ),
                 ],

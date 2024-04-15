@@ -1,9 +1,11 @@
 import 'package:Movieverse/constants/app_colors.dart';
+import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/screens/details_screen/details_screen.dart';
-import 'package:Movieverse/screens/home_screen/home_screen.dart';
+import 'package:Movieverse/screens/home_screen/main_home_screen.dart';
 import 'package:Movieverse/screens/search_screen/search_screen.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -16,6 +18,8 @@ class _MainScreenState extends State<MainScreen> {
 
   int _currentIndex = 0;
   PageController? _pageController;
+
+  HomeScreenController homeScreenController = Get.put(HomeScreenController());
 
 
   @override
@@ -33,6 +37,10 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        homeScreenController.loadPrimewireHomeScreen();
+
+      },child: Icon(Icons.add),),
       body: SizedBox.expand(
         child: PageView(
           controller: _pageController,
@@ -40,10 +48,9 @@ class _MainScreenState extends State<MainScreen> {
             setState(() => _currentIndex = index);
           },
           children: <Widget>[
-            HomeScreen(),
+            MainHomeScreen(),
             SearchScreen(),
             Container(color: Colors.green,),
-            Container(color: Colors.blue,),
           ],
         ),
       ),

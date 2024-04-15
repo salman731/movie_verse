@@ -1,6 +1,6 @@
 
 
-import 'package:Movieverse/screens/home_screen/home_screen.dart';
+import 'package:Movieverse/screens/home_screen/main_home_screen.dart';
 import 'package:Movieverse/screens/main_screen.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
 
-import 'package:Movieverse/controllers/main_screen_controller.dart';
+import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/enums/media_type_enum.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';

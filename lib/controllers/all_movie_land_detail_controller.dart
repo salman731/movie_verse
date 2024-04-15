@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:Movieverse/controllers/main_screen_controller.dart';
+import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_episode.dart';

@@ -176,7 +176,7 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
                   if(widget.prMoviesDetail.networks!.isNotEmpty)...[
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
-                    title: 'Released',
+                    title: 'Networks',
                     content:
                     widget.prMoviesDetail.networks!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.networks!,
                   ),

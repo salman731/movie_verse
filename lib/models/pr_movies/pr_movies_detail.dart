@@ -29,6 +29,8 @@ class PrMoviesDetail extends PrMoviesCover
 
   String? networks;
 
+  Map<String,String>? episodeMap;
+
   PrMoviesDetail(
       {String? title,
         String? url,
@@ -45,5 +47,6 @@ class PrMoviesDetail extends PrMoviesCover
         this.studio,
         this.tvStatus,
         this.networks,
+        this.episodeMap,
         this.description}):super(title: title,url: url,imageURL: coverUrl,tag: tags);
 }

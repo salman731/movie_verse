@@ -129,13 +129,13 @@ class _PrMoviesDetailScreenState extends State<PrMoviesDetailScreen> {
                                   ),
                                 ),
 
-                                /*if(widget.primeWireCover.url!.contains("/tv/"))...[
+                                if(PrMoviesDetailController.isSeries)...[
                                   SizedBox(height: 2.h,),
                                   RichText(
                                     maxLines: 15,
                                     overflow: TextOverflow.ellipsis,
                                     text: TextSpan(
-                                      text: 'Select Season ',
+                                      text: 'Select Episode ',
                                       style:
                                       Theme.of(context).textTheme.titleMedium!.copyWith(
                                         color: Colors.amber,
@@ -161,15 +161,14 @@ class _PrMoviesDetailScreenState extends State<PrMoviesDetailScreen> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         iconEnabledColor: AppColors.red,
-                                        value: primeWireMovieDetailController.selectedSeason.value,
+                                        value: prMoviesDetailController.selectedEpisode.value,
                                         onChanged: (String? newValue) {
-                                          primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![newValue]![0];
-                                          primeWireMovieDetailController.selectedSeason.value = newValue!;
+                                          prMoviesDetailController.selectedEpisode.value = newValue!;
                                         },
-                                        items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
+                                        items: snapshot.data!.episodeMap!.keys.map((String value) {
                                           return DropdownMenuItem<String>(
                                             value: value,
-                                            child: Text("Season ${value}"),
+                                            child: Text("${value}"),
                                           );
                                         }).toList(),
                                         dropdownColor: Colors.black, // Dropdown background color
@@ -178,60 +177,17 @@ class _PrMoviesDetailScreenState extends State<PrMoviesDetailScreen> {
                                     ),
                                   ),
                                   ),
-                                  SizedBox(height: 2.h),
-                                  RichText(
-                                    maxLines: 15,
-                                    overflow: TextOverflow.ellipsis,
-                                    text: TextSpan(
-                                      text: 'Select Episode ',
-                                      style:
-                                      Theme.of(context).textTheme.titleMedium!.copyWith(
-                                        color: Colors.amber,
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 2.h),
-                                  Obx(()=>Center(
-                                    child: Container(
-                                      width: 80.w,
-
-                                      height: 7.h,
-                                      padding: EdgeInsets.all(8.0),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black, // Background color
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        border: Border.all(
-                                          color: AppColors.red, // Border color
-                                          width: 2.0,
-                                        ),
-                                      ),
-                                      child: DropdownButton<PrimewireSeasonEpisode>(
-                                        value: primeWireMovieDetailController.selectedEpisode.value,
-                                        iconEnabledColor: AppColors.red,
-                                        isExpanded: true,
-                                        onChanged: ( newValue) {
-                                          primeWireMovieDetailController.selectedEpisode.value = newValue!;
-                                        },
-                                        items:snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
-                                          return DropdownMenuItem<PrimewireSeasonEpisode>(
-                                            value: value,
-                                            child: Text("${value.episodeNo} ${value.episodeTitle}"),
-                                          );
-                                        }).toList(),
-                                        dropdownColor: Colors.black, // Dropdown background color
-                                        underline: SizedBox(), // Remove default underline
-                                      ),
-                                    ),
-                                  ),
-                                  ),
-                                ],*/
+                                ],
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {
                                     LoaderDialog.showLoaderDialog(navigator!.context,text: "Fetching Video Links ......");
-                                    Map<String,String> map = await prMoviesDetailController.getServerPages();
+                                    Map<String,String> map;
+                                    if (!PrMoviesDetailController.isSeries) {
+                                      map = await prMoviesDetailController.getServerPages();
+                                    } else {
+                                      map = await prMoviesDetailController.getServerPages(episodeUrl: snapshot.data!.episodeMap![prMoviesDetailController.selectedEpisode.value],isSeries: PrMoviesDetailController.isSeries);
+                                    }
                                     LoaderDialog.stopLoaderDialog();
                                     ServerListDialog.showServerListDialog(navigator!.context, map, widget.prMoviesCover.title!,headers: {"Referer":"https://minoplres.xyz"},isNativemxPlayer: true);
                                   }, title: "Play",

@@ -9,11 +9,13 @@ import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
-class PrMoviesDetailController extends GetxController
-{
+class PrMoviesDetailController extends GetxController {
   late dom.Document pageSource;
+  late dom.Document episodeSource;
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   final String MINOPLRES_SERVER_URL = "https://minoplres.xyz";
+  static bool isSeries = false;
+  RxString selectedEpisode = "".obs;
 
   Future<PrMoviesDetail> getMovieDetail(PrMoviesCover prMoviesCover) async
   {
@@ -62,6 +64,8 @@ class PrMoviesDetailController extends GetxController
           released = element.querySelector("a")!.text;
         case "IMDb:":
           ratings = element.querySelector("span")!.text;
+        case "TMDb:":
+          ratings = element.querySelector("span")!.text;
         case "Country:":
           country = element.querySelector("a")!.text;
         case "Networks:":
@@ -69,16 +73,19 @@ class PrMoviesDetailController extends GetxController
       }
     }
 
-    //ratings = pageSource.querySelector(".mvic-info .mvici-right .imdb_r p span")!.text;
-    //getServerPages();
-
-    return PrMoviesDetail(url: prMoviesCover.url,title: prMoviesCover.title,ratings: ratings,actors: actors,country: country,coverUrl: prMoviesCover.imageURL,description: description,genre: genre,director: director,languageQuality: languageQuality,released: released,runtime: runtime,tags: prMoviesCover.tag,studio: studio,networks: networks,tvStatus: tvStatus);
+    return PrMoviesDetail(url: prMoviesCover.url,title: prMoviesCover.title,ratings: ratings,actors: actors,country: country,coverUrl: prMoviesCover.imageURL,description: description,genre: genre,director: director,languageQuality: languageQuality,released: released,runtime: runtime,tags: prMoviesCover.tag,studio: studio,networks: networks,tvStatus: tvStatus,episodeMap: getEpisodesServerPages());
   }
 
-  Future<Map<String,String>> getServerPages() async
+  Future<Map<String,String>> getServerPages({String? episodeUrl,bool isSeries = false}) async
   {
     Map<String,String> map = Map();
-    List<dom.Element> list = pageSource.querySelectorAll(".movieplay iframe");
+    List<dom.Element> list = [];
+    if (!isSeries) {
+      list = pageSource.querySelectorAll(".movieplay iframe");
+    } else {
+      episodeSource = await WebUtils.getDomFromURL_Get(episodeUrl!);
+      list = episodeSource.querySelectorAll(".movieplay iframe");
+    }
     String? iframeSrc = list.where((element) => element.attributes["src"]!.contains("minoplres")).first.attributes["src"];
     dom.Document document = await WebUtils.getDomFromURL_Get(list[0].attributes["src"]!,headers: {"Referer":PRMOVIES_SERVER_URL});
     List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
@@ -106,4 +113,26 @@ class PrMoviesDetailController extends GetxController
       }
     return map;
   }
+
+  Map<String,String> getEpisodesServerPages() {
+    List<dom.Element> list = pageSource.querySelectorAll(
+        "#seasons .tvseason .les-content a");
+    Map<String,String> episodeMap = Map();
+    if(list != null && list.isNotEmpty)
+      {
+        isSeries = true;
+        for(dom.Element element in list)
+          {
+            episodeMap[element.text!] = element.attributes["href"]!;
+          }
+        selectedEpisode.value = episodeMap.keys.first;
+      }
+    else
+      {
+        isSeries = false;
+      }
+  return episodeMap;
+  }
+
+
 }

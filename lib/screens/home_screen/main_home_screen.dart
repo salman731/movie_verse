@@ -7,11 +7,13 @@ import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/dialogs/source_list_dialog.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/carousel_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
 import 'package:Movieverse/utils/shared_prefs_utils.dart';
+import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/widgets/custom_error_widget.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -103,7 +105,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
-          ),
+          ), /*FloatingActionButton(onPressed: (){
+            VideoHostProviderUtils.getM3U8UrlFromMinoplres("https://minoplres.xyz/embed-13owquipe4gf.html", "Movie",headers: {"Referer":"https://prmovies.rent"});
+          },child: Icon(Icons.add),),*/
             body:getSource(homeScreenController.selectedSource.value),
         );
       },
@@ -123,6 +127,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
       case SourceEnum.AllMovieLand:
         return AllMovieLandHomeScreenWidget();
+      case SourceEnum.PrMovies:
+        return PrMoviesHomeScreenWidget();
     }
     return Container();
   }

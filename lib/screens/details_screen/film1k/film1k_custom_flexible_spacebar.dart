@@ -1,5 +1,5 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/models/film_1k_detail.dart';
+import 'package:Movieverse/models/film_1k/film_1k_detail.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

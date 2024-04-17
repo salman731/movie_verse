@@ -1,18 +1,16 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/controllers/all_movie_land_detail_controller.dart';
+import 'package:Movieverse/controllers/pr_movies_detail_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/enums/media_type_enum.dart';
-import 'package:Movieverse/main.dart';
-import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
-import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
-import 'package:Movieverse/models/all_movie_land/all_movie_land_server_links.dart';
+import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
+import 'package:Movieverse/models/pr_movies/pr_movies_detail.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/primewire/primewire_season_episode.dart';
-import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_custom_flexible_spacebar.dart';
+import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/widgets/back_button.dart';
 import 'package:Movieverse/screens/details_screen/widgets/custom_flexible_spacebar.dart';
@@ -27,17 +25,18 @@ import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 
-class AllMovieLandDetailsScreen extends StatefulWidget {
-  AllMovieLandCover allMovieLandCover;
-  AllMovieLandDetailsScreen({super.key, required this.allMovieLandCover});
+class PrMoviesDetailScreen extends StatefulWidget {
+  PrMoviesCover prMoviesCover;
+  PrMoviesDetailScreen({super.key, required this.prMoviesCover});
 
   @override
-  State<AllMovieLandDetailsScreen> createState() => _AllMovieLandDetailsScreenState();
+  State<PrMoviesDetailScreen> createState() => _PrMoviesDetailScreenState();
 }
 
-class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
+class _PrMoviesDetailScreenState extends State<PrMoviesDetailScreen> {
 
-  AllMovieLandDetailController allMovieLandDetailController = Get.put(AllMovieLandDetailController());
+  PrMoviesDetailController prMoviesDetailController = Get.put(PrMoviesDetailController());
+  SearchScreenController searchScreenController = Get.put(SearchScreenController());
   @override
   void initState() {
     super.initState();
@@ -54,8 +53,8 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
           ));
         } else if (moviestate is MovieDetailsSuccess) {
           return*/ Scaffold(
-        body: FutureBuilder<AllMovieLandDetail>(
-            future:  allMovieLandDetailController.getMovieDetail(widget.allMovieLandCover!)!,
+        body: FutureBuilder<PrMoviesDetail>(
+            future:  prMoviesDetailController.getMovieDetail(widget.prMoviesCover!)!,
             builder: (context, snapshot) {
 
               if(snapshot.hasData)
@@ -66,7 +65,7 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                       pinned: true,
                       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       leading: const CustomBackButton(),
-                      flexibleSpace: AllMovieLandCustomFlexibleSpaceBar(allMovieLandDetail: snapshot.data!,),
+                      flexibleSpace: PrMoviesCustomFlexibleSpaceBar(prMoviesDetail: snapshot.data!,),
                       expandedHeight: 65.h,
                     ),
                     SliverList(
@@ -84,7 +83,7 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                                   maxLines: 15,
                                   overflow: TextOverflow.ellipsis,
                                   text: TextSpan(
-                                    text: 'Casts: ',
+                                    text: 'Casts : ',
                                     style:
                                     Theme.of(context).textTheme.titleMedium!.copyWith(
                                       color: Colors.amber,
@@ -130,7 +129,7 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                                   ),
                                 ),
 
-                                if(allMovieLandDetailController.isSeries)...[
+                                /*if(widget.primeWireCover.url!.contains("/tv/"))...[
                                   SizedBox(height: 2.h,),
                                   RichText(
                                     maxLines: 15,
@@ -162,13 +161,12 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         iconEnabledColor: AppColors.red,
-                                        value: allMovieLandDetailController.selectedSeason.value,
+                                        value: primeWireMovieDetailController.selectedSeason.value,
                                         onChanged: (String? newValue) {
-                                          allMovieLandDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodeMap![newValue]![0];
-                                          allMovieLandDetailController.selectedSeason.value = newValue!;
-                                          allMovieLandDetailController.findSelectedSeasonEpisode();
+                                          primeWireMovieDetailController.selectedEpisode.value = snapshot.data!.seasonEpisodesMap![newValue]![0];
+                                          primeWireMovieDetailController.selectedSeason.value = newValue!;
                                         },
-                                        items: snapshot.data!.seasonEpisodeMap!.keys.map((String value) {
+                                        items: snapshot.data!.seasonEpisodesMap!.keys.map((String value) {
                                           return DropdownMenuItem<String>(
                                             value: value,
                                             child: Text("Season ${value}"),
@@ -209,18 +207,17 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                                           width: 2.0,
                                         ),
                                       ),
-                                      child: DropdownButton<String>(
-                                        value: allMovieLandDetailController.selectedEpisode.value,
+                                      child: DropdownButton<PrimewireSeasonEpisode>(
+                                        value: primeWireMovieDetailController.selectedEpisode.value,
                                         iconEnabledColor: AppColors.red,
                                         isExpanded: true,
                                         onChanged: ( newValue) {
-                                          allMovieLandDetailController.selectedEpisode.value = newValue!;
-                                          allMovieLandDetailController.findSelectedSeasonEpisode();
+                                          primeWireMovieDetailController.selectedEpisode.value = newValue!;
                                         },
-                                        items:snapshot.data!.seasonEpisodeMap![allMovieLandDetailController.selectedSeason.value]?.map((String value) {
-                                          return DropdownMenuItem<String>(
+                                        items:snapshot.data!.seasonEpisodesMap![primeWireMovieDetailController.selectedSeason.value]?.map((PrimewireSeasonEpisode value) {
+                                          return DropdownMenuItem<PrimewireSeasonEpisode>(
                                             value: value,
-                                            child: Text("Episode ${value}"),
+                                            child: Text("${value.episodeNo} ${value.episodeTitle}"),
                                           );
                                         }).toList(),
                                         dropdownColor: Colors.black, // Dropdown background color
@@ -229,23 +226,14 @@ class _AllMovieLandDetailsScreenState extends State<AllMovieLandDetailsScreen> {
                                     ),
                                   ),
                                   ),
-                                ],
+                                ],*/
                                 SizedBox(height: 2.h),
                                 Center(
-                                  child: CustomButton(func: () async{
-                                    LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links.....");
-                                    List<AllMovieLandServerLinks> list = await allMovieLandDetailController.getServerLinks();
+                                  child: CustomButton(func: () async {
+                                    LoaderDialog.showLoaderDialog(navigator!.context,text: "Fetching Video Links ......");
+                                    Map<String,String> map = await prMoviesDetailController.getServerPages();
                                     LoaderDialog.stopLoaderDialog();
-                                    String title = "";
-                                    if(allMovieLandDetailController.isSeries)
-                                    {
-                                      title = widget.allMovieLandCover.title! + " Season ${allMovieLandDetailController.selectedSeason} Episode ${allMovieLandDetailController.selectedEpisode}";
-                                    }
-                                    else
-                                    {
-                                      title = widget.allMovieLandCover.title!;
-                                    }
-                                    ServerListDialog.showServerLinksDialog_AllMovieLand(navigatorKey.currentContext!,list , widget.allMovieLandCover.title!);
+                                    ServerListDialog.showServerListDialog(navigator!.context, map, widget.prMoviesCover.title!,headers: {"Referer":"https://minoplres.xyz"},isNativemxPlayer: true);
                                   }, title: "Play",
                                     color: AppColors.red,
                                     shape: RoundedRectangleBorder(

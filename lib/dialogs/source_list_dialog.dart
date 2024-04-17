@@ -56,6 +56,14 @@ class SourceListDialog
                     selectedOption!.value = value!;
                 },
               ),
+              RadioListTile<String>(
+                title: Text('PrMovies',style: TextStyle(color: Colors.white)),
+                value: SourceEnum.PrMovies.name,
+                groupValue: selectedOption!.value,
+                onChanged: (value) {
+                  selectedOption!.value = value!;
+                },
+              ),
             ],),
         ),
       );

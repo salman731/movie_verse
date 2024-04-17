@@ -1,5 +1,7 @@
 
-import 'package:Movieverse/models/up_movies_cover.dart';
+
+
+import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 
 class UpMovieDetail extends UpMoviesCover
 {

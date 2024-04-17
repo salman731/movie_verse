@@ -1,10 +1,10 @@
 
-import 'package:Movieverse/models/prime_wire_cover.dart';
-import 'package:Movieverse/models/primewire_season_episode.dart';
+import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
+import 'package:Movieverse/models/primewire/primewire_season_episode.dart';
 
-class PrimeWireDetail extends PrimeWireCover
+class HdMovie2Detail extends HdMovie2Cover
 {
-  String? genre;
+  String? tags;
 
   String? ratings;
 
@@ -18,22 +18,17 @@ class PrimeWireDetail extends PrimeWireCover
 
   String? description;
 
-  String? company;
+  String? director;
 
-  String? crew;
 
-  Map<String,List<PrimewireSeasonEpisode>>? seasonEpisodesMap;
-
-  PrimeWireDetail(
+  HdMovie2Detail(
       {String? title,
         String? url,
         String? coverUrl,
-        this.seasonEpisodesMap,
-        this.genre,
+        this.tags,
         this.ratings,
         this.releasedDate,
-        this.company,
-        this.crew,
+        this.director,
         this.country,
         this.actors,
         this.duration,

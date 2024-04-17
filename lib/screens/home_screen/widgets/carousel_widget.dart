@@ -1,7 +1,6 @@
 
 import 'package:Movieverse/enums/source_enum.dart';
-import 'package:Movieverse/models/prime_wire_detail.dart';
-import 'package:Movieverse/models/up_movies_cover.dart';
+import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
@@ -46,6 +45,8 @@ class CarouselWidget extends StatelessWidget {
                       case SourceEnum.AllMovieLand:
                         Get.to(AllMovieLandDetailsScreen(allMovieLandCover: item));
 
+                      case SourceEnum.PrMovies:
+                        // TODO: Handle this case.
                     }
                   }),
             )

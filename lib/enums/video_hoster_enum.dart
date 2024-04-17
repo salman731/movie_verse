@@ -17,6 +17,7 @@ enum VideoHosterEnum
   Dood,
   UpStream,
   VidHideVip,
-  FileMoon
+  FileMoon,
+  Minoplres
 
 }

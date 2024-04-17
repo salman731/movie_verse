@@ -23,7 +23,8 @@ class ServerListDialog
   static bool decodeIframe = false;
   static bool isVideotoEmbededAllowed = false;
   static bool isDirectProviderLink1 = false;
-  static Map<String,String>? film1kHeaders;
+  static bool isNativeMxPlayer = false;
+  static Map<String,String>? videoHosterHeaders;
 
   static stopServerListDialog()
   {
@@ -33,7 +34,7 @@ class ServerListDialog
     }
   }
 
-  static showServerListDialog(BuildContext context,Map<String,List<String>> map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers}){
+  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false}){
 
     if (map.isNotEmpty) {
       isLoaderShowing = true;
@@ -41,7 +42,8 @@ class ServerListDialog
       decodeIframe = decodeiframe;
       isDirectProviderLink1 = isDirectProviderLink;
       isVideotoEmbededAllowed = videotoIframeAllowed;
-      film1kHeaders = headers;
+      videoHosterHeaders = headers;
+      isNativeMxPlayer = isNativemxPlayer;
       AlertDialog alert=AlertDialog(
         backgroundColor: AppColors.black,
         title: Text("Select Server"),
@@ -112,10 +114,14 @@ class ServerListDialog
       if (!isSourceOwnServers) {
         await playVideo(pageUrl,server);
       } else {
-        ExternalVideoPlayerLauncher.launchMxPlayer(
-            pageUrl!, MIME.applicationVndAppleMpegurl, {
-          "title": title,
-        });
+        if (!isNativeMxPlayer) {
+          ExternalVideoPlayerLauncher.launchMxPlayer(
+                      pageUrl!, MIME.applicationVndAppleMpegurl, {
+                    "title": title,
+                  });
+        } else {
+          LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);
+        }
       }
       LoaderDialog.stopLoaderDialog();
     }, title: btnTitle,
@@ -144,24 +150,33 @@ class ServerListDialog
    );*/
   }
 
-  static List<Widget> populateServerButtons(Map<String,List<String>> map)
+  static List<Widget> populateServerButtons(dynamic map)
   {
     List<Widget> btnList =[];
-    for (MapEntry<String,List<String>> mapEntry in map.entries)
-      {
-        for (VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
-          {
-            if(mapEntry.key == videoHosterEnum.name)
-              {
-                for(int i = 0;i<mapEntry.value.length;i++)
-                  {
-                      
-                     btnList.add(getServerButton(mapEntry.key, mapEntry.value[i],index: i));
-                     btnList.add(SizedBox(height: 2.h,));
-                  }
-              }
-          }
-      }
+    if (map is Map<String,List<String>>) {
+      for (MapEntry<String,List<String>> mapEntry in map.entries)
+            {
+              for (VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
+                {
+                  if(mapEntry.key == videoHosterEnum.name)
+                    {
+                      for(int i = 0;i<mapEntry.value.length;i++)
+                        {
+
+                           btnList.add(getServerButton(mapEntry.key, mapEntry.value[i],index: i));
+                           btnList.add(SizedBox(height: 2.h,));
+                        }
+                    }
+                }
+            }
+    } else if (map is Map<String,String>)
+    {
+      for(MapEntry<String,String> mapEntry in map.entries)
+        {
+          btnList.add(getServerButton(mapEntry.key, mapEntry.value,isSourceOwnServers: true));
+          btnList.add(SizedBox(height: 2.h,));
+        }
+    }
     return btnList;
   }
 
@@ -201,36 +216,36 @@ class ServerListDialog
     switch(videoHosterEnum)
     {
       case VideoHosterEnum.Voe:
-        await VideoHostProviderUtils.getM3U8UrlFromVoeSX(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromVoeSX(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Vidoza:
-        await VideoHostProviderUtils.getMp4UrlFromVidoza(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getMp4UrlFromVidoza(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.VidMoly:
-        await VideoHostProviderUtils.getM3U8UrlFromVidMoly(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromVidMoly(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.UpStream:
-        await VideoHostProviderUtils.getM3U8UrlfromUpStream(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlfromUpStream(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Films5k:
       case VideoHosterEnum.StreamWish:
-        await VideoHostProviderUtils.getM3U8UrlFromStreamWish(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromStreamWish(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.StreamVid:
-        await VideoHostProviderUtils.getM3U8UrlFromStreamVid(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromStreamVid(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.StreamTape:
-        await VideoHostProviderUtils.getMp4UrlFromStreamTape(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getMp4UrlFromStreamTape(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.MixDrop:
-        await VideoHostProviderUtils.getMp4UrlfromMixDrop(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getMp4UrlfromMixDrop(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.FileLions:
-        await VideoHostProviderUtils.getM3U8UrlFromFileLions(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromFileLions(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.DropLoad:
-        await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Dood:
-        await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.VTube:
-        await VideoHostProviderUtils.getM3U8UrlfromVTube(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlfromVTube(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.ePlayVid:
         await VideoHostProviderUtils.getMp4UrlFromePlayVid(providerUrl, title!);
       case VideoHosterEnum.FileMoon:
-        await VideoHostProviderUtils.getM3U8UrlfromFileMoon(providerUrl, title!,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlfromFileMoon(providerUrl, title!,headers: videoHosterHeaders);
       case VideoHosterEnum.VidHideVip:
-        await VideoHostProviderUtils.getM3U8UrlFromVidHideVip(providerUrl, title!,headers: film1kHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromVidHideVip(providerUrl, title!,headers: videoHosterHeaders);
       default:
     }
   }

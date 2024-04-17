@@ -355,6 +355,27 @@ class VideoHostProviderUtils
 
   }
 
+  static Future<String?> getM3U8UrlFromMinoplres(String embededUrl,String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
+  {
+    if (isVideotoEmbededAllowed) {
+      embededUrl = embededUrl.replaceAll("https://minoplres.xyz/", "https://minoplres.xyz/embed-");
+    }
+    try {
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
+      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
+      String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
+      LocalUtils.openAndPlayVideoWithMxPlayer_Android(m3u8Url!, title, "https://minoplres.xyz",MIME.applicationVndAppleMpegurl);
+      /*ExternalVideoPlayerLauncher.launchMxPlayer(
+          m3u8Url!, MIME.applicationVndAppleMpegurl, {
+        "title": title,
+      });*/
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+
+  }
+
   static Future<String?> getMp4UrlFromePlayVid (String embededUrl,String title) async
   {
     try {

@@ -1,6 +1,6 @@
 
 
-import 'package:Movieverse/models/film_1k_cover.dart';
+import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 
 class Film1kDetail extends Film1kCover
 {

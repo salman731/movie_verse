@@ -1,23 +1,25 @@
 import 'package:Movieverse/constants/app_colors.dart';
+import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
+import 'package:Movieverse/models/pr_movies/pr_movies_detail.dart';
+import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
+import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../widgets/custom_button.dart';
-import '../../../widgets/custom_text.dart';
 
-class UpMoviesCustomFlexibleSpaceBar extends StatefulWidget {
-   UpMovieDetail upMovieDetail;
-   UpMoviesCustomFlexibleSpaceBar({super.key,required this.upMovieDetail});
+class PrMoviesCustomFlexibleSpaceBar extends StatefulWidget {
+  PrMoviesDetail prMoviesDetail;
+  PrMoviesCustomFlexibleSpaceBar({super.key,required this.prMoviesDetail});
   @override
-  UpMoviesCustomFlexibleSpaceBarState createState() {
-    return UpMoviesCustomFlexibleSpaceBarState();
+  PrMoviesCustomFlexibleSpaceBarState createState() {
+    return PrMoviesCustomFlexibleSpaceBarState();
   }
 }
 
-class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSpaceBar> {
+class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSpaceBar> {
   ScrollPosition? _position;
   bool? _visible;
 
@@ -47,7 +49,7 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
 
   void _positionListener() {
     final FlexibleSpaceBarSettings? settings =
-        context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
+    context.dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>();
     bool visible =
         settings == null || settings.currentExtent <= settings.minExtent;
     if (_visible != visible) {
@@ -67,25 +69,26 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
         children: [
           CachedNetworkImage(
             imageUrl:
-                widget.upMovieDetail.imageURL!,
+            widget.prMoviesDetail.imageURL!,
             fit: BoxFit.cover,
           ),
           Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
-                Theme.of(context).scaffoldBackgroundColor,
-              ],
-            )),
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.3),
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ],
+                )),
           ),
+          SizedBox(height: 2.h),
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               CustomText(
-                title: widget.upMovieDetail.title!,
+                title: widget.prMoviesDetail.title!,
                 maxlines: 4,
                 horizontalpadding: 20,
               ),
@@ -93,9 +96,9 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    widget.upMovieDetail.genre!.split(",").length,
-                    (index) => CustomText(
-                      title: widget.upMovieDetail.genre!.split(",")[index],
+                    widget.prMoviesDetail.genre!.split(" ").length,
+                        (index) => CustomText(
+                      title:  widget.prMoviesDetail.genre!.split(" ")[index] + " ",
                       color: Colors.grey,
                       size: 8,
                     ),
@@ -104,25 +107,95 @@ class UpMoviesCustomFlexibleSpaceBarState extends State<UpMoviesCustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Row(
+                    children: List.generate(
+                        double.parse(widget.prMoviesDetail.ratings!).toInt(),
+                            (index) => Icon(
+                          index == double.parse(widget.prMoviesDetail.ratings!).toInt()
+                              ? Icons.star_half
+                              : Icons.star,
+                          color: Colors.amber,
+                          size: 15.sp,
+                        )),
+                  ),
+                  SizedBox(width: 1.w),
+                  Container(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.red,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: CustomText(
+                      title: widget.prMoviesDetail.ratings!,
+                      size: 8,
+                    ),
+                  )
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   _buildCoulmnInfo(
-                    title: 'Year',
-                    content: widget.upMovieDetail.year!,
+                    title: 'Language/Quality',
+                    content: widget.prMoviesDetail.languageQuality!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.languageQuality! ,
                   ),
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
-                    title: 'Duration',
+                    title: 'Runtime',
                     content:
-                    widget.upMovieDetail.duration!,
+                    widget.prMoviesDetail.runtime!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.runtime!,
+                  ),
+                  SizedBox(width: 4.w),
+                  _buildCoulmnInfo(
+                    title: 'Released',
+                    content:
+                    widget.prMoviesDetail.released!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.released!,
+                  ),
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if(widget.prMoviesDetail.studio!.isNotEmpty)...[
+                    _buildCoulmnInfo(
+                      title: 'Studio',
+                      content: widget.prMoviesDetail.studio!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.studio! ,
+                    ),
+                  ],
+                  if(widget.prMoviesDetail.tvStatus!.isNotEmpty)...[
+                  SizedBox(width: 4.w),
+                  _buildCoulmnInfo(
+                    title: 'Tv Status',
+                    content:
+                    widget.prMoviesDetail.tvStatus!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.tvStatus!,
+                  ),
+                  ],
+                  if(widget.prMoviesDetail.networks!.isNotEmpty)...[
+                  SizedBox(width: 4.w),
+                  _buildCoulmnInfo(
+                    title: 'Released',
+                    content:
+                    widget.prMoviesDetail.networks!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.networks!,
+                  ),
+                   ]
+                ],
+              ),
+              SizedBox(height: 2.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildCoulmnInfo(
+                    title: 'Country',
+                    content:widget.prMoviesDetail.country!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.country!,
                   ),
                   SizedBox(width: 4.w),
                   _buildCoulmnInfo(
                     title: 'Director',
-                    content: widget.upMovieDetail.director!,
-                  ),
-                  SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
-                    title: 'Country',
-                    content: widget.upMovieDetail.country!,
+                    content:
+                    widget.prMoviesDetail.director!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.director!,
                   ),
                 ],
               ),

@@ -2,7 +2,7 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
-import 'package:Movieverse/models/up_movies_cover.dart';
+import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/screens/home_screen/widgets/carousel_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
 import 'package:Movieverse/widgets/custom_text.dart';

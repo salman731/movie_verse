@@ -1,6 +1,6 @@
 import 'package:Movieverse/constants/app_colors.dart';
-import 'package:Movieverse/models/prime_wire_detail.dart';
-import 'package:Movieverse/models/up_movie_detail.dart';
+import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
+import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

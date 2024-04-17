@@ -2,8 +2,8 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/main.dart';
-import 'package:Movieverse/models/up_movie_detail.dart';
-import 'package:Movieverse/models/up_movies_cover.dart';
+import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
+import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/widgets/back_button.dart';
 import 'package:Movieverse/screens/details_screen/widgets/custom_flexible_spacebar.dart';
@@ -176,7 +176,7 @@ class _UpMoviesDetailScreenState extends State<UpMoviesDetailScreen> {
                                               }
                                               else
                                               {
-                                              ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(episodePageUrl: movieDetailController.episodeMap[movieDetailController.selectedEpisode],isSeries: true),widget.upMoviesCover.title!);
+                                                ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await movieDetailController.getServerPages(episodePageUrl: movieDetailController.episodeMap[movieDetailController.selectedEpisode],isSeries: true),widget.upMoviesCover.title!);
                                               }
                                             }, title: "Play",
                                               color: AppColors.red,

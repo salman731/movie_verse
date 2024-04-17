@@ -3,8 +3,8 @@
 import 'dart:convert';
 
 import 'package:Movieverse/enums/video_hoster_enum.dart';
-import 'package:Movieverse/models/film_1k_cover.dart';
-import 'package:Movieverse/models/film_1k_detail.dart';
+import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/film_1k/film_1k_detail.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:flutter/material.dart';

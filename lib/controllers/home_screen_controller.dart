@@ -2,12 +2,15 @@
 
 import 'package:Movieverse/constants/priwewire_category_urls_contants.dart';
 import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
+import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
-import 'package:Movieverse/models/prime_wire_cover.dart';
-import 'package:Movieverse/models/up_movies_cover.dart';
+import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
+import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
+import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
+import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
@@ -17,10 +20,12 @@ class HomeScreenController extends GetxController
   final String UPMOVIES_SERVER_URL = "https://www.upmovies.net";
   final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
   final String AllMOVIELAND_SERVER_URL = "https://allmovieland.fun";
+  final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
-  Rx<SourceEnum> selectedSource = SourceEnum.AllMovieLand.obs;
+  Map<String,List<PrMoviesCover>> prMoviesCategoryListMap = <String,List<PrMoviesCover>>{};
+  Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
 
 
   Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
@@ -52,7 +57,7 @@ class HomeScreenController extends GetxController
      upMoviesCategoryListMap[UpMoviesHomeCategoryEnum.TopMovies.name] = topMoviesList;
 
      // Load Anime,Cartoons,Tv Series, Asian Drama
-     
+
      List<dom.Element> list3 = sourceDocument.querySelectorAll(".main-section .main-section-left .listcate");
      for(dom.Element element in list3)
        {
@@ -74,7 +79,7 @@ class HomeScreenController extends GetxController
              upMoviesCategoryListMap[UpMoviesHomeCategoryEnum.AsianDramas.name] = asianDramasList;
          }
        }
-     
+
      return upMoviesCategoryListMap;
 
    }
@@ -99,9 +104,9 @@ class HomeScreenController extends GetxController
         {
           List<PrimeWireCover> coverList = [];
           dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(mapEntry.value);
-          
+
           List<dom.Element> list = sourceDocument.querySelectorAll(".index_item.index_item_ie");
-          
+
           for(dom.Element element in list)
             {
               String? title = element.querySelectorAll("a")[0].attributes["title"];
@@ -150,7 +155,7 @@ class HomeScreenController extends GetxController
       }
 
     allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Featured.name] = featuredList;
-    
+
     List<dom.Element> list2 = sourceDocument.querySelectorAll(".main__block");
     for(int i = 1;i<list2.length;i++)
       {
@@ -172,7 +177,7 @@ class HomeScreenController extends GetxController
     return allMovieLandCategoryListMap;
 
   }
-  
+
   List<AllMovieLandCover> getAllMovieLandCategorisList(dom.Element element)
   {
     List<AllMovieLandCover> coverList = [];
@@ -192,4 +197,55 @@ class HomeScreenController extends GetxController
   {
     update(["updateHomeScreen"]);
   }
+
+  Future<Map<String,List<PrMoviesCover>>> loadPrMoviesHomeScreen() async
+  {
+    dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(PRMOVIES_SERVER_URL);
+    dom.Element featuredElement = sourceDocument.querySelector("#movie-featured")!;
+    dom.Element topIMDBElement = sourceDocument.querySelector("#top-imdb")!;
+    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Featured.name] = getPrMoviesCategoriesDetailList(featuredElement);
+    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.TopIMDB.name] = getPrMoviesCategoriesDetailList(topIMDBElement);
+
+    List<dom.Element> categoryElementList = sourceDocument.querySelectorAll(".movies-list-wrap.mlw-latestmovie");
+    
+    for(dom.Element element in categoryElementList)
+      {
+        String? categoryTitle = element.querySelector(".ml-title .pull-left")!.text.trim();
+
+        switch(categoryTitle)
+         {
+          case "Cinema Movies":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Cinema.name] = getPrMoviesCategoriesDetailList(element);
+          case "Bollywood Movies":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Bollywood.name] = getPrMoviesCategoriesDetailList(element);
+          case "Dual Audio Movies":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.DualAudioMovies.name] = getPrMoviesCategoriesDetailList(element);
+          case "Hot Series":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.HotSeries.name] = getPrMoviesCategoriesDetailList(element);
+          case "Hollywood Movies":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Hollywood.name] = getPrMoviesCategoriesDetailList(element);
+          case "English Series":
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.EnglishSeries.name] = getPrMoviesCategoriesDetailList(element);
+        }
+      }
+    return prMoviesCategoryListMap;
+  }
+
+
+  List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
+  {
+     List<dom.Element> list = element.querySelectorAll(".ml-item");
+     List<PrMoviesCover> prMoviesCoverList = [];
+     for(dom.Element element2 in list)
+       {
+          String? title = element2.querySelector(".mli-info h2")!.text;
+          String? url = element2.querySelector(".ml-mask,jt")!.attributes["href"];
+          String? posterUrl = element2.querySelector(".lazy.thumb.mli-thumb")!.attributes["data-original"];
+          String? tag = element2.querySelector(".mli-quality") != null ? element2.querySelector(".mli-quality")!.text : "";
+          prMoviesCoverList.add(PrMoviesCover(title: title,url: url,imageURL: posterUrl,tag: tag));
+       }
+     return prMoviesCoverList;
+
+  }
+
 }

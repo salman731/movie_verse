@@ -1,10 +1,11 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/home_screen_controller.dart';
+import 'package:Movieverse/controllers/pr_movies_detail_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
-import 'package:Movieverse/models/up_movies_cover.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,8 @@ class MovieListView extends StatelessWidget {
                      case SourceEnum.AllMovieLand:
                        Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
 
+                    case SourceEnum.PrMovies:
+                      // TODO: Handle this case.
                    }
                 } else {
                   switch (sourceEnum)
@@ -70,12 +73,15 @@ class MovieListView extends StatelessWidget {
                     case SourceEnum.AllMovieLand:
                       Get.to(AllMovieLandDetailsScreen(allMovieLandCover: moviesList[index]));
 
+                    case SourceEnum.PrMovies:
+                      Get.to(PrMoviesDetailScreen(prMoviesCover: moviesList[index]));
                   }
                 }
               },
               child: MovieCard(
                 imgurl: moviesList[index].imageURL!,
                 title: moviesList[index].title!,
+                tag: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : "",
                 //rate: 2.4,
               ),
             );

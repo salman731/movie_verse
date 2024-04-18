@@ -3,6 +3,11 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
+import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_card.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +90,20 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                     SliverGrid(delegate: SliverChildBuilderDelegate((context,index)
                     {
                       return GestureDetector(onTap: (){
-
+                        switch (homeScreenController.selectedSource.value)
+                        {
+                          case SourceEnum.UpMovies:
+                            Get.to(UpMoviesDetailScreen(upMoviesCover: Get.find<SearchScreenController>().upMoviesSearchList[index]));
+                          case SourceEnum.Primewire:
+                            Get.find<SearchScreenController>().primewireMovieTitle = Get.find<SearchScreenController>().primeWireSearchList[index].title;
+                            Get.to(PrimewireDetailsScreen(primeWireCover: Get.find<SearchScreenController>().primeWireSearchList[index]));
+                          case SourceEnum.Film1k:
+                            Get.to(Film1kDetailScreen(film1kCover: Get.find<SearchScreenController>().film1kSearchList[index]));
+                          case SourceEnum.AllMovieLand:
+                            Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
+                          case SourceEnum.PrMovies:
+                            Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
+                        }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!));
                     },childCount: selectedSourceList.length), gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(

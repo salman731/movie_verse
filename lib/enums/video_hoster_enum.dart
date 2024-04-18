@@ -18,6 +18,8 @@ enum VideoHosterEnum
   UpStream,
   VidHideVip,
   FileMoon,
-  Minoplres
+  Minoplres,
+  Dooood,
+  Embedwish
 
 }

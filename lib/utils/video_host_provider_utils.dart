@@ -256,13 +256,14 @@ class VideoHostProviderUtils
       embededUrl = embededUrl.replaceAll("/d/", "/e/");
     }
     try {
-      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
+      String? orginalUrl = await WebUtils.getOriginalUrl(embededUrl);
+      dom.Document document = await WebUtils.getDomFromURL_Get(orginalUrl!,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
       String javaScript = list[8].text;
-      String baseUrl = Uri.parse(embededUrl).origin;
+      String baseUrl = Uri.parse(orginalUrl).origin;
       String getVideoUrl = LocalUtils.getStringBetweenTwoStrings("\$.get('", "',", javaScript);
       String fullUrl = baseUrl + getVideoUrl;
-      String? partialDlUrl = await WebUtils.makeGetRequest(fullUrl,headers: {"Referer":embededUrl});
+      String? partialDlUrl = await WebUtils.makeGetRequest(fullUrl,headers: {"Referer":orginalUrl});
       List<String> listSplit = getVideoUrl.split("/");
       String fullDlUrl = partialDlUrl! + LocalUtils.getDoodHashValue() + "?token=${listSplit[listSplit.length - 1]}&expiry=${DateTime.now().millisecondsSinceEpoch}";
       LocalUtils.openAndPlayVideoWithMxPlayer_Android(fullDlUrl!, title, baseUrl,MIME.applicationMp4);

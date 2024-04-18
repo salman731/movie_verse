@@ -110,6 +110,10 @@ class PrMoviesDetailController extends GetxController {
         {
           map["Minoplres(${VideoQualityEnum.High.name})"] = url;
         }
+        else if(url.contains("_o/") && url.contains("m3u8"))
+        {
+          map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
+        }
       }
     return map;
   }

@@ -7,9 +7,13 @@ import 'package:html/dom.dart' as dom;
 
 class WebUtils
 {
-   static Future<dom.Document> getDomFromURL_Get (String url,{Map<String,String>? headers}) async
+   static Future<dom.Document> getDomFromURL_Get (String url,{Map<String,String>? headers,Function(int)? onStatusCode}) async
    {
      http.Response response = await http.Client().get(Uri.parse(url),headers: headers);
+     if(onStatusCode!=null)
+       {
+         onStatusCode(response.statusCode);
+       }
      return parser.parse(response.body);
    }
 
@@ -49,6 +53,10 @@ class WebUtils
                 response.drain();
                 return response.headers.value(HttpHeaders.locationHeader);
               }
+       else
+         {
+           return url;
+         }
      } catch (e) {
        print(e);
      }

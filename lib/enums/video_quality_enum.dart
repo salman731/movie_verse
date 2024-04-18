@@ -3,5 +3,6 @@
 enum VideoQualityEnum
 {
   Low,
-  High
+  High,
+  Orginal
 }

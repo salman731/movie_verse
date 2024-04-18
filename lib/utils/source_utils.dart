@@ -1,4 +1,5 @@
 
+import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -18,5 +19,23 @@ class SourceUtils
     }
     return prMoviesCoverList;
 
+  }
+
+  static List<Film1kCover> getFilm1kMoviesList(dom.Document document)
+  {
+    List<Film1kCover> film1kList = [];
+    List<dom.Element> list = document.querySelectorAll(".loop-post.vdeo.snow-b.sw03.pd08.por.ovh");
+    for(dom.Element element in list)
+    {
+      try {
+        String? imageUrl = element.querySelector(".thumb.por .por.ovh img")!.attributes["src"];
+        String? title = element.querySelector(".mt08 h2")!.text;
+        String? url = element.querySelector(".lka")!.attributes["href"];
+        film1kList.add(Film1kCover(imageURL: imageUrl,title: title,url: url));
+      } catch (e) {
+        print(e);
+      }
+    }
+    return film1kList;
   }
 }

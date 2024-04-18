@@ -89,13 +89,16 @@ class MovieCard extends StatelessWidget {
               }),
         ),
         SizedBox(height: 1.h),
-        Container(
-          width: 45.w,
-          child: CustomText(
-            title: title,
-            maxlines: 1,
-            size: 10,
-            color: Colors.white,
+        Expanded(
+          flex: 2,
+          child: Container(
+            width: 45.w,
+            child: CustomText(
+              title: title,
+              maxlines: 2,
+              size: 10,
+              color: Colors.white,
+            ),
           ),
         )
       ],

@@ -185,6 +185,7 @@ class Film1kCustomFlexibleSpaceBarState extends State<Film1kCustomFlexibleSpaceB
         ),
         CustomText(
           title: content,
+          maxlines: 2,
           size: 10,
         ),
       ],

@@ -45,7 +45,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                   await searchScreenController.loadPrimeWireMovies(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.primeWireSearchList;
                 case SourceEnum.Film1k:
-                  // TODO: Handle this case.
+                  await searchScreenController.loadFilm1KMovies(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
+                  selectedSourceList = searchScreenController.film1kSearchList;
                 case SourceEnum.AllMovieLand:
                   await searchScreenController.loadAllMovieLand(searchScreenController.homeSearchBarEditingController.text,loadMore: true);
                   selectedSourceList = searchScreenController.allMovieLandSearchList;
@@ -68,14 +69,16 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
         selectedSourceList =  searchScreenController.upMoviesSearchList;
       case SourceEnum.Primewire:
         await searchScreenController.loadPrimeWireMovies(searchScreenController.homeSearchBarEditingController.text);
+        await searchScreenController.primeWireSearchCompleter.future;
         selectedSourceList = searchScreenController.primeWireSearchList;
       case SourceEnum.Film1k:
-      // TODO: Handle this case.
+        await searchScreenController.loadFilm1KMovies(searchScreenController.homeSearchBarEditingController.text);
+        selectedSourceList = searchScreenController.film1kSearchList;
       case SourceEnum.AllMovieLand:
         await searchScreenController.loadAllMovieLand(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.allMovieLandSearchList;
       case SourceEnum.PrMovies:
-        await searchScreenController.loadPrimeWireMovies(searchScreenController.homeSearchBarEditingController.text);
+        await searchScreenController.loadPrMoviesMovies(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.prMoviesSearchList;
     }
     isSourceLoading.value = false;
@@ -104,7 +107,7 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                           case SourceEnum.PrMovies:
                             Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
                         }
-                      },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!));
+                      },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : "",));
                     },childCount: selectedSourceList.length), gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       childAspectRatio: 0.8,

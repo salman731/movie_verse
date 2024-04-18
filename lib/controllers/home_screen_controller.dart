@@ -7,6 +7,7 @@ import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
+import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
@@ -22,10 +23,12 @@ class HomeScreenController extends GetxController
   final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
   final String AllMOVIELAND_SERVER_URL = "https://allmovieland.fun";
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
+  final String FILM1K_SERVER_URL = "https://www.film1k.com/";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
   Map<String,List<PrMoviesCover>> prMoviesCategoryListMap = <String,List<PrMoviesCover>>{};
+  Map<String,List<Film1kCover>> film1kCategoryListMap = <String,List<Film1kCover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
 
 
@@ -230,6 +233,25 @@ class HomeScreenController extends GetxController
         }
       }
     return prMoviesCategoryListMap;
+  }
+
+  Future<Map<String,List<Film1kCover>>> loadFilm1kHomeScreen() async
+  {
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(FILM1K_SERVER_URL);
+    film1kCategoryListMap["Featured"] = SourceUtils.getFilm1kMoviesList(pageDocument);
+    List<dom.Element> list = pageDocument.querySelectorAll(".ctgr.snow-b.sw03.pd08.por.ovh.brp.dfx.aic .lka");
+
+    for(dom.Element element in list)
+      {
+        String? genreUrl = element.attributes["href"];
+        String? genre = element.querySelector("span")!.text;
+        dom.Document genreDocument = await WebUtils.getDomFromURL_Get(genreUrl!);
+        film1kCategoryListMap[genre] = SourceUtils.getFilm1kMoviesList(genreDocument);
+      }
+
+    return film1kCategoryListMap;
+
+
   }
 
 

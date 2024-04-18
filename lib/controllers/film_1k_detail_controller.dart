@@ -82,6 +82,8 @@ class Film1kController extends GetxController
         _addServerPage(src!,VideoHosterEnum.FileMoon.name,map,src!);
         _addServerPage(src!,VideoHosterEnum.Films5k.name,map,src!);
         _addServerPage(src!,VideoHosterEnum.VidHideVip.name,map,src!);
+        _addServerPage(src!,VideoHosterEnum.Dooood.name,map,src!);
+        _addServerPage(src!,VideoHosterEnum.Embedwish.name,map,src!);
       }
     // List<dom.Element> list;
     // if(isSeries)

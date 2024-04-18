@@ -1,5 +1,6 @@
 
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Movieverse/controllers/primewire_movie_detail_controller.dart';
@@ -67,6 +68,8 @@ class SearchScreenController extends GetxController
    bool isFilm1kMorePagesExist = false;
    RxBool isUpMoviesReachedMax = false.obs;
    TextEditingController homeSearchBarEditingController = TextEditingController();
+   Completer primeWireSearchCompleter = Completer();
+   bool isPrMoviesHasMorePages = false;
 
   startShowingLoadingSources()
   {
@@ -146,8 +149,9 @@ class SearchScreenController extends GetxController
 
    loadPrimeWireMovies(String movieName,{bool isLoadMore = false}) async
    {
-     if (!isLoadMore) {
 
+     if (!isLoadMore) {
+       primeWireSearchCompleter = Completer();
        primeWireCurrentPage = 1;
       // await loginIntoPrimeWire();
        //await Future.delayed(Duration(seconds: 3));
@@ -167,21 +171,8 @@ class SearchScreenController extends GetxController
   Future<List<Film1kCover>> getFilm1MoviesList(String pageUrl) async
    {
      dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
-     List<Film1kCover> film1kList = [];
-     List<dom.Element> list = document.querySelectorAll(".loop-post.vdeo.snow-b.sw03.pd08.por.ovh");
      isFilm1kMorePagesExist = document.querySelector(".nav-links") != null;
-     for(dom.Element element in list)
-       {
-         try {
-           String? imageUrl = element.querySelector(".thumb.por .por.ovh img")!.attributes["src"];
-           String? title = element.querySelector(".mt08 h2")!.text;
-           String? url = element.querySelector(".lka")!.attributes["href"];
-           film1kList.add(Film1kCover(imageURL: imageUrl,title: title,url: url));
-         } catch (e) {
-           print(e);
-         }
-       }
-     return film1kList;
+     return SourceUtils.getFilm1kMoviesList(document);
    }
 
 
@@ -264,6 +255,7 @@ class SearchScreenController extends GetxController
                       primeWireSearchHash = uri.queryParameters["ds"];
                       String? decodedString =  await getHtmlFromPrimewire();
                       primeWireSearchList = await getPrimeWireMoviesList(decodedString!);
+                      primeWireSearchCompleter.complete();
                       isPrimeWireSourceLoading.value = false;
                     }
                   else if(url.contains("https://www.primewire.tf/movie") || url.contains("https://www.primewire.tf/tv"))
@@ -358,30 +350,45 @@ class SearchScreenController extends GetxController
 
    }
 
-   Future<List<PrMoviesCover>> searchPrMoviesList (String pageUrl) async
+   Future<List<PrMoviesCover>> searchPrMoviesList (String pageUrl,bool isLoadMore) async
    {
-     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
-     dom.Element element = pageDocument.querySelector(".movies-list.movies-list-full")!;
-     return SourceUtils.getPrMoviesCategoriesDetailList(element);
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl,onStatusCode: (value){
+       if (value == 404) {
+         isPrMoviesHasMorePages = false;
+       }
+       else
+         {
+           isPrMoviesHasMorePages = true;
+         }
+     });
+     if (!isLoadMore) {
+       isPrMoviesHasMorePages = pageDocument.querySelector("#pagination") != null;
+     }
+     try {
+       dom.Element element = pageDocument.querySelector(".movies-list.movies-list-full")!;
+       return SourceUtils.getPrMoviesCategoriesDetailList(element);
+     } catch (e) {
+       return [];
+     }
    }
 
 
    loadPrMoviesMovies(String movieName,{bool isLoadMore = false}) async
    {
-     if(isLoadMore)
+     if(isLoadMore && isPrMoviesHasMorePages)
        {
          prMoviesCurrentPage += 1;
          String searchedUrl = LocalUtils.getPrMoviesSearchUrl(movieName,isLoadMore: true,pageNo: prMoviesCurrentPage);
          isPrMoviesMoviesLoading.value = true;
-         List<PrMoviesCover> prMoviesList = await searchPrMoviesList(searchedUrl);
+         List<PrMoviesCover> prMoviesList = await searchPrMoviesList(searchedUrl,isLoadMore);
          prMoviesSearchList.addAll(prMoviesList);
          isPrMoviesMoviesLoading.value = false;
        }
-     else
+     else if(!isLoadMore)
        {
          prMoviesCurrentPage = 1;
          String searchedUrl = LocalUtils.getPrMoviesSearchUrl(movieName,isLoadMore: false);
-         prMoviesSearchList = await searchPrMoviesList(searchedUrl);
+         prMoviesSearchList = await searchPrMoviesList(searchedUrl,isLoadMore);
          isPrMoviesSourceLoading.value = false;
        }
    }

@@ -7,6 +7,7 @@ import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/dialogs/source_list_dialog.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
@@ -109,13 +110,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
-          ), /*FloatingActionButton(onPressed: (){
-            showMaterialModalBottomSheet(
-              expand: false,
-              context: context,
-              backgroundColor: AppColors.lightblack,
-              builder: (context) => SourceSearchBottomSheetWidget(),
-            );
+          ),/*FloatingActionButton(onPressed: (){
+            homeScreenController.loadFilm1kHomeScreen();
           },child: Icon(Icons.add),),*/
             body:Column(children:[
               SizedBox(height:0,width:0,child: WebViewWidget(controller: searchScreenController.webViewController!,)),
@@ -136,7 +132,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       case SourceEnum.Primewire:
         return PrimewireHomeScreenWidget();
       case SourceEnum.Film1k:
-
+        return Film1kHomeScreenWidget();
       case SourceEnum.AllMovieLand:
         return AllMovieLandHomeScreenWidget();
       case SourceEnum.PrMovies:

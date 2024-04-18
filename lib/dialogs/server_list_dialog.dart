@@ -224,6 +224,7 @@ class ServerListDialog
       case VideoHosterEnum.UpStream:
         await VideoHostProviderUtils.getM3U8UrlfromUpStream(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Films5k:
+      case VideoHosterEnum.Embedwish:
       case VideoHosterEnum.StreamWish:
         await VideoHostProviderUtils.getM3U8UrlFromStreamWish(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.StreamVid:
@@ -236,6 +237,7 @@ class ServerListDialog
         await VideoHostProviderUtils.getM3U8UrlFromFileLions(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.DropLoad:
         await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
+      case VideoHosterEnum.Dooood:
       case VideoHosterEnum.Dood:
         await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.VTube:

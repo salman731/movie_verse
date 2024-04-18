@@ -56,9 +56,8 @@ class MovieListView extends StatelessWidget {
                        Get.to(Film1kDetailScreen(film1kCover: Get.find<SearchScreenController>().film1kSearchList[index]));
                      case SourceEnum.AllMovieLand:
                        Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
-
                     case SourceEnum.PrMovies:
-                      // TODO: Handle this case.
+                          Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
                    }
                 } else {
                   switch (sourceEnum)

@@ -60,6 +60,8 @@ dependencies:
   bottom_navy_bar: ^6.0.0
   font_awesome_flutter: ^10.7.0
   shared_preferences: ^2.2.3
+  modal_bottom_sheet: ^3.0.0
+  sliver_fill_remaining_box_adapter: ^1.0.0
 
 dev_dependencies:
   flutter_test:

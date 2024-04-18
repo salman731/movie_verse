@@ -59,6 +59,11 @@ class _SearchScreenState extends State<SearchScreen> {
         searchScreenController.loadAllMovieLand(searchEditingController.text,loadMore: true);
       }
     });
+    searchScreenController.prMoviesScrollController.addListener(() {
+      if (searchScreenController.prMoviesScrollController.position.extentAfter == 0) {
+        searchScreenController.loadPrMoviesMovies(searchEditingController.text,isLoadMore: true);
+      }
+    });
   }
 
   @override
@@ -84,6 +89,8 @@ class _SearchScreenState extends State<SearchScreen> {
             await searchScreenController.loadPrimeWireMovies(searchEditingController.text);
             await searchScreenController.loadFilm1KMovies(searchEditingController.text);
             await searchScreenController.loadAllMovieLand(searchEditingController.text);
+            await searchScreenController.loadPrMoviesMovies(searchEditingController.text);
+
           },
         ),
         SizedBox(
@@ -194,29 +201,31 @@ class _SearchScreenState extends State<SearchScreen> {
                             ],
                           ),
                           ),
-                          // MovieListView(
-                          //   controller: mainScreenController.upMoviesScrollController,
-                          //   movies: list,
-                          //   hasReachedMax: true,
-                          // ),
-                          // SizedBox(
-                          //   height: 2.h,
-                          // ),
-                          // const CustomText(
-                          //   title: 'Upcoming Movies',
-                          //   size: 12,
-                          // ),
-                          // SizedBox(
-                          //   height: 2.h,
-                          // ),
-                          // MovieListView(
-                          //   controller: mainScreenController.upMoviesScrollController,
-                          //   movies: list,
-                          //   hasReachedMax: true,
-                          // ),
-                          // SizedBox(
-                          //   height: 2.h,
-                          // ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          const CustomText(
+                            title: "PrMovies",
+                            size: 12,
+                          ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          Obx(() => searchScreenController.isPrMoviesSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                          Row(
+                            children: [
+                              Expanded(
+                                flex:8,
+                                child: MovieListView(
+                                  controller: searchScreenController.prMoviesScrollController,
+                                  moviesList:  searchScreenController.prMoviesSearchList,
+                                  hasReachedMax: searchScreenController.isPrMoviesMoviesLoading.value,
+                                  sourceEnum: SourceEnum.PrMovies,
+                                ),
+                              ),
+                            ],
+                          ),
+                          )
                         ],
                       )) : Container(),
                 )

@@ -11,6 +11,7 @@ import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
+import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
@@ -203,8 +204,8 @@ class HomeScreenController extends GetxController
     dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(PRMOVIES_SERVER_URL);
     dom.Element featuredElement = sourceDocument.querySelector("#movie-featured")!;
     dom.Element topIMDBElement = sourceDocument.querySelector("#top-imdb")!;
-    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Featured.name] = getPrMoviesCategoriesDetailList(featuredElement);
-    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.TopIMDB.name] = getPrMoviesCategoriesDetailList(topIMDBElement);
+    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Featured.name] = SourceUtils.getPrMoviesCategoriesDetailList(featuredElement);
+    prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.TopIMDB.name] = SourceUtils.getPrMoviesCategoriesDetailList(topIMDBElement);
 
     List<dom.Element> categoryElementList = sourceDocument.querySelectorAll(".movies-list-wrap.mlw-latestmovie");
     
@@ -215,37 +216,21 @@ class HomeScreenController extends GetxController
         switch(categoryTitle)
          {
           case "Cinema Movies":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Cinema.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Cinema.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
           case "Bollywood Movies":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Bollywood.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Bollywood.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
           case "Dual Audio Movies":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.DualAudioMovies.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.DualAudioMovies.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
           case "Hot Series":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.HotSeries.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.HotSeries.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
           case "Hollywood Movies":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Hollywood.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.Hollywood.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
           case "English Series":
-            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.EnglishSeries.name] = getPrMoviesCategoriesDetailList(element);
+            prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.EnglishSeries.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
         }
       }
     return prMoviesCategoryListMap;
   }
 
-
-  List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
-  {
-     List<dom.Element> list = element.querySelectorAll(".ml-item");
-     List<PrMoviesCover> prMoviesCoverList = [];
-     for(dom.Element element2 in list)
-       {
-          String? title = element2.querySelector(".mli-info h2")!.text;
-          String? url = element2.querySelector(".ml-mask,jt")!.attributes["href"];
-          String? posterUrl = element2.querySelector(".lazy.thumb.mli-thumb")!.attributes["data-original"];
-          String? tag = element2.querySelector(".mli-quality") != null ? element2.querySelector(".mli-quality")!.text : "";
-          prMoviesCoverList.add(PrMoviesCover(title: title,url: url,imageURL: posterUrl,tag: tag));
-       }
-     return prMoviesCoverList;
-
-  }
 
 }

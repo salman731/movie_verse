@@ -552,6 +552,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  modal_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: modal_bottom_sheet
+      sha256: eac66ef8cb0461bf069a38c5eb0fa728cee525a531a8304bd3f7b2185407c67e
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -813,6 +821,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_fill_remaining_box_adapter:
+    dependency: "direct main"
+    description:
+      name: sliver_fill_remaining_box_adapter
+      sha256: "2a222c0f09eb07c37857ce2526c0fbf3b17b2bd1b1ff0e890085f2f7a9ba1927"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   source_gen:
     dependency: transitive
     description:
@@ -1054,5 +1070,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.2.6 <4.0.0"
+  dart: ">=3.3.0 <4.0.0"
   flutter: ">=3.19.2"

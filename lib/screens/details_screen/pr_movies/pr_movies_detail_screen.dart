@@ -27,7 +27,7 @@ import 'package:sizer/sizer.dart';
 
 class PrMoviesDetailScreen extends StatefulWidget {
   PrMoviesCover prMoviesCover;
-  PrMoviesDetailScreen({super.key, required this.prMoviesCover});
+  PrMoviesDetailScreen({super.key, required this.prMoviesCover,});
 
   @override
   State<PrMoviesDetailScreen> createState() => _PrMoviesDetailScreenState();

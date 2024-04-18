@@ -16,10 +16,13 @@ import 'package:Movieverse/utils/shared_prefs_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/widgets/custom_error_widget.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
+import 'package:Movieverse/widgets/source_search_bottom_sheet_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:sizer/sizer.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'widgets/shimmer_widget.dart';
 
 class MainHomeScreen extends StatefulWidget {
@@ -67,6 +70,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     // _popularmoviescontroller.addListener(_onPopularMovieScroll);
     // _recentmoviescontroller.addListener(_onRecentMovieScroll);
     // _upcomingmoviescontroller.addListener(_onUpcomingMovieScroll);
+    searchScreenController.initWebViewController();
     Get.find<HomeScreenController>().selectedSource.value = SourceEnum.values.firstWhere((e) => e.toString() == 'SourceEnum.' + SharedPrefsUtil.getString(SharedPrefsUtil.KEY_SELECTED_SOURCE,defaultValue: SourceEnum.UpMovies.name));
     listener = _checker.onStatusChange.listen((status) {
       switch (status) {
@@ -106,9 +110,17 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
           ), /*FloatingActionButton(onPressed: (){
-            VideoHostProviderUtils.getM3U8UrlFromMinoplres("https://minoplres.xyz/embed-13owquipe4gf.html", "Movie",headers: {"Referer":"https://prmovies.rent"});
+            showMaterialModalBottomSheet(
+              expand: false,
+              context: context,
+              backgroundColor: AppColors.lightblack,
+              builder: (context) => SourceSearchBottomSheetWidget(),
+            );
           },child: Icon(Icons.add),),*/
-            body:getSource(homeScreenController.selectedSource.value),
+            body:Column(children:[
+              SizedBox(height:0,width:0,child: WebViewWidget(controller: searchScreenController.webViewController!,)),
+              Expanded(child: getSource(homeScreenController.selectedSource.value))
+            ]),
         );
       },
 

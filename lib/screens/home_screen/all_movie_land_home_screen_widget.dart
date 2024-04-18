@@ -69,7 +69,7 @@ class _AllMovieLandHomeScreenWidgetState extends State<AllMovieLandHomeScreenWid
                           MovieListView(
                             controller: ScrollController(),
                             moviesList: snapshot.data![AllMovieLandHomeCategoryEnum.Hollywood.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                            hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
                             isHomeScreen: true,
                           ),
                           SizedBox(

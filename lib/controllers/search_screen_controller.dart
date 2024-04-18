@@ -10,9 +10,11 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_search_request.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
+import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
@@ -32,32 +34,39 @@ class SearchScreenController extends GetxController
    final String PRIMEWIRE_HOST_SERVER_URL = "https://www.primewire.tf/links/go/";
    final String ALLMOVIELAND_SEARCH_SERVER_URL = "https://allmovieland.fun/index.php?do=search";
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
+   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
    List<Film1kCover> film1kSearchList  = [];
    List<AllMovieLandCover> allMovieLandSearchList  = [];
+   List<PrMoviesCover> prMoviesSearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
    RxBool isFilm1kSourceLoading = false.obs;
    RxBool isAllMovieLandSourceLoading = false.obs;
+   RxBool isPrMoviesSourceLoading = false.obs;
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isFilm1kMoreUpMoviesLoading = false.obs;
    RxBool isAllMovieLandMoviesLoading = false.obs;
+   RxBool isPrMoviesMoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
    ScrollController primeWireScrollController = ScrollController();
    ScrollController film1kScrollController = ScrollController();
    ScrollController allMovieLandScrollController = ScrollController();
+   ScrollController prMoviesScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
    int allMovieLandCurrentPage = 1;
+   int prMoviesCurrentPage = 1;
    WebViewController? webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
    RxBool isUpMoviesReachedMax = false.obs;
+   TextEditingController homeSearchBarEditingController = TextEditingController();
 
   startShowingLoadingSources()
   {
@@ -65,6 +74,7 @@ class SearchScreenController extends GetxController
     isPrimeWireSourceLoading.value = true;
     isFilm1kSourceLoading.value = true;
     isAllMovieLandSourceLoading.value = true;
+    isPrMoviesSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -211,7 +221,7 @@ class SearchScreenController extends GetxController
      return allMovieLandCoverList;
    }
 
-   Future<void> loadAllMovieLand(String movieName,{bool loadMore = false}) async
+   loadAllMovieLand(String movieName,{bool loadMore = false}) async
    {
      if(loadMore)
        {
@@ -316,25 +326,6 @@ class SearchScreenController extends GetxController
      }
 
      print(map);
-
-     /*for(int i = 0;i<list.length;i++)
-    {
-      String? providerLogoImageUrl = list[i].querySelector(".server_version img")!.attributes["src"];
-      String? providerPageUrl = list[i].querySelector(".server_version a")!.attributes["href"];
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.ePlayVid.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Dood.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.DropLoad.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.FileLions.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.MixDrop.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamTape.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamVid.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.StreamWish.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.UpStream.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VidMoly.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.Vidoza.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VoeSX.name,map,providerPageUrl!);
-      _addServerPage(providerLogoImageUrl!,VideoHosterEnum.VTubeTo.name,map,providerPageUrl!);
-    }*/
      return map;
    }
 
@@ -367,40 +358,35 @@ class SearchScreenController extends GetxController
 
    }
 
-   /*Future<String?> playVIPServerUrlFromUpMoviesPage(String pageUrl,String title) async
+   Future<List<PrMoviesCover>> searchPrMoviesList (String pageUrl) async
    {
-     dom.Document document = await HtmlParsingUtils.getDomFromURL(pageUrl);
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+     dom.Element element = pageDocument.querySelector(".movies-list.movies-list-full")!;
+     return SourceUtils.getPrMoviesCategoriesDetailList(element);
+   }
 
-     List<dom.Element> list = document.getElementsByClassName("player-iframe animation");
-     String? encodedData = list[0].querySelector("script")!.text!;
-     String encodedEmbededUrl = LocalUtils.getStringBetweenTwoStrings("document.write(Base64.decode(", "));", encodedData);
-     String eplayVid = LocalUtils.decodeUpMoviesIframeEmbedUrl(encodedEmbededUrl);
-     dom.Document iframeDocument = await HtmlParsingUtils.getDomFromURL(eplayVid);
-     String? eplayMp4Url = iframeDocument.querySelector("source")!.attributes["src"];
-     LocalUtils.openAndPlayVideoWithMxPlayer_Android(eplayMp4Url!, title, "https://eplayvid.net",MIME.applicationMp4);
-     ExternalVideoPlayerLauncher.launchMxPlayer(
-         eplayMp4Url!, MIME.applicationMp4, {
-       "title": title,
-       "headers":["referer","https://eplayvid.net"]
-     });
-     List<dom.Element> list = document.querySelectorAll("iframe");
-     print(list);
-     return url;
-   }*/
 
-  /* Future<UpMovieDetail?> getMovieDetail(UpMoviesCover upMoviesCover) async
+   loadPrMoviesMovies(String movieName,{bool isLoadMore = false}) async
    {
-     dom.Document document = await HtmlParsingUtils.getDomFromURL(upMoviesCover.url!);
-     List<dom.Element> list = document.querySelectorAll(".film-detail-right .film-detail .about .features ul li");
-     String genre = LocalUtils.getStringAfterStartStringToEnd("Genres: ", list[0].text);
-     String country = LocalUtils.getStringAfterStartStringToEnd("Country: ", list[1].text);
-     String director = LocalUtils.getStringAfterStartStringToEnd("Director: ", list[2].text);
-     String duration = LocalUtils.getStringAfterStartStringToEnd("Duration: ", list[3].text);
-     String year = LocalUtils.getStringAfterStartStringToEnd("Year: ", list[4].text);
-     String actors = LocalUtils.getStringAfterStartStringToEnd("Actors: ", list[5].text);
-     String? description = document.querySelector(".film-detail-right .film-detail .textSpoiler")!.text;
-     return UpMovieDetail(year: year,url: upMoviesCover.url,title: upMoviesCover.title,actors: actors,country: country,coverUrl: upMoviesCover.imageURL,description: description,director: director,duration: duration,genre: genre);
-   }*/
+     if(isLoadMore)
+       {
+         prMoviesCurrentPage += 1;
+         String searchedUrl = LocalUtils.getPrMoviesSearchUrl(movieName,isLoadMore: true,pageNo: prMoviesCurrentPage);
+         isPrMoviesMoviesLoading.value = true;
+         List<PrMoviesCover> prMoviesList = await searchPrMoviesList(searchedUrl);
+         prMoviesSearchList.addAll(prMoviesList);
+         isPrMoviesMoviesLoading.value = false;
+       }
+     else
+       {
+         prMoviesCurrentPage = 1;
+         String searchedUrl = LocalUtils.getPrMoviesSearchUrl(movieName,isLoadMore: false);
+         prMoviesSearchList = await searchPrMoviesList(searchedUrl);
+         isPrMoviesSourceLoading.value = false;
+       }
+   }
+
+
 
 
 }

@@ -77,6 +77,31 @@ class LocalUtils
 
   }
 
+  static String getPrMoviesSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://prmovies.rent/page/${pageNo}?s=${queryMovieName}";
+    }
+    else
+    {
+      return "https://prmovies.rent/?s=${queryMovieName}";
+    }
+
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);

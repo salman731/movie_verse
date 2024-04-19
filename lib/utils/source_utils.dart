@@ -1,6 +1,8 @@
 
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
+import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
+import 'package:Movieverse/utils/local_utils.dart';
 import 'package:html/dom.dart' as dom;
 
 class SourceUtils
@@ -37,5 +39,26 @@ class SourceUtils
       }
     }
     return film1kList;
+  }
+
+  static List<WatchMoviesCover> getWatchMoviesList(dom.Element element)
+  {
+    List<WatchMoviesCover> coverList = [];
+    List<dom.Element> list =  element.querySelectorAll(".postbox");
+
+    for(dom.Element element2 in list)
+      {
+        try {
+          String? title = LocalUtils.getStringBeforString("Watch", element2.querySelector("a")!.attributes["title"]!);
+          String? url = element2.querySelector("a")!.attributes["href"];
+          String? posterUrl = element2.querySelector("a img")!.attributes["data-src"];
+
+          coverList.add(WatchMoviesCover(url: url,imageURL: posterUrl,title: title));
+        } catch (e) {
+          print(e);
+        }
+      }
+
+    return coverList;
   }
 }

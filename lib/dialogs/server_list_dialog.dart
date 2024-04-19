@@ -98,17 +98,21 @@ class ServerListDialog
     }
   }
 
-  static Widget getServerButton(String server,String pageUrl,{int? index,bool isSourceOwnServers = false})
+  static Widget getServerButton(String server,String pageUrl,{int? index,bool isSourceOwnServers = false,String? buttonText})
   {
     String btnTitle = "";
-   if(index != null)
-     {
-       btnTitle = "Play (${server}" " ${index + 1})";
-     }
-   else
-     {
-       btnTitle = "Play (${server})";
-     }
+    if (buttonText == null) {
+      if(index != null)
+           {
+             btnTitle = "Play (${server}" " ${index + 1})";
+           }
+         else
+           {
+             btnTitle = "Play (${server})";
+           }
+    } else {
+      btnTitle = buttonText;
+    }
    return CustomButton(func: () async {
       LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Playing.....");
       if (!isSourceOwnServers) {
@@ -177,6 +181,17 @@ class ServerListDialog
           btnList.add(SizedBox(height: 2.h,));
         }
     }
+    else if (map is Map<String,Map<String,String>>)
+      {
+        for(MapEntry<String,Map<String,String>> mapEntry in map.entries)
+          {
+            for (MapEntry<String,String> mapEntry2 in mapEntry.value.entries)
+              {
+                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry.key +" (${mapEntry2.key})"));
+                btnList.add(SizedBox(height: 2.h,));
+              }
+          }
+      }
     return btnList;
   }
 
@@ -238,6 +253,7 @@ class ServerListDialog
       case VideoHosterEnum.DropLoad:
         await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Dooood:
+      case VideoHosterEnum.D000d:
       case VideoHosterEnum.Dood:
         await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.VTube:
@@ -245,9 +261,11 @@ class ServerListDialog
       case VideoHosterEnum.ePlayVid:
         await VideoHostProviderUtils.getMp4UrlFromePlayVid(providerUrl, title!);
       case VideoHosterEnum.FileMoon:
-        await VideoHostProviderUtils.getM3U8UrlfromFileMoon(providerUrl, title!,headers: videoHosterHeaders);
+        await VideoHostProviderUtils.getM3U8UrlfromFileMoon(providerUrl, title!,headers: videoHosterHeaders,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       case VideoHosterEnum.VidHideVip:
-        await VideoHostProviderUtils.getM3U8UrlFromVidHideVip(providerUrl, title!,headers: videoHosterHeaders);
+        await VideoHostProviderUtils.getM3U8UrlFromVidHideVip(providerUrl, title!,headers: videoHosterHeaders,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
+      case VideoHosterEnum.Embedpk:
+        await VideoHostProviderUtils.getM3U8UrlFromEmbedPK(providerUrl, title!,headers: videoHosterHeaders,isVideotoEmbededAllowed: isVideotoEmbededAllowed);
       default:
     }
   }

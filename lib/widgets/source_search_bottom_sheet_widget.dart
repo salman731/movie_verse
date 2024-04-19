@@ -8,6 +8,7 @@ import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.da
 import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/watch_movies/watch_movies_detail_screen.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_card.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                 case SourceEnum.PrMovies:
                   await searchScreenController.loadPrMoviesMovies(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.prMoviesSearchList;
+                case SourceEnum.WatchMovies:
+                  await searchScreenController.loadWatchMoviesSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
+                  selectedSourceList = searchScreenController.watchMoviesSearchList;
             }
         isMoviesLoading.value = false;
       }
@@ -80,6 +84,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
       case SourceEnum.PrMovies:
         await searchScreenController.loadPrMoviesMovies(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.prMoviesSearchList;
+      case SourceEnum.WatchMovies:
+        await searchScreenController.loadWatchMoviesSearchList(searchScreenController.homeSearchBarEditingController.text);
+        selectedSourceList = searchScreenController.watchMoviesSearchList;
     }
     isSourceLoading.value = false;
   }
@@ -106,6 +113,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                             Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
                           case SourceEnum.PrMovies:
                             Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
+                          case SourceEnum.WatchMovies:
+                            Get.to(WatchMoviesDetailScreen(watchMoviesCover: Get.find<SearchScreenController>().watchMoviesSearchList[index]));
+
                         }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : "",));
                     },childCount: selectedSourceList.length), gridDelegate:

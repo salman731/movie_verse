@@ -20,6 +20,8 @@ enum VideoHosterEnum
   FileMoon,
   Minoplres,
   Dooood,
-  Embedwish
+  Embedwish,
+  Embedpk,
+  D000d
 
 }

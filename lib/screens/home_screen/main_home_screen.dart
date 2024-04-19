@@ -11,6 +11,7 @@ import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/watch_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/carousel_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
 import 'package:Movieverse/utils/shared_prefs_utils.dart';
@@ -108,6 +109,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       builder: (_){
         return Scaffold(
           floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
+             //homeScreenController.loadWatchMoviesHomeScreen();
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
           ),/*FloatingActionButton(onPressed: (){
@@ -137,6 +139,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         return AllMovieLandHomeScreenWidget();
       case SourceEnum.PrMovies:
         return PrMoviesHomeScreenWidget();
+      case SourceEnum.WatchMovies:
+        return WatchMoviesHomeScreenWidget();
     }
     return Container();
   }

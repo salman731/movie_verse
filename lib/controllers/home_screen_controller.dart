@@ -1,17 +1,19 @@
 
 
-import 'package:Movieverse/constants/priwewire_category_urls_contants.dart';
+import 'package:Movieverse/constants/category_urls_contants.dart';
 import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
 import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
+import 'package:Movieverse/enums/watch_movies_home_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
+import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
@@ -23,12 +25,14 @@ class HomeScreenController extends GetxController
   final String PRIMEWIRE_SERVER_URL = "https://www.primewire.tf";
   final String AllMOVIELAND_SERVER_URL = "https://allmovieland.fun";
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
-  final String FILM1K_SERVER_URL = "https://www.film1k.com/";
+  final String FILM1K_SERVER_URL = "https://www.film1k.com";
+  final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
   Map<String,List<PrMoviesCover>> prMoviesCategoryListMap = <String,List<PrMoviesCover>>{};
   Map<String,List<Film1kCover>> film1kCategoryListMap = <String,List<Film1kCover>>{};
+  Map<String,List<WatchMoviesCover>> watchMoviesCategoryListMap = <String,List<WatchMoviesCover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
 
 
@@ -251,6 +255,28 @@ class HomeScreenController extends GetxController
 
     return film1kCategoryListMap;
 
+  
+  }
+
+  Future<Map<String,List<WatchMoviesCover>>> loadWatchMoviesHomeScreen() async
+  {
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(WATCHMOVIES_SERVER_URL);
+    dom.Element moviesElement = pageDocument.querySelector("#hpost")!;
+
+    List<WatchMoviesCover> watchMoviesCoverList = SourceUtils.getWatchMoviesList(moviesElement);
+
+    watchMoviesCategoryListMap[WatchMoviesHomeScreenCategoryEnum.Featured.name] = watchMoviesCoverList.sublist(0,12);
+    watchMoviesCategoryListMap[WatchMoviesHomeScreenCategoryEnum.Latest.name] = watchMoviesCoverList.sublist(12,watchMoviesCoverList.length);
+
+    for (MapEntry<String,String> mapEntry in WatchMoviesCategoryUrlsContant.urlsMap.entries)
+      {
+        List<WatchMoviesCover> coverList = [];
+        dom.Document categoryPageSource = await WebUtils.getDomFromURL_Get(mapEntry.value);
+        dom.Element moviesElement = categoryPageSource.querySelector(".postcont")!;
+        watchMoviesCategoryListMap[mapEntry.key] = SourceUtils.getWatchMoviesList(moviesElement);
+      }
+
+    return watchMoviesCategoryListMap;
 
   }
 

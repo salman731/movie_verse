@@ -102,6 +102,31 @@ class LocalUtils
 
   }
 
+  static String getWatchMoviesSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://watch-movies.com.pk/page/${pageNo}?s=${queryMovieName}";
+    }
+    else
+    {
+      return "https://watch-movies.com.pk/?s=${queryMovieName}";
+    }
+
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
@@ -136,6 +161,14 @@ class LocalUtils
 
     return str.substring(startIndex + start.length, str.length);
   }
+
+  static String getStringBeforString(String end,String str)
+  {
+    final endIndex = str.indexOf(end);
+
+    return str.substring(0, endIndex);
+  }
+
 
   static String getDoodHashValue()
   {

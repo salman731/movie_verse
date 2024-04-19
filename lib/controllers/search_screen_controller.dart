@@ -15,6 +15,7 @@ import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
+import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
@@ -36,21 +37,25 @@ class SearchScreenController extends GetxController
    final String ALLMOVIELAND_SEARCH_SERVER_URL = "https://allmovieland.fun/index.php?do=search";
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
+   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
    List<Film1kCover> film1kSearchList  = [];
    List<AllMovieLandCover> allMovieLandSearchList  = [];
    List<PrMoviesCover> prMoviesSearchList  = [];
+   List<WatchMoviesCover> watchMoviesSearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
    RxBool isFilm1kSourceLoading = false.obs;
    RxBool isAllMovieLandSourceLoading = false.obs;
    RxBool isPrMoviesSourceLoading = false.obs;
+   RxBool isWatchMoviesSourceLoading = false.obs;
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isFilm1kMoreUpMoviesLoading = false.obs;
    RxBool isAllMovieLandMoviesLoading = false.obs;
    RxBool isPrMoviesMoviesLoading = false.obs;
+   RxBool isWatchMoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
@@ -58,11 +63,13 @@ class SearchScreenController extends GetxController
    ScrollController film1kScrollController = ScrollController();
    ScrollController allMovieLandScrollController = ScrollController();
    ScrollController prMoviesScrollController = ScrollController();
+   ScrollController watchMoviesScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
    int allMovieLandCurrentPage = 1;
    int prMoviesCurrentPage = 1;
+   int watchMoviesCurrentPage = 1;
    WebViewController? webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
@@ -78,6 +85,7 @@ class SearchScreenController extends GetxController
     isFilm1kSourceLoading.value = true;
     isAllMovieLandSourceLoading.value = true;
     isPrMoviesSourceLoading.value = true;
+    isWatchMoviesSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -394,6 +402,33 @@ class SearchScreenController extends GetxController
    }
 
 
+   Future<List<WatchMoviesCover>> getWatchMoviesSearchedList(String pageUrl) async
+   {
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+     dom.Element movieListElement = pageDocument.querySelector(".postcont")!;
+     return SourceUtils.getWatchMoviesList(movieListElement);
+   }
+
+   loadWatchMoviesSearchList(String movieName,{bool isLoadMore = false}) async
+   {
+     if(isLoadMore)
+       {
+         isWatchMoviesLoading.value = true;
+         watchMoviesCurrentPage += 1;
+         String? searchUrl = LocalUtils.getWatchMoviesSearchUrl(movieName,pageNo: watchMoviesCurrentPage,isLoadMore: isLoadMore);
+         List<WatchMoviesCover> list = await getWatchMoviesSearchedList(searchUrl);
+         watchMoviesSearchList.addAll(list);
+         isWatchMoviesLoading.value = false;
+       }
+     else
+       {
+          watchMoviesCurrentPage = 1;
+          String? searchUrl = LocalUtils.getWatchMoviesSearchUrl(movieName,isLoadMore: isLoadMore);
+          watchMoviesSearchList = await getWatchMoviesSearchedList(searchUrl);
+          isWatchMoviesSourceLoading.value = false;
+
+       }
+   }
 
 
 }

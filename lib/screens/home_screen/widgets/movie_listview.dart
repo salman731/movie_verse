@@ -2,12 +2,14 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/controllers/pr_movies_detail_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
+import 'package:Movieverse/controllers/watch_movies_detail_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/watch_movies/watch_movies_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -58,6 +60,8 @@ class MovieListView extends StatelessWidget {
                        Get.to(AllMovieLandDetailsScreen(allMovieLandCover: Get.find<SearchScreenController>().allMovieLandSearchList[index]));
                     case SourceEnum.PrMovies:
                           Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
+                    case SourceEnum.WatchMovies:
+                      Get.to(WatchMoviesDetailScreen(watchMoviesCover: Get.find<SearchScreenController>().watchMoviesSearchList[index]));
                    }
                 } else {
                   switch (sourceEnum)
@@ -74,6 +78,8 @@ class MovieListView extends StatelessWidget {
 
                     case SourceEnum.PrMovies:
                       Get.to(PrMoviesDetailScreen(prMoviesCover: moviesList[index]));
+                    case SourceEnum.WatchMovies:
+                      Get.to(WatchMoviesDetailScreen(watchMoviesCover: moviesList[index]));
                   }
                 }
               },

@@ -103,6 +103,13 @@ class VideoHostProviderUtils
     if (isVideotoEmbededAllowed) {
       embededUrl = embededUrl.replaceAll("/f/", "/e/");
     }
+    if(!embededUrl.contains("https://") && !embededUrl.contains("http://"))
+      {
+        if(embededUrl.contains("//"))
+          {
+            embededUrl=  embededUrl.replaceAll("//", "https://");
+          }
+      }
     try {
       dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
@@ -371,6 +378,44 @@ class VideoHostProviderUtils
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
         "title": title,
       });*/
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+
+  }
+
+  static Future<String?> getM3U8UrlFromEmbedPK(String embededUrl,String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
+  {
+    if (isVideotoEmbededAllowed) {
+      embededUrl = embededUrl.replaceAll("https://embedpk.net/", "https://embedpk.net/embed-");
+    }
+    try {
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
+      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
+      String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
+      String decodedEval = evalStr.replaceAll("eval", "console.log");
+      JavascriptRuntime flutterJs = getJavascriptRuntime();
+      late String mp4Url;
+      dynamic logFn(dynamic args) {
+        if(args[1].contains("{src:\""))
+          {
+            mp4Url = LocalUtils.getStringBetweenTwoStrings("{src:\"", "\",", args[1]);
+          }
+        else
+          {
+            mp4Url = LocalUtils.getStringBetweenTwoStrings("{sources:[{file:\"", "\",", args[1]);
+          }
+
+        ExternalVideoPlayerLauncher.launchMxPlayer(
+            mp4Url!, MIME.applicationMp4, {
+          "title": title,
+        });
+      }
+      final channelCallbacks = JavascriptRuntime.channelFunctionsRegistered[flutterJs.getEngineInstanceId()];
+      channelCallbacks!["ConsoleLog"] = logFn;
+      JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
+
     } catch (e) {
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }

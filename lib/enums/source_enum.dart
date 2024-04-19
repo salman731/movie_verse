@@ -5,5 +5,6 @@ enum SourceEnum
   Primewire,
   Film1k,
   AllMovieLand,
-  PrMovies
+  PrMovies,
+  WatchMovies
 }

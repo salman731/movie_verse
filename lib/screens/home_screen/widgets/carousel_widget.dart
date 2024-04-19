@@ -56,6 +56,8 @@ class CarouselWidget extends StatelessWidget {
                               Get.to(AllMovieLandDetailsScreen(allMovieLandCover: item));
                             case SourceEnum.PrMovies:
                               Get.to(PrMoviesDetailScreen(prMoviesCover: item));
+                            case SourceEnum.WatchMovies:
+                              // TODO: Handle this case.
                           }
                         }),
                   )

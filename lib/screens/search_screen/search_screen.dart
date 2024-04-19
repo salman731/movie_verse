@@ -64,6 +64,11 @@ class _SearchScreenState extends State<SearchScreen> {
         searchScreenController.loadPrMoviesMovies(searchEditingController.text,isLoadMore: true);
       }
     });
+    searchScreenController.watchMoviesScrollController.addListener(() {
+      if (searchScreenController.watchMoviesScrollController.position.extentAfter == 0) {
+        searchScreenController.loadWatchMoviesSearchList(searchEditingController.text,isLoadMore: true);
+      }
+    });
   }
 
   @override
@@ -90,6 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
             await searchScreenController.loadFilm1KMovies(searchEditingController.text);
             await searchScreenController.loadAllMovieLand(searchEditingController.text);
             await searchScreenController.loadPrMoviesMovies(searchEditingController.text);
+            await searchScreenController.loadWatchMoviesSearchList(searchEditingController.text);
 
           },
         ),
@@ -225,7 +231,32 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             ],
                           ),
-                          )
+                          ),
+                  SizedBox(
+                  height: 2.h,
+                ),
+                  const CustomText(
+                    title: "WatchMovies",
+                    size: 12,
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+                  Obx(() => searchScreenController.isWatchMoviesSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                  Row(
+                    children: [
+                      Expanded(
+                        flex:8,
+                        child: MovieListView(
+                          controller: searchScreenController.watchMoviesScrollController,
+                          moviesList:  searchScreenController.watchMoviesSearchList,
+                          hasReachedMax: searchScreenController.isWatchMoviesLoading.value,
+                          sourceEnum: SourceEnum.WatchMovies,
+                        ),
+                      ),
+                    ],
+                  ),
+                  )
                         ],
                       )) : Container(),
                 )

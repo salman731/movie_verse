@@ -91,30 +91,35 @@ class PrMoviesDetailController extends GetxController {
     List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
     String javaScriptText = listJavascript.where((element) => element.text.contains("sources: [{file:\"")).first.text;
     String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
+    String urlSetLink = "";
     if(!m3u8Url.contains(",l,h,.urlset"))
       {
-        m3u8Url = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
-        m3u8Url = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
+        urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
+        urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
       }
-    String? response = await WebUtils.makeGetRequest(m3u8Url,headers: {"Referer":MINOPLRES_SERVER_URL});
-    List<String> m3u8UrlList = response!.split("\n");
-    List<String> qualityUrlList = [];
-    for(String url in m3u8UrlList)
-      {
+    String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
+    if (!response!.contains("Not Found")) {
+      List<String> m3u8UrlList = response!.split("\n");
+      List<String> qualityUrlList = [];
+      for(String url in m3u8UrlList)
+            {
 
-        if(url.contains("_l/") && url.contains("m3u8"))
-          {
-            map["Minoplres(${VideoQualityEnum.Low.name})"] = url;
-          }
-        else if(url.contains("_h/") && url.contains("m3u8"))
-        {
-          map["Minoplres(${VideoQualityEnum.High.name})"] = url;
-        }
-        else if(url.contains("_o/") && url.contains("m3u8"))
-        {
-          map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
-        }
-      }
+              if(url.contains("_l/") && url.contains("m3u8"))
+                {
+                  map["Minoplres(${VideoQualityEnum.Low.name})"] = url;
+                }
+              else if(url.contains("_h/") && url.contains("m3u8"))
+              {
+                map["Minoplres(${VideoQualityEnum.High.name})"] = url;
+              }
+              else if(url.contains("_o/") && url.contains("m3u8"))
+              {
+                map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
+              }
+            }
+    } else {
+      map["Minoplres(${VideoQualityEnum.Orginal.name})"] = m3u8Url;
+    }
     return map;
   }
 

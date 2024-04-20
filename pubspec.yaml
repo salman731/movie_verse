@@ -62,6 +62,7 @@ dependencies:
   shared_preferences: ^2.2.3
   modal_bottom_sheet: ^3.0.0
   sliver_fill_remaining_box_adapter: ^1.0.0
+  flick_video_player: ^0.7.0
 
 dev_dependencies:
   flutter_test:

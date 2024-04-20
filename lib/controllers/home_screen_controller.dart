@@ -16,6 +16,7 @@ import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 

@@ -2,6 +2,7 @@ import 'package:Movieverse/config/app_theme.dart';
 import 'package:Movieverse/screens/splash_screen.dart';
 import 'package:Movieverse/utils/colors_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Sizer(
       builder: (context, orientation, deviceType) =>GetMaterialApp(
         navigatorKey: navigatorKey,

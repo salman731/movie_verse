@@ -27,7 +27,7 @@ class CarouselWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50.h,
+      height: 45.h,
       child: Stack(
         fit: StackFit.expand,
         children: [

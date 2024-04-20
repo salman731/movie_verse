@@ -5,6 +5,7 @@ import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_server_links.dart';
+import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
@@ -119,15 +120,18 @@ class ServerListDialog
         await playVideo(pageUrl,server);
       } else {
         if (!isNativeMxPlayer) {
-          ExternalVideoPlayerLauncher.launchMxPlayer(
+          LoaderDialog.stopLoaderDialog();
+          Get.to(VideoPlayerScreen(pageUrl,title!));
+          /*ExternalVideoPlayerLauncher.launchMxPlayer(
                       pageUrl!, MIME.applicationVndAppleMpegurl, {
                     "title": title,
-                  });
+                  });*/
         } else {
-          LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);
+          LoaderDialog.stopLoaderDialog();
+          Get.to(VideoPlayerScreen(pageUrl,title!,headers: videoHosterHeaders!,));
+          //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);
         }
       }
-      LoaderDialog.stopLoaderDialog();
     }, title: btnTitle,
       color: AppColors.red,
       shape: RoundedRectangleBorder(

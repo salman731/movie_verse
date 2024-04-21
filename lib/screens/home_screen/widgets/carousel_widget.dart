@@ -58,6 +58,8 @@ class CarouselWidget extends StatelessWidget {
                               Get.to(PrMoviesDetailScreen(prMoviesCover: item));
                             case SourceEnum.WatchMovies:
                               // TODO: Handle this case.
+                            case SourceEnum.HdMovie2:
+                              // TODO: Handle this case.
                           }
                         }),
                   )
@@ -69,7 +71,7 @@ class CarouselWidget extends StatelessWidget {
                 autoPlayAnimationDuration: const Duration(seconds: 2),
                 enlargeCenterPage: false,
               )),
-          Positioned(top: 5.h,child: SizedBox(height: 7.h,width: MediaQuery.of(context).size.width,child: SearchBarTextField())),
+          Positioned(top: 3.h,child: SizedBox(height: 7.h,width: MediaQuery.of(context).size.width,child: SearchBarTextField())),
         ],
       ),
     );

@@ -26,111 +26,106 @@ class _WatchMoviesHomeScreenWidgetState extends State<WatchMoviesHomeScreenWidge
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String,List<WatchMoviesCover>>>(future: homeScreenController.loadWatchMoviesHomeScreen(),
-
-        builder: (context,snapshot) {
-          if(snapshot.hasData)
-          {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  CarouselWidget(
-                    sourceEnum: SourceEnum.WatchMovies,
-                    list: snapshot.data![WatchMoviesHomeScreenCategoryEnum.Featured.name]!,
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 5.w,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            title: 'Latest Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![WatchMoviesHomeScreenCategoryEnum.Latest.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Indian Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![WatchMoviesHomeScreenCategoryEnum.Indian.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Hindi Dubbed Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![WatchMoviesHomeScreenCategoryEnum.HindiDubbed.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'English Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![WatchMoviesHomeScreenCategoryEnum.English.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Punjab Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![WatchMoviesHomeScreenCategoryEnum.Punjabi.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
-                            isHomeScreen: true,
-                          ),
+    return  Obx(()=> homeScreenController.isWatchMoviesHomePageLoading.value ? SingleChildScrollView(
+                child: Column(
+                  children: [
+                    CarouselWidget(
+                      sourceEnum: SourceEnum.WatchMovies,
+                      list: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.Featured.name]!,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5.w,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const CustomText(
+                              title: 'Latest Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.Latest.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Indian Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.Indian.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Hindi Dubbed Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.HindiDubbed.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'English Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.English.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Punjab Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.watchMoviesCategoryListMap![WatchMoviesHomeScreenCategoryEnum.Punjabi.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.WatchMovies,
+                              isHomeScreen: true,
+                            ),
 
 
-                        ],
-                      ))
-                ],
-              ),
-            );
-          }
-          return Center(child: CircularProgressIndicator(color: AppColors.red),);
-        });
+                          ],
+                        ))
+                  ],
+                ),
+              ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
+    );
+
+
   }
 }

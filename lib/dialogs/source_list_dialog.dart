@@ -80,6 +80,14 @@ class SourceListDialog
                   selectedOption!.value = value!;
                 },
               ),
+              RadioListTile<String>(
+                title: Text('HdMovie2',style: TextStyle(color: Colors.white)),
+                value: SourceEnum.HdMovie2.name,
+                groupValue: selectedOption!.value,
+                onChanged: (value) {
+                  selectedOption!.value = value!;
+                },
+              ),
             ],),
         ),
       );

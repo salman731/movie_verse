@@ -26,126 +26,120 @@ class _PrMoviesHomeScreenWidgetState extends State<PrMoviesHomeScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String,List<PrMoviesCover>>>(future: homeScreenController.loadPrMoviesHomeScreen(),
+    return Obx(()=> homeScreenController.isPrMoviesHomePageLoading.value ? SingleChildScrollView(
+                child: Column(
+                  children: [
+                    CarouselWidget(
+                      sourceEnum: SourceEnum.PrMovies,
+                      list: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.Featured.name]!,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5.w,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const CustomText(
+                              title: 'Bollywood Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.Bollywood.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: "Hollywood Movies",
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![AllMovieLandHomeCategoryEnum.Hollywood.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Hot Series',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.HotSeries.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Cinema Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.Cinema.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'Dual Audio Movies',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.DualAudioMovies.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const CustomText(
+                              title: 'English Series',
+                              size: 12,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            MovieListView(
+                              controller: ScrollController(),
+                              moviesList: homeScreenController.prMoviesCategoryListMap![PrMoviesHomeScreenCategoryEnum.EnglishSeries.name]!,
+                              hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
+                              isHomeScreen: true,
+                            ),
 
-        builder: (context,snapshot) {
-          if(snapshot.hasData)
-          {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  CarouselWidget(
-                    sourceEnum: SourceEnum.PrMovies,
-                    list: snapshot.data![PrMoviesHomeScreenCategoryEnum.Featured.name]!,
-                  ),
-                  Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 5.w,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            title: 'Bollywood Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![PrMoviesHomeScreenCategoryEnum.Bollywood.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: "Hollywood Movies",
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![AllMovieLandHomeCategoryEnum.Hollywood.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Hot Series',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![PrMoviesHomeScreenCategoryEnum.HotSeries.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Cinema Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![PrMoviesHomeScreenCategoryEnum.Cinema.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'Dual Audio Movies',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![PrMoviesHomeScreenCategoryEnum.DualAudioMovies.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          const CustomText(
-                            title: 'English Series',
-                            size: 12,
-                          ),
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          MovieListView(
-                            controller: ScrollController(),
-                            moviesList: snapshot.data![PrMoviesHomeScreenCategoryEnum.EnglishSeries.name]!,
-                            hasReachedMax: false, sourceEnum: SourceEnum.PrMovies,
-                            isHomeScreen: true,
-                          ),
+                          ],
+                        ))
+                  ],
+                ),
+              ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
+    );
 
-                        ],
-                      ))
-                ],
-              ),
-            );
-          }
-          return Center(child: CircularProgressIndicator(color: AppColors.red),);
-        });
   }
 }

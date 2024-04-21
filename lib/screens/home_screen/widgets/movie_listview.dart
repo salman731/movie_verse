@@ -62,6 +62,8 @@ class MovieListView extends StatelessWidget {
                           Get.to(PrMoviesDetailScreen(prMoviesCover: Get.find<SearchScreenController>().prMoviesSearchList[index]));
                     case SourceEnum.WatchMovies:
                       Get.to(WatchMoviesDetailScreen(watchMoviesCover: Get.find<SearchScreenController>().watchMoviesSearchList[index]));
+                    case SourceEnum.HdMovie2:
+                      // TODO: Handle this case.
                    }
                 } else {
                   switch (sourceEnum)
@@ -80,6 +82,8 @@ class MovieListView extends StatelessWidget {
                       Get.to(PrMoviesDetailScreen(prMoviesCover: moviesList[index]));
                     case SourceEnum.WatchMovies:
                       Get.to(WatchMoviesDetailScreen(watchMoviesCover: moviesList[index]));
+                    case SourceEnum.HdMovie2:
+                      // TODO: Handle this case.
                   }
                 }
               },

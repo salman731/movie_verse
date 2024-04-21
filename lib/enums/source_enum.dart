@@ -6,5 +6,6 @@ enum SourceEnum
   Film1k,
   AllMovieLand,
   PrMovies,
-  WatchMovies
+  WatchMovies,
+  HdMovie2,
 }

@@ -8,6 +8,7 @@ import 'package:Movieverse/dialogs/source_list_dialog.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/hd_movie2_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
@@ -109,7 +110,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       builder: (_){
         return Scaffold(
           floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
-             //homeScreenController.loadWatchMoviesHomeScreen();
+             //homeScreenController.loadHdMovie2HomeScreen();
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
           ),/*FloatingActionButton(onPressed: (){
@@ -130,17 +131,47 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     switch(selectedSource)
     {
       case SourceEnum.UpMovies:
-        return UpMoviesHomeScreenWidget();
+        if (homeScreenController.upMoviesCategoryListMap.isEmpty) {
+          homeScreenController.isUpMoviesHomePageLoading.value = false;
+          homeScreenController.loadUpMoviesHomeScreen();
+        }
+        return const UpMoviesHomeScreenWidget();
       case SourceEnum.Primewire:
-        return PrimewireHomeScreenWidget();
+        if (homeScreenController.primewireCategoryListMap.isEmpty) {
+          homeScreenController.isPrimewireHomePageLoading.value = false;
+          homeScreenController.loadPrimewireHomeScreen();
+        }
+        return const PrimewireHomeScreenWidget();
       case SourceEnum.Film1k:
-        return Film1kHomeScreenWidget();
+        if (homeScreenController.film1kCategoryListMap.isEmpty) {
+          homeScreenController.isFilm1kHomePageLoading.value = false;
+          homeScreenController.loadFilm1kHomeScreen();
+        }
+        return const Film1kHomeScreenWidget();
       case SourceEnum.AllMovieLand:
-        return AllMovieLandHomeScreenWidget();
+        if (homeScreenController.allMovieLandCategoryListMap.isEmpty) {
+          homeScreenController.isAllMovieLandHomePageLoading.value = false;
+          homeScreenController.loadAllMovieLandHomeScreen();
+        }
+        return const AllMovieLandHomeScreenWidget();
       case SourceEnum.PrMovies:
-        return PrMoviesHomeScreenWidget();
+        if (homeScreenController.prMoviesCategoryListMap.isEmpty) {
+          homeScreenController.isPrMoviesHomePageLoading.value = false;
+          homeScreenController.loadPrMoviesHomeScreen();
+        }
+        return const PrMoviesHomeScreenWidget();
       case SourceEnum.WatchMovies:
-        return WatchMoviesHomeScreenWidget();
+        if (homeScreenController.watchMoviesCategoryListMap.isEmpty) {
+          homeScreenController.isWatchMoviesHomePageLoading.value = false;
+          homeScreenController.loadWatchMoviesHomeScreen();
+        }
+        return const WatchMoviesHomeScreenWidget();
+      case SourceEnum.HdMovie2:
+        if (homeScreenController.hdMovie2CategoryListMap.isEmpty) {
+          homeScreenController.isHdMovie2HomePageLoading.value = false;
+          homeScreenController.loadHdMovie2HomeScreen();
+        }
+        return const HdMovie2HomeScreenWidget();
     }
     return Container();
   }

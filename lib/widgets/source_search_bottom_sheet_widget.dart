@@ -57,6 +57,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                 case SourceEnum.WatchMovies:
                   await searchScreenController.loadWatchMoviesSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.watchMoviesSearchList;
+                case SourceEnum.HdMovie2:
+
             }
         isMoviesLoading.value = false;
       }
@@ -87,6 +89,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
       case SourceEnum.WatchMovies:
         await searchScreenController.loadWatchMoviesSearchList(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.watchMoviesSearchList;
+      case SourceEnum.HdMovie2:
+        // TODO: Handle this case.
     }
     isSourceLoading.value = false;
   }
@@ -116,6 +120,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                           case SourceEnum.WatchMovies:
                             Get.to(WatchMoviesDetailScreen(watchMoviesCover: Get.find<SearchScreenController>().watchMoviesSearchList[index]));
 
+                          case SourceEnum.HdMovie2:
+                            // TODO: Handle this case.
                         }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : "",));
                     },childCount: selectedSourceList.length), gridDelegate:

@@ -2,6 +2,7 @@
 
 import 'package:Movieverse/constants/category_urls_contants.dart';
 import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
+import 'package:Movieverse/enums/hd_movie_2_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
@@ -28,13 +29,22 @@ class HomeScreenController extends GetxController
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   final String FILM1K_SERVER_URL = "https://www.film1k.com";
   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
+  final String HDMOVIE2_SERVER_URL = "https://hdmovie2.blue";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
   Map<String,List<PrMoviesCover>> prMoviesCategoryListMap = <String,List<PrMoviesCover>>{};
   Map<String,List<Film1kCover>> film1kCategoryListMap = <String,List<Film1kCover>>{};
   Map<String,List<WatchMoviesCover>> watchMoviesCategoryListMap = <String,List<WatchMoviesCover>>{};
+  Map<String,List<HdMovie2Cover>> hdMovie2CategoryListMap = <String,List<HdMovie2Cover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
+  RxBool isUpMoviesHomePageLoading = false.obs,
+      isPrimewireHomePageLoading = false.obs,
+      isAllMovieLandHomePageLoading = false.obs,
+      isPrMoviesHomePageLoading = false.obs,
+      isFilm1kHomePageLoading = false.obs,
+      isWatchMoviesHomePageLoading = false.obs,
+      isHdMovie2HomePageLoading = false.obs;
 
 
   Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
@@ -88,6 +98,8 @@ class HomeScreenController extends GetxController
              upMoviesCategoryListMap[UpMoviesHomeCategoryEnum.AsianDramas.name] = asianDramasList;
          }
        }
+
+     isUpMoviesHomePageLoading.value = true;
 
      return upMoviesCategoryListMap;
 
@@ -146,6 +158,7 @@ class HomeScreenController extends GetxController
               primewireCategoryListMap[PrimewireHomeScreenCategoryEnum.Recent.name] = coverList;
           }
         }
+      isPrimewireHomePageLoading.value = true;
       return primewireCategoryListMap;
    }
 
@@ -182,6 +195,7 @@ class HomeScreenController extends GetxController
             allMovieLandCategoryListMap[AllMovieLandHomeCategoryEnum.Cartoons.name] = getAllMovieLandCategorisList(list2[i]);
         }
       }
+    isAllMovieLandHomePageLoading.value = true;
 
     return allMovieLandCategoryListMap;
 
@@ -237,6 +251,8 @@ class HomeScreenController extends GetxController
             prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.EnglishSeries.name] = SourceUtils.getPrMoviesCategoriesDetailList(element);
         }
       }
+
+    isPrMoviesHomePageLoading.value = true;
     return prMoviesCategoryListMap;
   }
 
@@ -253,6 +269,8 @@ class HomeScreenController extends GetxController
         dom.Document genreDocument = await WebUtils.getDomFromURL_Get(genreUrl!);
         film1kCategoryListMap[genre] = SourceUtils.getFilm1kMoviesList(genreDocument);
       }
+
+    isFilm1kHomePageLoading.value = true;
 
     return film1kCategoryListMap;
 
@@ -277,8 +295,60 @@ class HomeScreenController extends GetxController
         watchMoviesCategoryListMap[mapEntry.key] = SourceUtils.getWatchMoviesList(moviesElement);
       }
 
+    isWatchMoviesHomePageLoading.value =true;
     return watchMoviesCategoryListMap;
 
+  }
+
+
+  Future<Map<String,List<HdMovie2Cover>>> loadHdMovie2HomeScreen () async
+  {
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(HDMOVIE2_SERVER_URL);
+    dom.Element featuredElement = pageDocument.querySelector(".items.featured")!;
+    hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Featured_Movies.name] = getHdMovie2List(featuredElement);
+    dom.Element latestElement = pageDocument.querySelector(".items.normal")!;
+    hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Latest_Movies.name] = getHdMovie2List(latestElement);
+
+    List<HdMovie2Cover> coverList = [];
+    List<dom.Element> popularElementList = pageDocument.querySelectorAll(".dtw_content.dt_views_count .w_item_b")!;
+    for(dom.Element popularElement in popularElementList)
+      {
+        String? postId = popularElement.attributes["id"]!.split("-").last;
+        String? title = popularElement.querySelector(".data h3")!.text;
+        String? url = popularElement.querySelector("a")!.attributes["href"];
+        String? tag1 = popularElement.querySelector(".data .wextra span")!.text;
+        String? posterUrl = popularElement.querySelector(".image img")!.attributes["src"];
+        String? tag2 = popularElement.querySelector(".data .wextra b")!.text;
+        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2,postId: postId));
+      }
+
+    hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Popular_Movies.name] = coverList;
+
+    isHdMovie2HomePageLoading.value = true;
+    return hdMovie2CategoryListMap;
+  }
+
+  List<HdMovie2Cover> getHdMovie2List(dom.Element element)
+  {
+    List<HdMovie2Cover> coverList = [];
+    List<dom.Element> postElementList = element.querySelectorAll(".item.movies");
+
+    for(dom.Element postElement in postElementList)
+      {
+        String? postId = postElement.attributes["id"]!.split("-").last;
+        String? title = postElement.querySelector(".data a")!.text;
+        String? url = postElement.querySelector(".data a")!.attributes["href"];
+        String? tag1 = postElement.querySelector(".data span")!.text;
+        if(tag1.contains(","))
+          {
+            tag1 = tag1.split(",").last.trim();
+          }
+        String? posterUrl = postElement.querySelector(".poster img")!.attributes["src"];
+        String? tag2 = postElement.querySelector(".poster .rating")!.text;
+        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2,postId: postId));
+      }
+
+    return coverList;
   }
 
 

@@ -11,6 +11,7 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_search_request.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
@@ -38,24 +39,28 @@ class SearchScreenController extends GetxController
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
+   final String HDMOVIE2SERVER_URL = "https://hdmovie2.blue";
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
    List<Film1kCover> film1kSearchList  = [];
    List<AllMovieLandCover> allMovieLandSearchList  = [];
    List<PrMoviesCover> prMoviesSearchList  = [];
    List<WatchMoviesCover> watchMoviesSearchList  = [];
+   List<HdMovie2Cover> hdMovie2SearchList  = [];
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
    RxBool isFilm1kSourceLoading = false.obs;
    RxBool isAllMovieLandSourceLoading = false.obs;
    RxBool isPrMoviesSourceLoading = false.obs;
    RxBool isWatchMoviesSourceLoading = false.obs;
+   RxBool isHdMovie2SourceLoading = false.obs;
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isFilm1kMoreUpMoviesLoading = false.obs;
    RxBool isAllMovieLandMoviesLoading = false.obs;
    RxBool isPrMoviesMoviesLoading = false.obs;
    RxBool isWatchMoviesLoading = false.obs;
+   RxBool isHdMovie2MoviesLoading = false.obs;
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
    ScrollController upMoviesScrollController = ScrollController();
@@ -64,12 +69,14 @@ class SearchScreenController extends GetxController
    ScrollController allMovieLandScrollController = ScrollController();
    ScrollController prMoviesScrollController = ScrollController();
    ScrollController watchMoviesScrollController = ScrollController();
+   ScrollController hdMovie2ScrollController = ScrollController();
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
    int allMovieLandCurrentPage = 1;
    int prMoviesCurrentPage = 1;
    int watchMoviesCurrentPage = 1;
+   int hdMovie2CurrentPage = 1;
    WebViewController? webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
@@ -77,6 +84,7 @@ class SearchScreenController extends GetxController
    TextEditingController homeSearchBarEditingController = TextEditingController();
    Completer primeWireSearchCompleter = Completer();
    bool isPrMoviesHasMorePages = false;
+   int maxHdMovie2SearchPage = 1;
 
   startShowingLoadingSources()
   {
@@ -86,6 +94,7 @@ class SearchScreenController extends GetxController
     isAllMovieLandSourceLoading.value = true;
     isPrMoviesSourceLoading.value = true;
     isWatchMoviesSourceLoading.value = true;
+    isHdMovie2SourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -429,6 +438,61 @@ class SearchScreenController extends GetxController
 
        }
    }
+
+
+   Future<List<HdMovie2Cover>> getHdMovie2List (String pageUrl, {bool? isLoadMore}) async
+   {
+     List<HdMovie2Cover> coverList = [];
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+     List<dom.Element> searchElementList = pageDocument.querySelectorAll(".search-page .result-item");
+
+     if(!isLoadMore!)
+       {
+         dom.Element? paginationElement = pageDocument.querySelector(".pagination span");
+         if(paginationElement != null)
+           {
+              maxHdMovie2SearchPage = int.parse(LocalUtils.getStringAfterStartStringToEnd("of ", paginationElement.text));
+           }
+         else
+           {
+             maxHdMovie2SearchPage = 1;
+           }
+       }
+
+     for(dom.Element element in searchElementList)
+       {
+         String? title = element.querySelector(".title a")!.text;
+         String? url = element.querySelector(".title a")!.attributes["href"];
+         String? posterUrl = element.querySelector(".thumbnail.animation-2 a img")!.attributes["src"];
+         String? tag1 = element.querySelector(".meta .year") == null ? "" :element.querySelector(".meta .year")!.text ?? "";
+         String? tag2 = element.querySelector(".meta .rating") == null ? "" :element.querySelector(".meta .rating")!.text.replaceAll("IMDb ", "")?? "";
+         coverList.add(HdMovie2Cover(imageURL: posterUrl,tag1: tag1,tag2: tag2,url: url,title: title));
+       }
+
+     return coverList;
+   }
+
+
+   loadHdMovie2SearchList (String movieName, {bool isLoadMore = false}) async
+   {
+     if(isLoadMore && hdMovie2CurrentPage < maxHdMovie2SearchPage)
+       {
+         isHdMovie2MoviesLoading.value = true;
+         hdMovie2CurrentPage += 1;
+         String searchUrl = LocalUtils.getHdMovie2SearchUrl(movieName,isLoadMore: isLoadMore,pageNo: hdMovie2CurrentPage);
+         List<HdMovie2Cover> list = await getHdMovie2List(searchUrl,isLoadMore: isLoadMore);
+         hdMovie2SearchList.addAll(list);
+         isHdMovie2MoviesLoading.value = false;
+       }
+     else if (!isLoadMore)
+       {
+         hdMovie2CurrentPage = 1;
+         String searchUrl = LocalUtils.getHdMovie2SearchUrl(movieName,isLoadMore: isLoadMore);
+         hdMovie2SearchList = await getHdMovie2List(searchUrl,isLoadMore: isLoadMore);
+         isHdMovie2SourceLoading.value = false;
+       }
+   }
+
 
 
 }

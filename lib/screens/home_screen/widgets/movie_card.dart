@@ -13,12 +13,14 @@ import 'package:sizer/sizer.dart';
 class MovieCard extends StatelessWidget {
   final String imgurl;
   final String title;
-  final String tag;
+  final String tag1;
+  final String tag2;
   const MovieCard({
     required this.imgurl,
     //required this.rate,
     required this.title,
-    this.tag = "",
+    this.tag1 = "",
+    this.tag2 = "",
     Key? key,
   }) : super(key: key);
 
@@ -64,7 +66,7 @@ class MovieCard extends StatelessWidget {
                       ),
                     ),
                     // rating tag
-                    if(tag.isNotEmpty)...[
+                    if(tag1.isNotEmpty)...[
                     Positioned(
                       left: 15,
                       top: 10,
@@ -76,14 +78,32 @@ class MovieCard extends StatelessWidget {
                           color: AppColors.red,
                         ),
                         child: CustomText(
-                          title: tag,
+                          title: tag1,
+                          size: 10,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                ],
+                    if(tag2.isNotEmpty) ...[
+                    Positioned(
+                      right: 15,
+                      top: 10,
+                      child: Container(
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: AppColors.red,
+                        ),
+                        child: CustomText(
+                          title: tag2,
                           size: 10,
                           color: Colors.white,
                         ),
                       ),
                     ),
                 ]
-
                   ],
                 );
               }),

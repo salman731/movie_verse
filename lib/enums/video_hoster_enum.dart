@@ -22,6 +22,7 @@ enum VideoHosterEnum
   Dooood,
   Embedwish,
   Embedpk,
-  D000d
+  D000d,
+  Abysscdn
 
 }

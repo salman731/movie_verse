@@ -24,6 +24,7 @@ class ServerListDialog
   static bool decodeIframe = false;
   static bool isVideotoEmbededAllowed = false;
   static bool isDirectProviderLink1 = false;
+  static bool isPlayDirect = false;
   static bool isNativeMxPlayer = false;
   static Map<String,String>? videoHosterHeaders;
 
@@ -35,7 +36,7 @@ class ServerListDialog
     }
   }
 
-  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false}){
+  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false,bool isDirectPlay = false}){
 
     if (map.isNotEmpty) {
       isLoaderShowing = true;
@@ -44,6 +45,7 @@ class ServerListDialog
       isDirectProviderLink1 = isDirectProviderLink;
       isVideotoEmbededAllowed = videotoIframeAllowed;
       videoHosterHeaders = headers;
+      isPlayDirect = isDirectPlay;
       isNativeMxPlayer = isNativemxPlayer;
       AlertDialog alert=AlertDialog(
         backgroundColor: AppColors.black,
@@ -191,7 +193,7 @@ class ServerListDialog
           {
             for (MapEntry<String,String> mapEntry2 in mapEntry.value.entries)
               {
-                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry.key +" (${mapEntry2.key})"));
+                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry.key +" (${mapEntry2.key})",isSourceOwnServers: isPlayDirect ));
                 btnList.add(SizedBox(height: 2.h,));
               }
           }

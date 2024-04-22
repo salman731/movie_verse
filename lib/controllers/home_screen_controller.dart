@@ -310,16 +310,15 @@ class HomeScreenController extends GetxController
     hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Latest_Movies.name] = getHdMovie2List(latestElement);
 
     List<HdMovie2Cover> coverList = [];
-    List<dom.Element> popularElementList = pageDocument.querySelectorAll(".dtw_content.dt_views_count .w_item_b")!;
+    List<dom.Element> popularElementList = pageDocument.querySelectorAll(".widget.doothemes_widget .w_item_b")!;
     for(dom.Element popularElement in popularElementList)
       {
-        String? postId = popularElement.attributes["id"]!.split("-").last;
         String? title = popularElement.querySelector(".data h3")!.text;
         String? url = popularElement.querySelector("a")!.attributes["href"];
         String? tag1 = popularElement.querySelector(".data .wextra span")!.text;
         String? posterUrl = popularElement.querySelector(".image img")!.attributes["src"];
         String? tag2 = popularElement.querySelector(".data .wextra b")!.text;
-        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2,postId: postId));
+        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2));
       }
 
     hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Popular_Movies.name] = coverList;
@@ -335,7 +334,6 @@ class HomeScreenController extends GetxController
 
     for(dom.Element postElement in postElementList)
       {
-        String? postId = postElement.attributes["id"]!.split("-").last;
         String? title = postElement.querySelector(".data a")!.text;
         String? url = postElement.querySelector(".data a")!.attributes["href"];
         String? tag1 = postElement.querySelector(".data span")!.text;
@@ -345,7 +343,7 @@ class HomeScreenController extends GetxController
           }
         String? posterUrl = postElement.querySelector(".poster img")!.attributes["src"];
         String? tag2 = postElement.querySelector(".poster .rating")!.text;
-        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2,postId: postId));
+        coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2));
       }
 
     return coverList;

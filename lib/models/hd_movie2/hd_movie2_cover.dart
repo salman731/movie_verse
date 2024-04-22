@@ -3,7 +3,6 @@
 
 class HdMovie2Cover
 {
-  String? postId;
 
   String? title;
 
@@ -15,5 +14,5 @@ class HdMovie2Cover
 
   String? tag2;
 
-  HdMovie2Cover({this.title, this.url,this.imageURL,this.tag1,this.tag2,this.postId});
+  HdMovie2Cover({this.title, this.url,this.imageURL,this.tag1,this.tag2});
 }

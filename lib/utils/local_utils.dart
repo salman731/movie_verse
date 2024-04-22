@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
@@ -127,6 +128,31 @@ class LocalUtils
 
   }
 
+  static String getHdMovie2SearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://hdmovie2.phd/page/${pageNo}?s=${queryMovieName}";
+    }
+    else
+    {
+      return "https://hdmovie2.phd/?s=${queryMovieName}";
+    }
+
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);
@@ -187,5 +213,20 @@ class LocalUtils
     intentMethodChannel.invokeMethod("openMxPlayer",{"videoUrl":videoUrl,"title":title,"referer":referer,"mime":mime});
   }
 
+  static void showExceptionToast (String exception)
+  {
+    Fluttertoast.showToast(msg: exception,toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+  }
 
+
+  static bool isStringDouble (String value)
+  {
+    try {
+      double.parse(value);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

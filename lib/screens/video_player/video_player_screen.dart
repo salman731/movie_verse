@@ -1,5 +1,6 @@
 import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/controllers/video_player_screen_controller.dart';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/screens/video_player/widgets/landscape_player_controls.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   late String url;
-  Map<String,String> headers;
+  Map<String,String>? headers;
   late String title;
   VideoPlayerScreen(this.url,this.title,{this.headers =  const <String, String>{},Key? key}) : super(key: key);
 

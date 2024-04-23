@@ -2,6 +2,7 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoaderDialog
 {
@@ -11,7 +12,7 @@ class LoaderDialog
   {
     if(isLoaderShowing!)
       {
-        Navigator.of(navigatorKey.currentContext!,rootNavigator: false).pop();
+        Get.back();
         isLoaderShowing = false;
       }
   }

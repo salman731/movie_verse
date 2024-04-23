@@ -2,10 +2,13 @@
 
 import 'dart:convert';
 import 'dart:math';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
+import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
@@ -228,5 +231,11 @@ class LocalUtils
       print(e);
       return false;
     }
+  }
+
+  static startVideoPlayer(String url,String title,{Map<String,String> headers = const <String, String>{}})
+  {
+    LoaderDialog.stopLoaderDialog();
+    Get.to(VideoPlayerScreen(url,title!,headers: headers,));
   }
 }

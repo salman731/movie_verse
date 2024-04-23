@@ -23,6 +23,7 @@ enum VideoHosterEnum
   Embedwish,
   Embedpk,
   D000d,
+  Doods,
   Abysscdn
 
 }

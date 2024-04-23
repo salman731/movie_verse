@@ -1,5 +1,6 @@
 
 import 'package:Movieverse/controllers/video_player_screen_controller.dart';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
@@ -24,12 +25,14 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
             "title": title,
           });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -45,12 +48,14 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
             "title": title,
           });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -66,12 +71,14 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script");
       String javaScriptText = list.where((element) => element.text.contains("'hls': '")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("'hls': '","'," , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
             "title": title,
           });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -91,7 +98,8 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{src:\"", "\",", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {
           "title": title,
@@ -101,6 +109,7 @@ class VideoHostProviderUtils
       channelCallbacks!["ConsoleLog"] = logFn;
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -128,7 +137,8 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = "https:"+ LocalUtils.getStringBetweenTwoStrings("wurl=\"", "\";", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
                 mp4Url!, MIME.applicationVndAppleMpegurl, {
               "title": title,
@@ -139,6 +149,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -158,7 +169,8 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {
           "title": title,
@@ -169,6 +181,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -187,12 +200,14 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
         "title": title,
       });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -211,12 +226,14 @@ class VideoHostProviderUtils
       String? tokenString = LocalUtils.getStringBetweenTwoStrings("<script>document.getElementById('ideoolink').innerHTML =","')", javaScript);
       String? token = LocalUtils.getStringAfterStartStringToEnd("&token=", tokenString);
       String dlUrl = "https:/" + ideooLink + "&token=" + token + "&dl=1s";
-      Get.to(VideoPlayerScreen(dlUrl,title!,));
+      //Get.to(VideoPlayerScreen(dlUrl,title!));
+      LocalUtils.startVideoPlayer(dlUrl, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
           dlUrl!, MIME.applicationMp4, {
         "title": title,
       });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -230,12 +247,14 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       String? dlUrl = document.querySelector("source")!.attributes["src"];
-      Get.to(VideoPlayerScreen(dlUrl!,title!,));
+      LocalUtils.startVideoPlayer(dlUrl!, title);
+      //Get.to(VideoPlayerScreen(dlUrl!,title!,));
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
           dlUrl!, MIME.applicationMp4, {
         "title": title,
       });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -254,7 +273,8 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {
           "title": title,
@@ -265,6 +285,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -280,17 +301,19 @@ class VideoHostProviderUtils
       String? orginalUrl = await WebUtils.getOriginalUrl(embededUrl);
       dom.Document document = await WebUtils.getDomFromURL_Get(orginalUrl!,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script");
-      String javaScript = list[8].text;
+      String javaScript = list.where((element) => element.text.contains("pass_md5")).first.text;
       String baseUrl = Uri.parse(orginalUrl).origin;
       String getVideoUrl = LocalUtils.getStringBetweenTwoStrings("\$.get('", "',", javaScript);
       String fullUrl = baseUrl + getVideoUrl;
       String? partialDlUrl = await WebUtils.makeGetRequest(fullUrl,headers: {"Referer":orginalUrl});
       List<String> listSplit = getVideoUrl.split("/");
       String fullDlUrl = partialDlUrl! + LocalUtils.getDoodHashValue() + "?token=${listSplit[listSplit.length - 1]}&expiry=${DateTime.now().millisecondsSinceEpoch}";
-      Get.to(VideoPlayerScreen(fullDlUrl,title!,headers: {"Referer":baseUrl},));
+      LocalUtils.startVideoPlayer(fullDlUrl, title,headers:{"Referer":baseUrl} );
+      //Get.to(VideoPlayerScreen(fullDlUrl,title!,headers: {"Referer":baseUrl},));
       //LocalUtils.openAndPlayVideoWithMxPlayer_Android(fullDlUrl!, title, baseUrl,MIME.applicationMp4);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -311,7 +334,8 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
+       // Get.to(VideoPlayerScreen(mp4Url,title!,));
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {
           "title": title,
@@ -322,6 +346,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -334,14 +359,15 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String encryptedJavaScript = list[8].text;
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
       String decodedEval = evalStr.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {
           "title": title,
@@ -352,6 +378,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }
@@ -366,12 +393,14 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list[3].text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
         "title": title,
       });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -387,13 +416,15 @@ class VideoHostProviderUtils
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
-      Get.to(VideoPlayerScreen(m3u8Url,title!,headers: {"Referer":"https://minoplres.xyz"},));
+      LocalUtils.startVideoPlayer(m3u8Url, title,headers: {"Referer":"https://minoplres.xyz"});
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,headers: {"Referer":"https://minoplres.xyz"},));
      // LocalUtils.openAndPlayVideoWithMxPlayer_Android(m3u8Url!, title, "https://minoplres.xyz",MIME.applicationVndAppleMpegurl);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
           m3u8Url!, MIME.applicationVndAppleMpegurl, {
         "title": title,
       });*/
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -421,7 +452,8 @@ class VideoHostProviderUtils
           {
             mp4Url = LocalUtils.getStringBetweenTwoStrings("{sources:[{file:\"", "\",", args[1]);
           }
-        Get.to(VideoPlayerScreen(mp4Url,title!,));
+        LocalUtils.startVideoPlayer(mp4Url, title);
+        //Get.to(VideoPlayerScreen(mp4Url,title!,));
        /* ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationMp4, {
           "title": title,
@@ -432,6 +464,7 @@ class VideoHostProviderUtils
       JsEvalResult jsResult = flutterJs.evaluate(decodedEval);
 
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
 
@@ -442,9 +475,11 @@ class VideoHostProviderUtils
     try {
       dom.Document iframeDocument = await WebUtils.getDomFromURL_Get(embededUrl);
       String? eplayMp4Url = iframeDocument.querySelector("source")!.attributes["src"];
-      Get.to(VideoPlayerScreen(eplayMp4Url!,title!,headers: {"Referer":"https://eplayvid.net"},));
+      LocalUtils.startVideoPlayer(eplayMp4Url!, title,headers: {"Referer":"https://eplayvid.net"});
+      //Get.to(VideoPlayerScreen(eplayMp4Url!,title!,headers: {"Referer":"https://eplayvid.net"},));
       //LocalUtils.openAndPlayVideoWithMxPlayer_Android(eplayMp4Url!, title, "https://eplayvid.net",MIME.applicationMp4);
     } catch (e) {
+      LoaderDialog.stopLoaderDialog();
       Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
     }
   }

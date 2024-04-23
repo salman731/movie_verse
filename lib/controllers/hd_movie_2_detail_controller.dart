@@ -66,14 +66,14 @@ class HdMovie2DetailController extends GetxController
    Future<(String,Map<String,Map<String,String>>)> getVideoLinks(String movieUrl,List<HdMovie2PlayerRequest> playerList,) async
    {
      Map<String,Map<String,String>> map = Map();
-     String? orignalUrl;
+     String? orignalUrl = "";
       for (HdMovie2PlayerRequest hdMovie2PlayerRequest in playerList)
         {
            String response = await WebUtils.makePostRequest(HDMOVIE2_ADMIN_AJAX_SERVER_URL, hdMovie2PlayerRequest.toJson(),headers: {"Referer":movieUrl});
            HdMovie2PlayerResponse hdMovie2PlayerResponse = HdMovie2PlayerResponse.fromJson(jsonDecode(response));
+
            if (hdMovie2PlayerResponse.embed_url!.contains("short.ink")) {
              orignalUrl = await WebUtils.getOriginalUrl(hdMovie2PlayerResponse.embed_url!.trim());
-           }
            if (orignalUrl!.contains("abysscdn.com")) {
 
              dom.Document playerDocument = await WebUtils.getDomFromURL_Get(orignalUrl!);
@@ -95,9 +95,31 @@ class HdMovie2DetailController extends GetxController
              map[VideoHosterEnum.Abysscdn.name] = map2;
 
            }
+          }
+           else
+             {
+               for(VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
+               {
+                 _addVideoHosterLinks(hdMovie2PlayerResponse.embed_url!.trim(), videoHosterEnum.name, map,hdMovie2PlayerResponse.embed_url!.trim());
+               }
+             }
+
 
         }
 
       return (orignalUrl!,map);
+   }
+
+   void _addVideoHosterLinks(String iframeUrl,String hostProvider,Map<String,Map<String,String>> map,String pageServerUrl)
+   {
+     if(iframeUrl.toLowerCase()!.contains(hostProvider.toLowerCase()))
+     {
+       if(map[hostProvider] == null)
+       {
+         Map<String,String> map2 = Map();
+         map2[""] = pageServerUrl;
+         map[hostProvider] = map2;
+       }
+     }
    }
 }

@@ -123,14 +123,16 @@ class ServerListDialog
       } else {
         if (!isNativeMxPlayer) {
           LoaderDialog.stopLoaderDialog();
-          Get.to(VideoPlayerScreen(pageUrl,title!));
+          LocalUtils.startVideoPlayer(pageUrl, title!);
+          //Get.to(VideoPlayerScreen(pageUrl,title!));
           /*ExternalVideoPlayerLauncher.launchMxPlayer(
                       pageUrl!, MIME.applicationVndAppleMpegurl, {
                     "title": title,
                   });*/
         } else {
-          LoaderDialog.stopLoaderDialog();
-          Get.to(VideoPlayerScreen(pageUrl,title!,headers: videoHosterHeaders!,));
+          //LoaderDialog.stopLoaderDialog();
+          LocalUtils.startVideoPlayer(pageUrl, title!,headers: videoHosterHeaders!);
+          //Get.to(VideoPlayerScreen(pageUrl,title!,headers: videoHosterHeaders!,));
           //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);
         }
       }
@@ -193,7 +195,7 @@ class ServerListDialog
           {
             for (MapEntry<String,String> mapEntry2 in mapEntry.value.entries)
               {
-                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry.key +" (${mapEntry2.key})",isSourceOwnServers: isPlayDirect ));
+                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry2.key.isEmpty ? "Play" +" (${mapEntry.key})" : mapEntry.key +" (${mapEntry2.key})",isSourceOwnServers: mapEntry2.key.isNotEmpty ? isPlayDirect :false ));
                 btnList.add(SizedBox(height: 2.h,));
               }
           }
@@ -260,6 +262,7 @@ class ServerListDialog
         await VideoHostProviderUtils.getM3U8UrlfromDropLoad(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.Dooood:
       case VideoHosterEnum.D000d:
+      case VideoHosterEnum.Doods:
       case VideoHosterEnum.Dood:
         await VideoHostProviderUtils.getMp4UrlFromDood(providerUrl, title!,isVideotoEmbededAllowed: isVideotoEmbededAllowed,headers: videoHosterHeaders);
       case VideoHosterEnum.VTube:

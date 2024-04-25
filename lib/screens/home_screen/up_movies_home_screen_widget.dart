@@ -23,104 +23,110 @@ class _UpMoviesHomeScreenWidgetState extends State<UpMoviesHomeScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=> homeScreenController.isUpMoviesHomePageLoading.value ? SingleChildScrollView(
-        child: Column(
-          children: [
-            CarouselWidget(
-              sourceEnum: SourceEnum.UpMovies,
-              list: homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.TopMovies.name]!,
-            ),
-            Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5.w,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CustomText(
-                      title: 'Latest Movies',
-                      size: 12,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    MovieListView(
-                      controller: ScrollController(),
-                      moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.LatestMovies.name]!,
-                      hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
-                      isHomeScreen: true,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    const CustomText(
-                      title: 'Tv Series',
-                      size: 12,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    MovieListView(
-                      controller: ScrollController(),
-                      moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.TvSeries.name]!,
-                      hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
-                      isHomeScreen: true,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    const CustomText(
-                      title: 'Anime',
-                      size: 12,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    MovieListView(
-                      controller: ScrollController(),
-                      moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.Anime.name]!,
-                      hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
-                      isHomeScreen: true,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    const CustomText(
-                      title: 'Cartoons',
-                      size: 12,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    MovieListView(
-                      controller: ScrollController(),
-                      moviesList: homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.Cartoons.name]!,
-                      hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
-                      isHomeScreen: true,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    const CustomText(
-                      title: 'Asian Dramas',
-                      size: 12,
-                    ),
-                    SizedBox(
-                      height: 2.h,
-                    ),
-                    MovieListView(
-                      controller: ScrollController(),
-                      moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.AsianDramas.name]!,
-                      hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
-                      isHomeScreen: true,
-                    ),
+    return Obx(()=> homeScreenController.isUpMoviesHomePageLoading.value ? RefreshIndicator(
+      onRefresh: () async {
+        homeScreenController.isUpMoviesHomePageLoading.value = false;
+        await homeScreenController.loadUpMoviesHomeScreen();
+      },
+      child: SingleChildScrollView(
+          child: Column(
+            children: [
+              CarouselWidget(
+                sourceEnum: SourceEnum.UpMovies,
+                list: homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.TopMovies.name]!,
+              ),
+              Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5.w,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const CustomText(
+                        title: 'Latest Movies',
+                        size: 12,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      MovieListView(
+                        controller: ScrollController(),
+                        moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.LatestMovies.name]!,
+                        hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                        isHomeScreen: true,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      const CustomText(
+                        title: 'Tv Series',
+                        size: 12,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      MovieListView(
+                        controller: ScrollController(),
+                        moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.TvSeries.name]!,
+                        hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                        isHomeScreen: true,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      const CustomText(
+                        title: 'Anime',
+                        size: 12,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      MovieListView(
+                        controller: ScrollController(),
+                        moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.Anime.name]!,
+                        hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                        isHomeScreen: true,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      const CustomText(
+                        title: 'Cartoons',
+                        size: 12,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      MovieListView(
+                        controller: ScrollController(),
+                        moviesList: homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.Cartoons.name]!,
+                        hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                        isHomeScreen: true,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      const CustomText(
+                        title: 'Asian Dramas',
+                        size: 12,
+                      ),
+                      SizedBox(
+                        height: 2.h,
+                      ),
+                      MovieListView(
+                        controller: ScrollController(),
+                        moviesList:  homeScreenController.upMoviesCategoryListMap![UpMoviesHomeCategoryEnum.AsianDramas.name]!,
+                        hasReachedMax: false, sourceEnum: SourceEnum.UpMovies,
+                        isHomeScreen: true,
+                      ),
 
 
-                  ],
-                ))
-          ],
+                    ],
+                  ))
+            ],
+          ),
         ),
-      ) :Center(child: CircularProgressIndicator(color: AppColors.red),),
+    ) :Center(child: CircularProgressIndicator(color: AppColors.red),),
     );
 
   }

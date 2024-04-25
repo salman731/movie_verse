@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:Movieverse/controllers/video_player_screen_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/screens/video_player/video_player_screen.dart';
@@ -10,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:string_validator/string_validator.dart';
 
 // PowVideo and StreamPlay has captcha due to it can't scrape
 class VideoHostProviderUtils
@@ -72,6 +75,10 @@ class VideoHostProviderUtils
       String javaScriptText = list.where((element) => element.text.contains("'hls': '")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("'hls': '","'," , javaScriptText);
       //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      if(isBase64(m3u8Url))
+        {
+          m3u8Url = String.fromCharCodes(base64Decode(m3u8Url));
+        }
       LocalUtils.startVideoPlayer(m3u8Url, title);
       /*ExternalVideoPlayerLauncher.launchMxPlayer(
               m3u8Url!, MIME.applicationVndAppleMpegurl, {
@@ -197,7 +204,7 @@ class VideoHostProviderUtils
     }
     try {
       dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
-      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      List<dom.Element> list = document.querySelectorAll("script");
       String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
       String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
       //Get.to(VideoPlayerScreen(m3u8Url,title!,));

@@ -17,7 +17,7 @@ class LoaderDialog
       }
   }
 
-  static showLoaderDialog(BuildContext context,{String text = "Loading..."}){
+  static showLoaderDialog(BuildContext context,{String text = "Loading..."}) async{
 
     if (!isLoaderShowing!) {
       isLoaderShowing = true;
@@ -29,12 +29,13 @@ class LoaderDialog
             Container(margin: EdgeInsets.only(left: 7),child:Text(text,style: TextStyle(color: AppColors.red),)),
           ],),
       );
-      showDialog(barrierDismissible: false,
+      await showDialog(barrierDismissible: false,
         context:context,
         builder:(BuildContext context){
           return alert;
         },
       );
+      isLoaderShowing = false;
     }
   }
 }

@@ -238,4 +238,12 @@ class LocalUtils
     LoaderDialog.stopLoaderDialog();
     Get.to(VideoPlayerScreen(url,title!,headers: headers,));
   }
+  
+  static Future<String> getDecrptedTextHdMovie2(String encryptedText) async
+  {
+    String? key = await WebUtils.makeGetRequest("https://raw.githubusercontent.com/Sofie99/Resources/main/chillix_key.json");
+    key = key!.replaceAll("\n", "").replaceAll("\"", "");
+    MethodChannel intentMethodChannel = MethodChannel("KOTLIN_CHANNEL");
+    return (await intentMethodChannel.invokeMethod("getEncryptedText",{"key":key,"encryptedText":encryptedText}));
+  }
 }

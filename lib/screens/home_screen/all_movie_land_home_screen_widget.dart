@@ -24,88 +24,94 @@ class _AllMovieLandHomeScreenWidgetState extends State<AllMovieLandHomeScreenWid
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=> homeScreenController.isAllMovieLandHomePageLoading.value ? SingleChildScrollView(
-                child: Column(
-                  children: [
-                    CarouselWidget(
-                      sourceEnum: SourceEnum.AllMovieLand,
-                      list: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Featured.name]!,
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5.w,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const CustomText(
-                              title: 'Bollywood',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Bollywood.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: "Hollywood",
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Hollywood.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'Tv Series',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.TvSeries.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'Cartoons',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Cartoons.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
-                              isHomeScreen: true,
-                            ),
-      
-      
-                          ],
-                        ))
-                  ],
+    return Obx(()=> homeScreenController.isAllMovieLandHomePageLoading.value ? RefreshIndicator(
+      onRefresh: () async {
+        homeScreenController.isAllMovieLandHomePageLoading.value = false;
+        homeScreenController.loadAllMovieLandHomeScreen();
+      },
+      child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      CarouselWidget(
+                        sourceEnum: SourceEnum.AllMovieLand,
+                        list: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Featured.name]!,
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CustomText(
+                                title: 'Bollywood',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Bollywood.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: "Hollywood",
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Hollywood.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'Tv Series',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.TvSeries.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'Cartoons',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.allMovieLandCategoryListMap![AllMovieLandHomeCategoryEnum.Cartoons.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.AllMovieLand,
+                                isHomeScreen: true,
+                              ),
+
+
+                            ],
+                          ))
+                    ],
+                  ),
                 ),
-              ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
+    ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
     );
   }
 }

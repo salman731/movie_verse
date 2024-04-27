@@ -27,50 +27,56 @@ class _Film1kHomeScreenWidgetState extends State<Film1kHomeScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return  Obx(()=> homeScreenController.isFilm1kHomePageLoading.value ? SingleChildScrollView(
-                child: Column(
-                  children: [
-                    CarouselWidget(
-                      sourceEnum: SourceEnum.Film1k,
-                      list: homeScreenController.film1kCategoryListMap!["Featured"]!,
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5.w,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+    return  Obx(()=> homeScreenController.isFilm1kHomePageLoading.value ? RefreshIndicator(
+      onRefresh: () async {
+        homeScreenController.isFilm1kHomePageLoading.value = false;
+        homeScreenController.loadFilm1kHomeScreen();
+      },
+      child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      CarouselWidget(
+                        sourceEnum: SourceEnum.Film1k,
+                        list: homeScreenController.film1kCategoryListMap!["Featured"]!,
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
 
-                            for(MapEntry<String,List<Film1kCover>> mapEntry in homeScreenController.film1kCategoryListMap!.entries)...
-                            [
-                               if(mapEntry.key != "Featured")...
-                                   [
-                                     CustomText(
-                                       title: mapEntry.key,
-                                       size: 12,
-                                     ),
-                                     SizedBox(
-                                       height: 2.h,
-                                     ),
-                                     MovieListView(
-                                       controller: ScrollController(),
-                                       moviesList: mapEntry.value!,
-                                       hasReachedMax: false, sourceEnum: SourceEnum.Film1k,
-                                       isHomeScreen: true,
-                                     ),
-                                     SizedBox(
-                                       height: 2.h,
-                                     ),
-                                   ]
+                              for(MapEntry<String,List<Film1kCover>> mapEntry in homeScreenController.film1kCategoryListMap!.entries)...
+                              [
+                                 if(mapEntry.key != "Featured")...
+                                     [
+                                       CustomText(
+                                         title: mapEntry.key,
+                                         size: 12,
+                                       ),
+                                       SizedBox(
+                                         height: 2.h,
+                                       ),
+                                       MovieListView(
+                                         controller: ScrollController(),
+                                         moviesList: mapEntry.value!,
+                                         hasReachedMax: false, sourceEnum: SourceEnum.Film1k,
+                                         isHomeScreen: true,
+                                       ),
+                                       SizedBox(
+                                         height: 2.h,
+                                       ),
+                                     ]
+                              ],
+
+
                             ],
-
-
-                          ],
-                        ))
-                  ],
+                          ))
+                    ],
+                  ),
                 ),
-              ): Center(child: CircularProgressIndicator(color: AppColors.red),),
+    ): Center(child: CircularProgressIndicator(color: AppColors.red),),
         );
   }
 }

@@ -24,6 +24,10 @@ enum VideoHosterEnum
   Embedpk,
   D000d,
   Doods,
-  Abysscdn
+  Abysscdn,
+  BestX,
+  WatchX,
+  MoviesApi
+
 
 }

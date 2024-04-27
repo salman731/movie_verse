@@ -24,104 +24,110 @@ class _PrimewireHomeScreenWidgetState extends State<PrimewireHomeScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(()=>homeScreenController.isPrimewireHomePageLoading.value ? SingleChildScrollView(
-                child: Column(
-                  children: [
-                    CarouselWidget(
-                      sourceEnum: SourceEnum.Primewire,
-                      list: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Featured.name]!,
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 5.w,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const CustomText(
-                              title: 'Latest Movies',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Latest.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'Trending',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Trending.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'Recently Added',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Recent.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'In Theaters',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.InTheaters.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
-                              isHomeScreen: true,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            const CustomText(
-                              title: 'Streaming',
-                              size: 12,
-                            ),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            MovieListView(
-                              controller: ScrollController(),
-                              moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Streaming.name]!,
-                              hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
-                              isHomeScreen: true,
-                            ),
+    return Obx(()=>homeScreenController.isPrimewireHomePageLoading.value ? RefreshIndicator(
+      onRefresh: () async{
+        homeScreenController.isPrimewireHomePageLoading.value = false;
+        homeScreenController.loadPrimewireHomeScreen();
+      },
+      child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      CarouselWidget(
+                        sourceEnum: SourceEnum.Primewire,
+                        list: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Featured.name]!,
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 5.w,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CustomText(
+                                title: 'Latest Movies',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Latest.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'Trending',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Trending.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'Recently Added',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Recent.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'In Theaters',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.InTheaters.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
+                                isHomeScreen: true,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              const CustomText(
+                                title: 'Streaming',
+                                size: 12,
+                              ),
+                              SizedBox(
+                                height: 2.h,
+                              ),
+                              MovieListView(
+                                controller: ScrollController(),
+                                moviesList: homeScreenController.primewireCategoryListMap![PrimewireHomeScreenCategoryEnum.Streaming.name]!,
+                                hasReachedMax: false, sourceEnum: SourceEnum.Primewire,
+                                isHomeScreen: true,
+                              ),
 
 
-                          ],
-                        ))
-                  ],
+                            ],
+                          ))
+                    ],
+                  ),
                 ),
-              ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
+    ) : Center(child: CircularProgressIndicator(color: AppColors.red),),
     );
 
   }

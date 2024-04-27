@@ -2,25 +2,14 @@ package com.example.movie_verse;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 
-public class MainActivity extends FlutterActivity {
+public class MainActivityTemp extends FlutterActivity {
 
     static  final String intentChannel = "INTENT_CHANNEL";
     @Override
@@ -38,7 +27,12 @@ public class MainActivity extends FlutterActivity {
                         String[] headers = {"referer",(String) call.argument("referer")};
                         intent.putExtra("headers",headers);
                         intent.putExtra("title", (String) call.argument("title"));
-                        MainActivity.this.startActivity(intent);
+                        MainActivityTemp.this.startActivity(intent);
+                    }
+                    if (call.method.equals("getDecrptedText"))
+                    {
+                        //AesHelper aesHelper = new AesHelper();
+
                     }
                 }
         );

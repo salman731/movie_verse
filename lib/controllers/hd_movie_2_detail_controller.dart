@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_detail.dart';
@@ -13,6 +14,7 @@ import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 
 
@@ -63,10 +65,11 @@ class HdMovie2DetailController extends GetxController
      return HdMovie2Detail(title: hdMovie2Cover.title,url: hdMovie2Cover.url,postId: postId,tags: tags,director: director,description: description,coverUrl: hdMovie2Cover.imageURL,tag1: hdMovie2Cover.tag1,tag2: hdMovie2Cover.tag2,country: country,actors: actors,ratings: ratings,releasedDate: released,duration: runtime,players: playerList);
    }
 
-   Future<(String,Map<String,Map<String,String>>)> getVideoLinks(String movieUrl,List<HdMovie2PlayerRequest> playerList,) async
+   Future<Map<String,Map<String,String>>> getVideoLinks(String movieUrl,List<HdMovie2PlayerRequest> playerList,) async
    {
      Map<String,Map<String,String>> map = Map();
      String? orignalUrl = "";
+     Map<String,String> bestXheaders = Map();
       for (HdMovie2PlayerRequest hdMovie2PlayerRequest in playerList)
         {
            String response = await WebUtils.makePostRequest(HDMOVIE2_ADMIN_AJAX_SERVER_URL, hdMovie2PlayerRequest.toJson(),headers: {"Referer":movieUrl});
@@ -92,22 +95,62 @@ class HdMovie2DetailController extends GetxController
 
                }
 
+             map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orignalUrl};
              map[VideoHosterEnum.Abysscdn.name] = map2;
 
            }
           }
-           else
+           else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
              {
-               for(VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
-               {
-                 _addVideoHosterLinks(hdMovie2PlayerResponse.embed_url!.trim(), videoHosterEnum.name, map,hdMovie2PlayerResponse.embed_url!.trim());
-               }
+               dom.Document playerDocument = await WebUtils.getDomFromURL_Get(hdMovie2PlayerResponse.embed_url!.trim(),headers: {"Referer":hdMovie2PlayerResponse.embed_url!.trim()});
+               String javaScript = playerDocument.querySelectorAll("script").where((element) => element.text.contains("JScripts")).first.text;
+               String json = LocalUtils.getStringBetweenTwoStrings("JScripts = '", "';", javaScript);
+               String mainM3u8Url = await LocalUtils.getDecrptedTextHdMovie2(json);
+
+               Map<String,String> headers = {
+                 "Accept" : "*/*",
+                 "Connection" : "keep-alive",
+                 "Sec-Fetch-Dest" : "empty",
+                 "Sec-Fetch-Mode" : "cors",
+                 "Sec-Fetch-Site" : "cross-site",
+                 "Origin" : Uri.parse(hdMovie2PlayerResponse.embed_url!.trim()).origin,
+               };
+               String? qualityLinksString = await WebUtils.makeGetRequest(mainM3u8Url,headers: headers);
+               List<String> qualityLinks = qualityLinksString!.split("\n").where((element) => element.contains("m3u8")).toList();
+               Map<String,String> qualityMap = Map();
+               for (String qualityLink in qualityLinks)
+                 {
+                   String quality = LocalUtils.getStringBeforString(".m3u8", qualityLink);
+                   qualityMap[quality] = mainM3u8Url.split("?")[0].replaceAll("video.m3u8", qualityLink);
+                 }
+               if(hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx"))
+                 {
+                   map[VideoHosterEnum.BestX.name+"_headers"] = headers;
+                   map[VideoHosterEnum.BestX.name] = qualityMap;
+                 }
+               else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx"))
+                 {
+                   map[VideoHosterEnum.WatchX.name +"_headers"] = headers;
+                   map[VideoHosterEnum.WatchX.name] = qualityMap;
+                 }
+               else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
+                 {
+                   map[VideoHosterEnum.MoviesApi.name+"_headers"] = headers;
+                   map[VideoHosterEnum.MoviesApi.name] = qualityMap;
+                 }
              }
+           else
+           {
+             for(VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
+             {
+               _addVideoHosterLinks(hdMovie2PlayerResponse.embed_url!.trim(), videoHosterEnum.name, map,hdMovie2PlayerResponse.embed_url!.trim());
+             }
+           }
 
 
         }
 
-      return (orignalUrl!,map);
+      return map;
    }
 
    void _addVideoHosterLinks(String iframeUrl,String hostProvider,Map<String,Map<String,String>> map,String pageServerUrl)

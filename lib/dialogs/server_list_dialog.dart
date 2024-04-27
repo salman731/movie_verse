@@ -26,6 +26,7 @@ class ServerListDialog
   static bool isDirectProviderLink1 = false;
   static bool isPlayDirect = false;
   static bool isNativeMxPlayer = false;
+  static bool hasownHeaders = false;
   static Map<String,String>? videoHosterHeaders;
 
   static stopServerListDialog()
@@ -36,7 +37,7 @@ class ServerListDialog
     }
   }
 
-  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false,bool isDirectPlay = false}){
+  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false,bool isDirectPlay = false,bool hasOwnHeaders = false}){
 
     if (map.isNotEmpty) {
       isLoaderShowing = true;
@@ -47,6 +48,7 @@ class ServerListDialog
       videoHosterHeaders = headers;
       isPlayDirect = isDirectPlay;
       isNativeMxPlayer = isNativemxPlayer;
+      hasownHeaders = hasOwnHeaders;
       AlertDialog alert=AlertDialog(
         backgroundColor: AppColors.black,
         title: Text("Select Server"),
@@ -101,7 +103,7 @@ class ServerListDialog
     }
   }
 
-  static Widget getServerButton(String server,String pageUrl,{int? index,bool isSourceOwnServers = false,String? buttonText})
+  static Widget getServerButton(String server,String pageUrl,{int? index,bool isSourceOwnServers = false,String? buttonText,Map<String,String>? ownHeaders})
   {
     String btnTitle = "";
     if (buttonText == null) {
@@ -131,7 +133,11 @@ class ServerListDialog
                   });*/
         } else {
           //LoaderDialog.stopLoaderDialog();
-          LocalUtils.startVideoPlayer(pageUrl, title!,headers: videoHosterHeaders!);
+          if (ownHeaders == null) {
+            LocalUtils.startVideoPlayer(pageUrl, title!,headers: videoHosterHeaders!);
+          } else {
+            LocalUtils.startVideoPlayer(pageUrl, title!,headers: ownHeaders!);
+          }
           //Get.to(VideoPlayerScreen(pageUrl,title!,headers: videoHosterHeaders!,));
           //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);
         }
@@ -191,12 +197,37 @@ class ServerListDialog
     }
     else if (map is Map<String,Map<String,String>>)
       {
+        List<String> sourceList = [];
+        if(hasownHeaders)
+          {
+            for (MapEntry<String,Map<String,String>> mapEntry in map.entries)
+              {
+                if(!mapEntry.key.contains("_headers"))
+                  {
+                    sourceList.add(mapEntry.key);
+                  }
+              }
+          }
         for(MapEntry<String,Map<String,String>> mapEntry in map.entries)
           {
+            Map<String,String>? header;
+            if(hasownHeaders )
+            {
+              for (String key in sourceList)
+                {
+                  if(mapEntry.key.contains(key))
+                    {
+                      header = map[key + "_headers"];
+                    }
+                }
+            }
             for (MapEntry<String,String> mapEntry2 in mapEntry.value.entries)
               {
-                btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry2.key.isEmpty ? "Play" +" (${mapEntry.key})" : mapEntry.key +" (${mapEntry2.key})",isSourceOwnServers: mapEntry2.key.isNotEmpty ? isPlayDirect :false ));
-                btnList.add(SizedBox(height: 2.h,));
+
+                if (!mapEntry.key.contains("_headers")) {
+                  btnList.add(getServerButton(mapEntry.key, mapEntry2.value,buttonText: mapEntry2.key.isEmpty ? "Play" +" (${mapEntry.key})" : mapEntry.key +" (${mapEntry2.key})",isSourceOwnServers: mapEntry2.key.isNotEmpty ? isPlayDirect :false ,ownHeaders: header));
+                  btnList.add(SizedBox(height: 2.h,));
+                }
               }
           }
       }

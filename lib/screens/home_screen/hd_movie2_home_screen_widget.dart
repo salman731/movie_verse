@@ -24,48 +24,54 @@ class _HdMovie2HomeScreenWidgetState extends State<HdMovie2HomeScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return  Obx(()=> homeScreenController.isHdMovie2HomePageLoading.value ? SingleChildScrollView(
-      child: Column(
-        children: [
-          CarouselWidget(
-            sourceEnum: SourceEnum.HdMovie2,
-            list: homeScreenController.hdMovie2CategoryListMap![HdMovie2HomeScreenCategoryEnum.Featured_Movies.name]!,
-          ),
-          Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5.w,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+    return  Obx(()=> homeScreenController.isHdMovie2HomePageLoading.value ? RefreshIndicator(
+      onRefresh: () async {
+        homeScreenController.isHdMovie2HomePageLoading.value = false;
+        homeScreenController.loadHdMovie2HomeScreen();
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            CarouselWidget(
+              sourceEnum: SourceEnum.HdMovie2,
+              list: homeScreenController.hdMovie2CategoryListMap![HdMovie2HomeScreenCategoryEnum.Featured_Movies.name]!,
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5.w,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 
-                  for(MapEntry<String,List<HdMovie2Cover>> mapEntry in homeScreenController.hdMovie2CategoryListMap!.entries)...
-                  [
-                    if(mapEntry.key != HdMovie2HomeScreenCategoryEnum.Featured_Movies.name)...
+                    for(MapEntry<String,List<HdMovie2Cover>> mapEntry in homeScreenController.hdMovie2CategoryListMap!.entries)...
                     [
-                      CustomText(
-                        title: mapEntry.key.replaceAll("_", " "),
-                        size: 12,
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                      MovieListView(
-                        controller: ScrollController(),
-                        moviesList: mapEntry.value!,
-                        hasReachedMax: false, sourceEnum: SourceEnum.HdMovie2,
-                        isHomeScreen: true,
-                      ),
-                      SizedBox(
-                        height: 2.h,
-                      ),
-                    ]
+                      if(mapEntry.key != HdMovie2HomeScreenCategoryEnum.Featured_Movies.name)...
+                      [
+                        CustomText(
+                          title: mapEntry.key.replaceAll("_", " "),
+                          size: 12,
+                        ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                        MovieListView(
+                          controller: ScrollController(),
+                          moviesList: mapEntry.value!,
+                          hasReachedMax: false, sourceEnum: SourceEnum.HdMovie2,
+                          isHomeScreen: true,
+                        ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                      ]
+                    ],
+
+
                   ],
-
-
-                ],
-              ))
-        ],
+                ))
+          ],
+        ),
       ),
     ): Center(child: CircularProgressIndicator(color: AppColors.red),),
     );

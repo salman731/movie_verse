@@ -238,9 +238,9 @@ class _HdMovie2DetailsScreenState extends State<HdMovie2DetailsScreen> {
                                 Center(
                                   child: CustomButton(func: () async{
                                     LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links.....");
-                                    (String,Map<String,Map<String,String>>) map = await hdMovie2DetailController.getVideoLinks( snapshot.data!.url!, snapshot.data!.players!);
+                                    Map<String,Map<String,String>> map = await hdMovie2DetailController.getVideoLinks( snapshot.data!.url!, snapshot.data!.players!);
                                     LoaderDialog.stopLoaderDialog();
-                                    ServerListDialog.showServerListDialog(navigatorKey.currentContext!,map.$2,widget.hdMovie2Cover.title!,headers: {"Referer":map.$1},isDirectPlay: true,isNativemxPlayer: true,isDirectProviderLink: true);
+                                    ServerListDialog.showServerListDialog(navigatorKey.currentContext!,map,widget.hdMovie2Cover.title!,isDirectPlay: true,isNativemxPlayer: true,isDirectProviderLink: true,hasOwnHeaders: true);
                                   }, title: "Play",
                                     color: AppColors.red,
                                     shape: RoundedRectangleBorder(

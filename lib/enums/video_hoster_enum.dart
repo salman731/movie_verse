@@ -27,7 +27,8 @@ enum VideoHosterEnum
   Abysscdn,
   BestX,
   WatchX,
-  MoviesApi
+  MoviesApi,
+  Akamaicdn
 
 
 }

@@ -147,11 +147,11 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://hdmovie2.phd/page/${pageNo}?s=${queryMovieName}";
+      return "https://hdmovie2.app/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://hdmovie2.phd/?s=${queryMovieName}";
+      return "https://hdmovie2.app/?s=${queryMovieName}";
     }
 
   }

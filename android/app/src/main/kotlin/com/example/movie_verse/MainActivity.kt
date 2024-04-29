@@ -18,9 +18,13 @@ class MainActivity: FlutterActivity() {
                 val encrptedtext = call.argument<String>("encryptedText");
                 if(key != null && encrptedtext != null)
                 {
-                    val decrypt = cryptoAESHandler(encrptedtext,key.toByteArray(),false)?.replace("\\", "")
-                    val source = Regex(""""?file"?:\s*"([^"]+)""").find(decrypt.toString())?.groupValues?.get(1)
-                    result.success(source);
+                    try {
+                        val decrypt = cryptoAESHandler(encrptedtext,key.toByteArray(),false)?.replace("\\", "")
+                        val source = Regex(""""?file"?:\s*"([^"]+)""").find(decrypt.toString())?.groupValues?.get(1)
+                        result.success(source);
+                    } catch (e: Exception) {
+                        result.success("error");
+                    }
                 }
                 else
                 {

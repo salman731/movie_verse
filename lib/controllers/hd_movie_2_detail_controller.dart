@@ -23,8 +23,9 @@ class HdMovie2DetailController extends GetxController
    Map<String,String> abyssQualityCdn = {"sd":"","hd":"www","fullHd":"whw"};
    late dom.Document pageSource;
 
-   static final HDMOVIE2_SERVER_URL = "https://hdmovie2.phd";
-   static final HDMOVIE2_ADMIN_AJAX_SERVER_URL = "https://hdmovie2.phd/wp-admin/admin-ajax.php";
+   static final HDMOVIE2_SERVER_URL = "https://hdmovie2.app";
+   static final HDMOVIE2_ADMIN_AJAX_SERVER_URL = "https://hdmovie2.app/wp-admin/admin-ajax.php";
+   static final AKAMAICDN_SERVER_URL = "https://akamaicdn.life/";
 
    Future<HdMovie2Detail> getMovieDetail (HdMovie2Cover hdMovie2Cover) async
    {
@@ -51,7 +52,7 @@ class HdMovie2DetailController extends GetxController
      List<dom.Element> tagsElementList = pageSource.querySelectorAll(".sgeneros a");
      tags = tagsElementList.fold("", (previousValue, element) => previousValue + element.text + ", ");
      description = pageSource.querySelector(".description .box_links") == null ? "N/A" : pageSource.querySelector(".description .box_links")!.text;
-     postId = pageSource.querySelector("#report-video-button-field input[name=\"postid\"]")!.attributes["value"];
+     postId = pageSource.querySelector("#dooplay-ajax-counter")!.attributes["data-postid"];
      try {
        List<dom.Element> castElementList = pageSource.querySelectorAll("#cast .persons")!;
 
@@ -75,76 +76,118 @@ class HdMovie2DetailController extends GetxController
            String response = await WebUtils.makePostRequest(HDMOVIE2_ADMIN_AJAX_SERVER_URL, hdMovie2PlayerRequest.toJson(),headers: {"Referer":movieUrl});
            HdMovie2PlayerResponse hdMovie2PlayerResponse = HdMovie2PlayerResponse.fromJson(jsonDecode(response));
 
-           if (hdMovie2PlayerResponse.embed_url!.contains("short.ink")) {
-             orignalUrl = await WebUtils.getOriginalUrl(hdMovie2PlayerResponse.embed_url!.trim());
-           if (orignalUrl!.contains("abysscdn.com")) {
 
-             dom.Document playerDocument = await WebUtils.getDomFromURL_Get(orignalUrl!);
-             List<dom.Element> scriptList = playerDocument.querySelectorAll("script");
-             String? javascript = scriptList.where((element) => element.text.contains("new PLAYER(atob(")).first.text;
-             String encodedBase64 = LocalUtils.getStringBetweenTwoStrings("new PLAYER(atob(\"", "\"));", javascript);
-             String decodedBase64 = String.fromCharCodes(base64Decode(encodedBase64));
-             HDMovie2VideoDetail hdMovie2VideoDetail = HDMovie2VideoDetail.fromJson(jsonDecode(decodedBase64));
+           if (hdMovie2PlayerResponse.embed_url!.contains("iframe")) {
+             dom.Document iframeDocument = WebUtils.getDomfromHtml(hdMovie2PlayerResponse.embed_url!);
+             String? hostVideUrl = iframeDocument.querySelector("iframe")!.attributes["src"];
+             if (hostVideUrl!.contains("short.ink")) {
+                          orignalUrl = await WebUtils.getOriginalUrl(hostVideUrl!.trim());
+                        if (orignalUrl!.contains("abysscdn.com")) {
 
-             Map<String,String> map2 = Map();
-             for(String qualitySource in hdMovie2VideoDetail.sources!)
-               {
-                 String? q_prefix = abyssQualityCdn[qualitySource];
-                 String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
-                 map2[qualitySource.toUpperCase()] = fullM3U8Url;
+                          dom.Document playerDocument = await WebUtils.getDomFromURL_Get(orignalUrl!);
+                          List<dom.Element> scriptList = playerDocument.querySelectorAll("script");
+                          String? javascript = scriptList.where((element) => element.text.contains("new PLAYER(atob(")).first.text;
+                          String encodedBase64 = LocalUtils.getStringBetweenTwoStrings("new PLAYER(atob(\"", "\"));", javascript);
+                          String decodedBase64 = String.fromCharCodes(base64Decode(encodedBase64));
+                          HDMovie2VideoDetail hdMovie2VideoDetail = HDMovie2VideoDetail.fromJson(jsonDecode(decodedBase64));
 
-               }
+                          Map<String,String> map2 = Map();
+                          for(String qualitySource in hdMovie2VideoDetail.sources!)
+                            {
+                              String? q_prefix = abyssQualityCdn[qualitySource];
+                              String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
+                              map2[qualitySource.toUpperCase()] = fullM3U8Url;
 
-             map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orignalUrl};
-             map[VideoHosterEnum.Abysscdn.name] = map2;
+                            }
 
-           }
-          }
-           else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
-             {
-               dom.Document playerDocument = await WebUtils.getDomFromURL_Get(hdMovie2PlayerResponse.embed_url!.trim(),headers: {"Referer":hdMovie2PlayerResponse.embed_url!.trim()});
-               String javaScript = playerDocument.querySelectorAll("script").where((element) => element.text.contains("JScripts")).first.text;
-               String json = LocalUtils.getStringBetweenTwoStrings("JScripts = '", "';", javaScript);
-               String mainM3u8Url = await LocalUtils.getDecrptedTextHdMovie2(json);
+                          map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orignalUrl};
+                          map[VideoHosterEnum.Abysscdn.name] = map2;
 
-               Map<String,String> headers = {
-                 "Accept" : "*/*",
-                 "Connection" : "keep-alive",
-                 "Sec-Fetch-Dest" : "empty",
-                 "Sec-Fetch-Mode" : "cors",
-                 "Sec-Fetch-Site" : "cross-site",
-                 "Origin" : Uri.parse(hdMovie2PlayerResponse.embed_url!.trim()).origin,
-               };
-               String? qualityLinksString = await WebUtils.makeGetRequest(mainM3u8Url,headers: headers);
-               List<String> qualityLinks = qualityLinksString!.split("\n").where((element) => element.contains("m3u8")).toList();
-               Map<String,String> qualityMap = Map();
-               for (String qualityLink in qualityLinks)
-                 {
-                   String quality = LocalUtils.getStringBeforString(".m3u8", qualityLink);
-                   qualityMap[quality] = mainM3u8Url.split("?")[0].replaceAll("video.m3u8", qualityLink);
-                 }
-               if(hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx"))
-                 {
-                   map[VideoHosterEnum.BestX.name+"_headers"] = headers;
-                   map[VideoHosterEnum.BestX.name] = qualityMap;
-                 }
-               else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx"))
-                 {
-                   map[VideoHosterEnum.WatchX.name +"_headers"] = headers;
-                   map[VideoHosterEnum.WatchX.name] = qualityMap;
-                 }
-               else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
-                 {
-                   map[VideoHosterEnum.MoviesApi.name+"_headers"] = headers;
-                   map[VideoHosterEnum.MoviesApi.name] = qualityMap;
-                 }
-             }
-           else
-           {
-             for(VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
-             {
-               _addVideoHosterLinks(hdMovie2PlayerResponse.embed_url!.trim(), videoHosterEnum.name, map,hdMovie2PlayerResponse.embed_url!.trim());
-             }
+                        }
+                       }
+                      else if (hostVideUrl.contains("akamaicdn"))
+                        {
+                          dom.Document pageDocument = await WebUtils.getDomFromURL_Get(hostVideUrl,headers: {"Referer":HDMOVIE2_SERVER_URL});
+                          String javascript = pageDocument.querySelectorAll("script").where((element) => element.text.contains("sniff")).first.text;
+                          List<String> idsList = LocalUtils.getStringBetweenTwoStrings("sniff(", ");", javascript).split(",");
+                          String m3u8Url = AKAMAICDN_SERVER_URL + "m3u8/${(idsList[1]).replaceAll("\"","")}/${idsList[2].replaceAll("\"","")}/master.txt?s=1&cache=1";
+                          String? m3u8QualityLinksResponse = await WebUtils.makeGetRequest(m3u8Url);
+                          List<String> m3u8QualityUrls = m3u8QualityLinksResponse!.split("\n");
+                          Map<String,String> qualityMap = Map();
+                          for(int i = 0;i< m3u8QualityUrls.length;i++)
+                            {
+                              if(m3u8QualityUrls[i].contains("akamaicdn"))
+                                {
+                                  if(m3u8QualityUrls[i -1].contains("1080"))
+                                    {
+                                      qualityMap["1080"] = m3u8QualityUrls[i];
+                                    }
+                                  else if(m3u8QualityUrls[i -1].contains("720"))
+                                  {
+                                    qualityMap["720"] = m3u8QualityUrls[i];
+                                  }
+                                  else if(m3u8QualityUrls[i -1].contains("360"))
+                                  {
+                                    qualityMap["360"] = m3u8QualityUrls[i];
+                                  }
+                                }
+                            }
+
+                          map[VideoHosterEnum.Akamaicdn.name] = qualityMap;
+
+
+
+                        }
+             
+                        // Not yet needed
+                        /*else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx") || hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
+                          {
+                            dom.Document playerDocument = await WebUtils.getDomFromURL_Get(hdMovie2PlayerResponse.embed_url!.trim(),headers: {"Referer":hdMovie2PlayerResponse.embed_url!.trim()});
+                            String javaScript = playerDocument.querySelectorAll("script").where((element) => element.text.contains("JScripts")).first.text;
+                            String json = LocalUtils.getStringBetweenTwoStrings("JScripts = '", "';", javaScript);
+                            String mainM3u8Url = await LocalUtils.getDecrptedTextHdMovie2(json);
+
+                            if (mainM3u8Url != "error") {
+                              Map<String,String> headers = {
+                                               "Accept" : "", add here removed because it blocks comment
+                                               "Connection" : "keep-alive",
+                                               "Sec-Fetch-Dest" : "empty",
+                                               "Sec-Fetch-Mode" : "cors",
+                                               "Sec-Fetch-Site" : "cross-site",
+                                               "Origin" : Uri.parse(hdMovie2PlayerResponse.embed_url!.trim()).origin,
+                                             };
+                              String? qualityLinksString = await WebUtils.makeGetRequest(mainM3u8Url,headers: headers);
+                              List<String> qualityLinks = qualityLinksString!.split("\n").where((element) => element.contains("m3u8")).toList();
+                              Map<String,String> qualityMap = Map();
+                              for (String qualityLink in qualityLinks)
+                                {
+                                  String quality = LocalUtils.getStringBeforString(".m3u8", qualityLink);
+                                  qualityMap[quality] = mainM3u8Url.split("?")[0].replaceAll("video.m3u8", qualityLink);
+                                }
+                              if(hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("bestx"))
+                                {
+                                  map[VideoHosterEnum.BestX.name+"_headers"] = headers;
+                                  map[VideoHosterEnum.BestX.name] = qualityMap;
+                                }
+                              else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("watchx"))
+                                {
+                                  map[VideoHosterEnum.WatchX.name +"_headers"] = headers;
+                                  map[VideoHosterEnum.WatchX.name] = qualityMap;
+                                }
+                              else if (hdMovie2PlayerResponse.embed_url!.toLowerCase().contains("moviesapi"))
+                                {
+                                  map[VideoHosterEnum.MoviesApi.name+"_headers"] = headers;
+                                  map[VideoHosterEnum.MoviesApi.name] = qualityMap;
+                                }
+                            }
+                          }*/
+                        else
+                        {
+                          for(VideoHosterEnum videoHosterEnum in VideoHosterEnum.values)
+                          {
+                            _addVideoHosterLinks(hostVideUrl!.trim(), videoHosterEnum.name, map,hostVideUrl!.trim());
+                          }
+                        }
            }
 
 

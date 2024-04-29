@@ -29,7 +29,7 @@ class HomeScreenController extends GetxController
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   final String FILM1K_SERVER_URL = "https://www.film1k.com";
   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
-  final String HDMOVIE2_SERVER_URL = "https://hdmovie2.blue";
+  final String HDMOVIE2_SERVER_URL = "https://hdmovie2.app";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};

@@ -1,9 +1,11 @@
 package com.example.movie_verse
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.NonNull
+import com.example.movie_verse.AesHelper.cryptoAESHandler
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import com.example.movie_verse.AesHelper.cryptoAESHandler
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "KOTLIN_CHANNEL"
@@ -30,6 +32,26 @@ class MainActivity: FlutterActivity() {
                 {
                     result.success(null);
                 }
+            }
+
+            if (call.method == "openMxPlayer") {
+                val packagename = "com.mxtech.videoplayer.ad"
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setPackage(packagename)
+                intent.setDataAndType(
+                    Uri.parse(call.argument("videoUrl") as String?),
+                    call.argument<Any>("mime") as String?
+                )
+                val headers = (call.argument<Any>("headers") as Map<String,String>).toList()
+                 val headersList = mutableListOf<String>()
+                for (pair : Pair<String,String> in headers)
+                {
+                    headersList.add(pair.first)
+                    headersList.add(pair.second)
+                }
+                intent.putExtra("headers", headersList.toTypedArray())
+                intent.putExtra("title", call.argument<Any>("title") as String?)
+                this@MainActivity.startActivity(intent)
             }
         }
     }

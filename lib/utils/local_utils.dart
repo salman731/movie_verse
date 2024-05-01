@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
+import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -210,10 +211,10 @@ class LocalUtils
     return a;
   }
 
-  static void openAndPlayVideoWithMxPlayer_Android(String videoUrl,String title,String referer,String mime)
+  static void openAndPlayVideoWithMxPlayer_Android(String videoUrl,String title, {String mime = "application/mp4",Map<String,String> headers = const <String,String> {}}) async
   {
-    MethodChannel intentMethodChannel = MethodChannel("INTENT_CHANNEL");
-    intentMethodChannel.invokeMethod("openMxPlayer",{"videoUrl":videoUrl,"title":title,"referer":referer,"mime":mime});
+    MethodChannel intentMethodChannel = MethodChannel("KOTLIN_CHANNEL");
+    intentMethodChannel.invokeMethod("openMxPlayer",{"videoUrl":videoUrl,"title":title,"headers":headers,"mime":mime});
   }
 
   static void showExceptionToast (String exception)

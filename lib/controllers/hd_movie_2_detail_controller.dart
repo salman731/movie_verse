@@ -17,6 +17,23 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 
+enum OkRuQualityEnum
+{
+  mobile,
+  lowest,
+  low,
+  sd,
+  hd
+}
+
+class OkRuLink
+{
+  String? name;
+
+  String? url;
+
+  OkRuLink({this.name, this.url});
+}
 
 class HdMovie2DetailController extends GetxController
 {
@@ -26,6 +43,8 @@ class HdMovie2DetailController extends GetxController
    static final HDMOVIE2_SERVER_URL = "https://hdmovie2.app";
    static final HDMOVIE2_ADMIN_AJAX_SERVER_URL = "https://hdmovie2.app/wp-admin/admin-ajax.php";
    static final AKAMAICDN_SERVER_URL = "https://akamaicdn.life/";
+   static final TWDOWN_SEARCH_SERVER_URL = "https://twdown.online/search?url=";
+   static final TWDOWN_DOWNLOAD_SERVER_URL = "https://downloader.twdown.online/load_url?";
 
    Future<HdMovie2Detail> getMovieDetail (HdMovie2Cover hdMovie2Cover) async
    {
@@ -80,6 +99,10 @@ class HdMovie2DetailController extends GetxController
            if (hdMovie2PlayerResponse.embed_url!.contains("iframe")) {
              dom.Document iframeDocument = WebUtils.getDomfromHtml(hdMovie2PlayerResponse.embed_url!);
              String? hostVideUrl = iframeDocument.querySelector("iframe")!.attributes["src"];
+             if(hostVideUrl![0] == "/" && hostVideUrl![1] == "/")
+               {
+                 hostVideUrl = hostVideUrl.replaceAll("//", "https://");
+               }
              if (hostVideUrl!.contains("short.ink")) {
                           orignalUrl = await WebUtils.getOriginalUrl(hostVideUrl!.trim());
                         if (orignalUrl!.contains("abysscdn.com")) {
@@ -134,9 +157,35 @@ class HdMovie2DetailController extends GetxController
                             }
 
                           map[VideoHosterEnum.Akamaicdn.name] = qualityMap;
+                          map[VideoHosterEnum.Akamaicdn.name + "_headers"] = {"Referer":AKAMAICDN_SERVER_URL,"Accept" : "*/*","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
 
+                        }
+                      else if(hostVideUrl!.contains("ok.ru"))
+                        {
+                          String cookie = "XSRF-TOKEN=eyJpdiI6Im1oNEcyOEpndGhyTW9JNHA5ZGhLTkE9PSIsInZhbHVlIjoiQkRYd2loWVh1c3YzN280VkwwTDdPbnpJVWlWaWJNOVplK0MydmNCM0hmXC9RQlRvNVlaazk2c1ZNc25lV2FMRlgiLCJtYWMiOiI1OWIzYjdjOWI2MGZhYzQ4NGYwZTg4Y2RlYjFlYWI4MzFiNmI4NGMzNTMwMTc3MTk0ZDU3Mjk2YTA2NzNhYTlkIn0%3D; s_id=QVH0JEya2VJApNM1ASB0lJiOScfhGI7LYPMZYvwz";
+                          String finalURl = TWDOWN_SEARCH_SERVER_URL + hostVideUrl;
+                          dom.Document pageDocument = await WebUtils.getDomFromURL_Get(finalURl,headers: {"Cookie" : cookie} );
+                          List<dom.Element> trElements = pageDocument.querySelectorAll("tbody tr");
+                          Map<String,String> okruQualityLinksMap = Map();
+                          for(dom.Element tdElement in trElements)
+                            {
+                              List<dom.Element> tdElementList = tdElement.querySelectorAll("td");
+                              if (tdElementList[0].text.contains("x")) {
 
+                                try {
+                                  String? url = tdElementList[2].querySelector("a")!.attributes["href"];
+                                  String? finalUrl = url!.split("#")[1];
+                                  String downloadURL = TWDOWN_DOWNLOAD_SERVER_URL + finalUrl;
+                                  String? finalDownloadURL = await WebUtils.makeGetRequest(downloadURL);
+                                  okruQualityLinksMap[tdElementList[0].text] = finalDownloadURL!;
+                                } catch (e) {
+                                  print(e);
+                                }
+                              }
+                            }
 
+                          map[VideoHosterEnum.OkRu.name + "_headers"] = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
+                          map[VideoHosterEnum.OkRu.name] = okruQualityLinksMap;
                         }
              
                         // Not yet needed

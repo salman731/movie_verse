@@ -27,7 +27,7 @@ class ServerListDialog
   static bool isPlayDirect = false;
   static bool isNativeMxPlayer = false;
   static bool hasownHeaders = false;
-  static Map<String,String>? videoHosterHeaders;
+  static Map<String,String> videoHosterHeaders = <String, String>{};
 
   static stopServerListDialog()
   {
@@ -37,7 +37,7 @@ class ServerListDialog
     }
   }
 
-  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String>? headers,bool isNativemxPlayer = false,bool isDirectPlay = false,bool hasOwnHeaders = false}){
+  static showServerListDialog(BuildContext context,dynamic map,String movieTitle,{bool decodeiframe = true,bool videotoIframeAllowed = false,bool isDirectProviderLink = false,Map<String,String> headers = const <String, String>{},bool isNativemxPlayer = false,bool isDirectPlay = false,bool hasOwnHeaders = false}){
 
     if (map.isNotEmpty) {
       isLoaderShowing = true;
@@ -134,9 +134,11 @@ class ServerListDialog
         } else {
           //LoaderDialog.stopLoaderDialog();
           if (ownHeaders == null) {
-            LocalUtils.startVideoPlayer(pageUrl, title!,headers: videoHosterHeaders!);
+            LocalUtils.startVideoPlayer(pageUrl, title!,headers: videoHosterHeaders);
+            //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!,headers: videoHosterHeaders);
           } else {
             LocalUtils.startVideoPlayer(pageUrl, title!,headers: ownHeaders!);
+            //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!,headers: ownHeaders);
           }
           //Get.to(VideoPlayerScreen(pageUrl,title!,headers: videoHosterHeaders!,));
           //LocalUtils.openAndPlayVideoWithMxPlayer_Android(pageUrl, title!, videoHosterHeaders!["Referer"]!, MIME.applicationVndAppleMpegurl);

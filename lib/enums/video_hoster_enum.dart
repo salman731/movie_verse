@@ -28,7 +28,8 @@ enum VideoHosterEnum
   BestX,
   WatchX,
   MoviesApi,
-  Akamaicdn
+  Akamaicdn,
+  OkRu,
 
 
 }

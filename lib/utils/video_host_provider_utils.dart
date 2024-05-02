@@ -445,7 +445,7 @@ class VideoHostProviderUtils
     try {
       dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
       List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
-      String encryptedJavaScript = list.where((element) => element.text.contains("eval")).first.text;
+      String encryptedJavaScript = list.where((element) => element.text.contains("eval(function")).first.text;
       String evalStr = LocalUtils.getStringfromStartToEnd("eval", encryptedJavaScript);
       String decodedEval = evalStr.replaceAll("eval", "console.log");
       JavascriptRuntime flutterJs = getJavascriptRuntime();

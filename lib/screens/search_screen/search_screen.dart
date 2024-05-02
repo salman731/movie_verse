@@ -51,6 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
     searchScreenController.film1kScrollController.addListener(() {
       if (searchScreenController.film1kScrollController.position.extentAfter == 0) {
+        searchScreenController.isFilm1kMoreUpMoviesLoading.value = true;
         searchScreenController.loadFilm1KMovies(searchEditingController.text,isLoadMore: true);
       }
     });
@@ -62,19 +63,28 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     searchScreenController.prMoviesScrollController.addListener(() {
       if (searchScreenController.prMoviesScrollController.position.extentAfter == 0) {
+        searchScreenController.isPrMoviesMoviesLoading.value = true;
         searchScreenController.loadPrMoviesMovies(searchEditingController.text,isLoadMore: true);
       }
     });
     searchScreenController.watchMoviesScrollController.addListener(() {
       if (searchScreenController.watchMoviesScrollController.position.extentAfter == 0) {
+        searchScreenController.isWatchMoviesLoading.value = true;
         searchScreenController.loadWatchMoviesSearchList(searchEditingController.text,isLoadMore: true);
       }
     });
     searchScreenController.hdMovie2ScrollController.addListener(() {
       if (searchScreenController.hdMovie2ScrollController.position.extentAfter == 0) {
+        searchScreenController.isHdMovie2MoviesLoading.value = true;
         searchScreenController.loadHdMovie2SearchList(searchEditingController.text,isLoadMore: true);
       }
     });
+      searchScreenController.watchSeriesScrollController.addListener(() {
+        if (searchScreenController.watchSeriesScrollController.position.extentAfter == 0) {
+          searchScreenController.isWatchSeriesMoviesLoading.value = true;
+          searchScreenController.loadWatchSeriesSearchList(searchEditingController.text,isLoadMore: true);
+        }
+      });
   }
 
   @override
@@ -137,6 +147,13 @@ class _SearchScreenState extends State<SearchScreen> {
             } catch (e) {
               searchScreenController.isHdMovie2SourceLoading.value = false;
               LocalUtils.showExceptionToast("${SourceEnum.HdMovie2.name} : " + e.toString());
+            }
+
+            try {
+              await searchScreenController.loadWatchSeriesSearchList(searchEditingController.text);
+            } catch (e) {
+              searchScreenController.isWatchSeriesSourceLoading.value = false;
+              LocalUtils.showExceptionToast("${SourceEnum.WatchSeries.name} : " + e.toString());
             }
 
           },
@@ -323,7 +340,32 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             ],
                           ),
-                          )
+
+                          ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    const CustomText(
+                      title: "WatchSeries",
+                      size: 12,
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    Obx(() => searchScreenController.isWatchSeriesSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                    Row(
+                      children: [
+                        Expanded(
+                          flex:8,
+                          child: MovieListView(
+                            controller: searchScreenController.watchSeriesScrollController,
+                            moviesList:  searchScreenController.watchSeriesSearchList,
+                            hasReachedMax: searchScreenController.isWatchSeriesMoviesLoading.value,
+                            sourceEnum: SourceEnum.WatchSeries,
+                          ),
+                        ),
+                      ],
+                    ),)
                         ],
                       )) : Container(),
                 )

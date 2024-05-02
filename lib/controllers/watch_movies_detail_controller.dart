@@ -75,6 +75,10 @@ class WatchMoviesDetailController extends GetxController
                 map2[resolution] = pageServerUrl;
               }
           }
+        if(map2.isEmpty && pageServerUrl.isNotEmpty)
+          {
+            map2["HD"] = pageServerUrl;
+          }
         map[hostProvider] = map2;
       }
       else

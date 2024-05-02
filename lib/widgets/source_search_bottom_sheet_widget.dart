@@ -10,6 +10,7 @@ import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_scr
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/watch_movies/watch_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/watch_series/watch_series_detail_screen.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_card.dart';
 import 'package:sliver_fill_remaining_box_adapter/sliver_fill_remaining_box_adapter.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                 case SourceEnum.HdMovie2:
                   await searchScreenController.loadHdMovie2SearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.hdMovie2SearchList;
+                case SourceEnum.WatchSeries:
+                  await searchScreenController.loadWatchSeriesSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
+                  selectedSourceList = searchScreenController.watchSeriesSearchList;
             }
         isMoviesLoading.value = false;
       }
@@ -94,6 +98,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
       case SourceEnum.HdMovie2:
         await searchScreenController.loadHdMovie2SearchList(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.hdMovie2SearchList;
+      case SourceEnum.WatchSeries:
+        await searchScreenController.loadWatchSeriesSearchList(searchScreenController.homeSearchBarEditingController.text);
+        selectedSourceList = searchScreenController.watchSeriesSearchList;
     }
     isSourceLoading.value = false;
   }
@@ -125,8 +132,10 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
 
                           case SourceEnum.HdMovie2:
                             Get.to(HdMovie2DetailsScreen(hdMovie2Cover: Get.find<SearchScreenController>().hdMovie2SearchList[index]));
+                          case SourceEnum.WatchSeries:
+                            Get.to(WatchSeriesDetailScreen(watchSeriesCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                         }
-                      },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag1: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : homeScreenController.selectedSource.value == SourceEnum.HdMovie2 ? selectedSourceList[index].tag1 : "" ,tag2: homeScreenController.selectedSource.value == SourceEnum.HdMovie2 ? selectedSourceList[index].tag2 : "",));
+                      },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag1: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag1 : "" ,tag2: homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag2 : "",));
                     },childCount: selectedSourceList.length), gridDelegate:
                     const SliverGridDelegateWithFixedCrossAxisCount(
                       childAspectRatio: 0.8,

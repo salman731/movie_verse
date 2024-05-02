@@ -31,7 +31,18 @@ class SourceListDialog
         ],
         content: Obx(()=>Column(
             children: [
-              RadioListTile<String>(
+              for (SourceEnum sourceEnum in SourceEnum.values)...
+              [
+                RadioListTile<String>(
+                  title: Text(sourceEnum.name,style: TextStyle(color: Colors.white),),
+                  value: sourceEnum.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
+                    selectedOption!.value = value!;
+                  },
+                ),
+              ],
+             /* RadioListTile<String>(
                 title: Text('UpMovies',style: TextStyle(color: Colors.white),),
                 value: SourceEnum.UpMovies.name,
                 groupValue: selectedOption!.value,
@@ -87,7 +98,7 @@ class SourceListDialog
                 onChanged: (value) {
                   selectedOption!.value = value!;
                 },
-              ),
+              ),*/
             ],),
         ),
       );

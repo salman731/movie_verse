@@ -8,4 +8,5 @@ enum SourceEnum
   PrMovies,
   WatchMovies,
   HdMovie2,
+  WatchSeries
 }

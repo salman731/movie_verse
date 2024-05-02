@@ -3,6 +3,7 @@ import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/controllers/pr_movies_detail_controller.dart';
 import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/controllers/watch_movies_detail_controller.dart';
+import 'package:Movieverse/controllers/watch_series_detail_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
@@ -11,6 +12,7 @@ import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_scr
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/watch_movies/watch_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/watch_series/watch_series_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
@@ -65,6 +67,8 @@ class MovieListView extends StatelessWidget {
                       Get.to(WatchMoviesDetailScreen(watchMoviesCover: Get.find<SearchScreenController>().watchMoviesSearchList[index]));
                     case SourceEnum.HdMovie2:
                       Get.to(HdMovie2DetailsScreen(hdMovie2Cover: Get.find<SearchScreenController>().hdMovie2SearchList[index]));
+                    case SourceEnum.WatchSeries:
+                      Get.to(WatchSeriesDetailScreen(watchSeriesCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                    }
                 } else {
                   switch (sourceEnum)
@@ -85,14 +89,16 @@ class MovieListView extends StatelessWidget {
                       Get.to(WatchMoviesDetailScreen(watchMoviesCover: moviesList[index]));
                     case SourceEnum.HdMovie2:
                       Get.to(HdMovie2DetailsScreen(hdMovie2Cover:  moviesList[index]));
+                    case SourceEnum.WatchSeries:
+                      Get.to(WatchSeriesDetailScreen(watchSeriesCover: moviesList[index]));
                   }
                 }
               },
               child: MovieCard(
                 imgurl: moviesList[index].imageURL!,
                 title: moviesList[index].title!,
-                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 ? moviesList[index].tag1 : "",
-                tag2: sourceEnum == SourceEnum.HdMovie2 ? moviesList[index].tag2 : "",
+                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries ?  moviesList[index].tag1 : "",
+                tag2: sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries ? moviesList[index].tag2 : "",
                 //rate: 2.4,
               ),
             );

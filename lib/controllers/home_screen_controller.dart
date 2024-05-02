@@ -8,6 +8,7 @@ import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/watch_movies_home_category_enum.dart';
+import 'package:Movieverse/enums/watch_series_home_screen_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
@@ -15,6 +16,7 @@ import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
+import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,7 @@ class HomeScreenController extends GetxController
   final String FILM1K_SERVER_URL = "https://www.film1k.com";
   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
   final String HDMOVIE2_SERVER_URL = "https://hdmovie2.app";
+  final String WATCHSERIES_HOME_SERVER_URL = "https://watchseries.pe/home";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
@@ -37,6 +40,7 @@ class HomeScreenController extends GetxController
   Map<String,List<Film1kCover>> film1kCategoryListMap = <String,List<Film1kCover>>{};
   Map<String,List<WatchMoviesCover>> watchMoviesCategoryListMap = <String,List<WatchMoviesCover>>{};
   Map<String,List<HdMovie2Cover>> hdMovie2CategoryListMap = <String,List<HdMovie2Cover>>{};
+  Map<String,List<WatchSeriesCover>> watchSeriesCategoryListMap = <String,List<WatchSeriesCover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
   RxBool isUpMoviesHomePageLoading = false.obs,
       isPrimewireHomePageLoading = false.obs,
@@ -44,7 +48,8 @@ class HomeScreenController extends GetxController
       isPrMoviesHomePageLoading = false.obs,
       isFilm1kHomePageLoading = false.obs,
       isWatchMoviesHomePageLoading = false.obs,
-      isHdMovie2HomePageLoading = false.obs;
+      isHdMovie2HomePageLoading = false.obs,
+      isWatchSeriesHomePageLoading = false.obs;
 
 
   Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
@@ -230,7 +235,7 @@ class HomeScreenController extends GetxController
     prMoviesCategoryListMap[PrMoviesHomeScreenCategoryEnum.TopIMDB.name] = SourceUtils.getPrMoviesCategoriesDetailList(topIMDBElement);
 
     List<dom.Element> categoryElementList = sourceDocument.querySelectorAll(".movies-list-wrap.mlw-latestmovie");
-    
+
     for(dom.Element element in categoryElementList)
       {
         String? categoryTitle = element.querySelector(".ml-title .pull-left")!.text.trim();
@@ -274,7 +279,7 @@ class HomeScreenController extends GetxController
 
     return film1kCategoryListMap;
 
-  
+
   }
 
   Future<Map<String,List<WatchMoviesCover>>> loadWatchMoviesHomeScreen() async
@@ -349,5 +354,28 @@ class HomeScreenController extends GetxController
     return coverList;
   }
 
+  Future<Map<String,List<WatchSeriesCover>>> loadWatchSeriesHomeScreen() async
+  {
+
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(WATCHSERIES_HOME_SERVER_URL);
+
+    dom.Element topElement = pageDocument.querySelector(".section-id-top .film-list-ul")!;
+    watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Top.name] = SourceUtils.getWatchSeriesList(topElement);
+
+    dom.Element trendingMoviesElement = pageDocument.querySelector(".section-id-01 #trending-movies .film_list-wrap")!;
+    watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Trending_Movies.name] = SourceUtils.getWatchSeriesList(trendingMoviesElement);
+
+    dom.Element trendingTvShowsElement = pageDocument.querySelector(".section-id-01 #trending-tv .film_list-wrap")!;
+    watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Trending_Tv_Shows.name] = SourceUtils.getWatchSeriesList(trendingTvShowsElement);
+
+    dom.Element latestMoviesElement = pageDocument.querySelector(".section-id-02 .film_list-wrap")!;
+    watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Latest_Movies.name] = SourceUtils.getWatchSeriesList(latestMoviesElement);
+
+    dom.Element latestTvShowsElement = pageDocument.querySelector(".section-id-03 .film_list-wrap")!;
+    watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Latest_Tv_Shows.name] = SourceUtils.getWatchSeriesList(latestTvShowsElement);
+
+    isWatchSeriesHomePageLoading.value = true;
+    return watchSeriesCategoryListMap;
+  }
 
 }

@@ -30,6 +30,8 @@ enum VideoHosterEnum
   MoviesApi,
   Akamaicdn,
   OkRu,
+  Upcloud,
+  Megacloud
 
 
 }

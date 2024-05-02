@@ -97,6 +97,10 @@ class PrMoviesDetailController extends GetxController {
         urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
         urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
       }
+    else
+      {
+        urlSetLink = m3u8Url;
+      }
     String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
     if (!response!.contains("Not Found")) {
       List<String> m3u8UrlList = response!.split("\n");

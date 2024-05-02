@@ -1,10 +1,10 @@
 
-import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
-import 'package:Movieverse/models/hd_movie2/hdmovie2_player_request.dart';
 
-class HdMovie2Detail extends HdMovie2Cover
+import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
+
+class WatchSeriesDetail extends WatchSeriesCover
 {
-  String? tags;
+  String? genre;
 
   String? ratings;
 
@@ -18,27 +18,23 @@ class HdMovie2Detail extends HdMovie2Cover
 
   String? description;
 
-  String? director;
+  String? production;
 
-  String? postId;
+  String? id;
 
-  List<HdMovie2PlayerRequest>? players;
-
-
-  HdMovie2Detail(
+  WatchSeriesDetail(
       {String? title,
         String? url,
         String? coverUrl,
         String? tag1,
         String? tag2,
-        this.tags,
+        this.genre,
+        this.id,
         this.ratings,
         this.releasedDate,
-        this.director,
         this.country,
         this.actors,
         this.duration,
-        this.postId,
-        this.players,
+        this.production,
         this.description}):super(title: title,url: url,imageURL: coverUrl,tag1: tag1,tag2: tag2);
 }

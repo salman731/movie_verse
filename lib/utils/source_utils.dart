@@ -2,11 +2,14 @@
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
+import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:html/dom.dart' as dom;
 
 class SourceUtils
 {
+
+  static final String WATCHSERIES_SERVER_URL = "https://watchseries.pe";
   static List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
   {
     List<dom.Element> list = element.querySelectorAll(".ml-item");
@@ -61,4 +64,23 @@ class SourceUtils
 
     return coverList;
   }
+
+  static List<WatchSeriesCover> getWatchSeriesList (dom.Element element)
+  {
+    List<dom.Element> listMovies = element.querySelectorAll(".flw-item");
+    List<WatchSeriesCover> listMoviesCover = [];
+
+    for (dom.Element movieElement in listMovies)
+    {
+      String? posterUrl = movieElement.querySelector(".film-poster img")!.attributes["src"] ?? movieElement.querySelector(".film-poster img")!.attributes["data-src"];
+      String? url = WATCHSERIES_SERVER_URL + movieElement.querySelector(".film-poster a")!.attributes["href"]!;
+      String? title = movieElement.querySelector(".film-detail .film-name a")!.text;
+      String? tag1 = movieElement.querySelectorAll(".film-infor span")[1].text;
+      String? tag2 = movieElement.querySelectorAll(".film-infor span")[2].text;
+      listMoviesCover.add(WatchSeriesCover(url: url,title: title,imageURL: posterUrl,tag1: tag1,tag2: tag2));
+    }
+    return listMoviesCover;
+  }
+
+
 }

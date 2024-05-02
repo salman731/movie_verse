@@ -9,6 +9,7 @@ import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_scr
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/watch_movies/watch_movies_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/watch_series/watch_series_detail_screen.dart';
 import 'package:Movieverse/widgets/search_bar_text_field.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,10 +21,12 @@ import 'carousel_item.dart';
 class CarouselWidget extends StatelessWidget {
   SourceEnum sourceEnum;
   List<dynamic> list;
+  bool isTagAvailable;
    CarouselWidget({
     Key? key,
     required this.list,
     required this.sourceEnum,
+    this.isTagAvailable = false
   }) : super(key: key);
 
   @override
@@ -40,7 +43,7 @@ class CarouselWidget extends StatelessWidget {
                     (item) => CarouselItem(
                         avatar: item.imageURL!,
                         title: item.title!.contains("+") ? item.title!.split("+")[0].replaceAll("\n", "").replaceAll("\t", "").trim() : item.title,
-                        additionalInfo: item.title!.contains("+") ? item.title!.split("+")[1].replaceAll("\n", "").replaceAll("\t", "").trim() : "",
+                        additionalInfo: !isTagAvailable?item.title!.contains("+") ? item.title!.split("+")[1].replaceAll("\n", "").replaceAll("\t", "").trim() : "" : item.tag1 + " / " + item.tag2,
                         onTapList: () {
                         },
                         onTap: (){
@@ -62,6 +65,8 @@ class CarouselWidget extends StatelessWidget {
                               Get.to(WatchMoviesDetailScreen(watchMoviesCover: item,));
                             case SourceEnum.HdMovie2:
                               Get.to(HdMovie2DetailsScreen(hdMovie2Cover: item));
+                            case SourceEnum.WatchSeries:
+                              Get.to(WatchSeriesDetailScreen(watchSeriesCover: item));
                           }
                         }),
                   )

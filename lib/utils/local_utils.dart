@@ -131,6 +131,30 @@ class LocalUtils
     }
 
   }
+  static String getWatchSeriesSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("-");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://watchseries.pe/search/${queryMovieName}?page=${pageNo}";
+    }
+    else
+    {
+      return "https://watchseries.pe/search/${queryMovieName}";
+    }
+
+  }
 
   static String getHdMovie2SearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
   {
@@ -246,5 +270,11 @@ class LocalUtils
     key = key!.replaceAll("\n", "").replaceAll("\"", "");
     MethodChannel intentMethodChannel = MethodChannel("KOTLIN_CHANNEL");
     return (await intentMethodChannel.invokeMethod("getEncryptedText",{"key":key,"encryptedText":encryptedText}));
+  }
+
+  static String removeExtraWhiteSpaceBetweenWords(String str)
+  {
+    final whitespaceRE = RegExp(r"(?! )\s+| \s+");
+    return str.split(whitespaceRE).join(" ");
   }
 }

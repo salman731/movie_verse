@@ -17,6 +17,7 @@ import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
+import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
@@ -40,6 +41,8 @@ class SearchScreenController extends GetxController
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
    final String HDMOVIE2SERVER_URL = "https://hdmovie2.app";
+   final String WATCHSERIESSERVER_URL = "https://watchseries.pe";
+
    List<UpMoviesCover> upMoviesSearchList  = [];
    List<PrimeWireCover> primeWireSearchList  = [];
    List<Film1kCover> film1kSearchList  = [];
@@ -47,6 +50,8 @@ class SearchScreenController extends GetxController
    List<PrMoviesCover> prMoviesSearchList  = [];
    List<WatchMoviesCover> watchMoviesSearchList  = [];
    List<HdMovie2Cover> hdMovie2SearchList  = [];
+   List<WatchSeriesCover> watchSeriesSearchList  = [];
+
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
    RxBool isFilm1kSourceLoading = false.obs;
@@ -54,6 +59,8 @@ class SearchScreenController extends GetxController
    RxBool isPrMoviesSourceLoading = false.obs;
    RxBool isWatchMoviesSourceLoading = false.obs;
    RxBool isHdMovie2SourceLoading = false.obs;
+   RxBool isWatchSeriesSourceLoading = false.obs;
+
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
    RxBool isFilm1kMoreUpMoviesLoading = false.obs;
@@ -61,8 +68,11 @@ class SearchScreenController extends GetxController
    RxBool isPrMoviesMoviesLoading = false.obs;
    RxBool isWatchMoviesLoading = false.obs;
    RxBool isHdMovie2MoviesLoading = false.obs;
+   RxBool isWatchSeriesMoviesLoading = false.obs;
+
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
+
    ScrollController upMoviesScrollController = ScrollController();
    ScrollController primeWireScrollController = ScrollController();
    ScrollController film1kScrollController = ScrollController();
@@ -70,6 +80,8 @@ class SearchScreenController extends GetxController
    ScrollController prMoviesScrollController = ScrollController();
    ScrollController watchMoviesScrollController = ScrollController();
    ScrollController hdMovie2ScrollController = ScrollController();
+   ScrollController watchSeriesScrollController = ScrollController();
+
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
    int film1kCurrentPage = 1;
@@ -77,6 +89,8 @@ class SearchScreenController extends GetxController
    int prMoviesCurrentPage = 1;
    int watchMoviesCurrentPage = 1;
    int hdMovie2CurrentPage = 1;
+   int watchSeriesCurrentPage = 1;
+
    WebViewController? webViewController;
    String? primewireMovieTitle;
    bool isFilm1kMorePagesExist = false;
@@ -85,6 +99,7 @@ class SearchScreenController extends GetxController
    Completer primeWireSearchCompleter = Completer();
    bool isPrMoviesHasMorePages = false;
    int maxHdMovie2SearchPage = 1;
+   int maxWatchSeriesSearchPage = 1;
 
   startShowingLoadingSources()
   {
@@ -95,6 +110,7 @@ class SearchScreenController extends GetxController
     isPrMoviesSourceLoading.value = true;
     isWatchMoviesSourceLoading.value = true;
     isHdMovie2SourceLoading.value = true;
+    isWatchSeriesSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -493,6 +509,48 @@ class SearchScreenController extends GetxController
        }
    }
 
+
+   Future<List<WatchSeriesCover>> getWatchSeriesList (String pageUrl,bool isLoadMore) async
+   {
+      dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+      dom.Element searchElement = pageDocument.querySelector(".film_list-wrap")!;
+
+      if(!isLoadMore)
+        {
+          dom.Element? paginationElement = pageDocument.querySelector(".pagination.pagination-lg.justify-content-center");
+          if(paginationElement != null)
+            {
+              dom.Element lastPageElement = pageDocument.querySelector(".page-item a[title=\"Last\"]")!;
+              maxWatchSeriesSearchPage = int.parse(LocalUtils.getStringAfterStartStringToEnd("page=", lastPageElement!.attributes["href"]!));
+            }
+          else
+            {
+              maxWatchSeriesSearchPage = 1;
+            }
+        }
+      return SourceUtils.getWatchSeriesList(searchElement);
+   }
+
+
+   loadWatchSeriesSearchList (String movieName, {bool isLoadMore = false}) async
+   {
+     if(isLoadMore && watchSeriesCurrentPage < maxWatchSeriesSearchPage)
+       {
+         watchSeriesCurrentPage += 1;
+         String finalSearchUrl = LocalUtils.getWatchSeriesSearchUrl(movieName,isLoadMore: isLoadMore,pageNo: watchSeriesCurrentPage);
+         List<WatchSeriesCover> list = await getWatchSeriesList(finalSearchUrl, isLoadMore);
+         watchSeriesSearchList.addAll(list);
+         isWatchSeriesMoviesLoading.value = false;
+
+       }
+     else
+       {
+         watchSeriesCurrentPage = 1;
+         String finalSearchUrl = LocalUtils.getWatchSeriesSearchUrl(movieName);
+         watchSeriesSearchList = await getWatchSeriesList(finalSearchUrl,isLoadMore);
+         isWatchSeriesSourceLoading.value = false;
+       }
+   }
 
 
 }

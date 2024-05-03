@@ -142,8 +142,56 @@ class _WatchSeriesDetailScreenState extends State<WatchSeriesDetailScreen> {
                                     ],
                                   ),
                                 ),
-                                /*SizedBox(height: 2.h,),
-                                if(movieDetailController.checkifEpisodeExist)...[
+                                SizedBox(height: 2.h,),
+                                if(snapshot.data!.url!.contains("/tv/") && snapshot.data!.episodeSeasonMap!.isNotEmpty)...[
+                                  RichText(
+                                    maxLines: 15,
+                                    overflow: TextOverflow.ellipsis,
+                                    text: TextSpan(
+                                      text: 'Select Season ',
+                                      style:
+                                      Theme.of(context).textTheme.titleMedium!.copyWith(
+                                        color: Colors.amber,
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Obx(()=>Center(
+                                    child: Container(
+                                      width: 80.w,
+                                      height: 7.h,
+                                      padding: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black, // Background color
+                                        borderRadius: BorderRadius.circular(5.0),
+                                        border: Border.all(
+                                          color: AppColors.red, // Border color
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        iconEnabledColor: AppColors.red,
+                                        value: watchSeriesDetailController.selectedSeason.value,
+                                        onChanged: (String? newValue) {
+                                          watchSeriesDetailController.selectedSeason.value = newValue!;
+                                          watchSeriesDetailController.selectedEpisode.value = snapshot.data!.episodeSeasonMap![newValue]!.keys.first;
+                                        },
+                                        items: snapshot!.data!.episodeSeasonMap!.keys.map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text("${value}"),
+                                          );
+                                        }).toList(),
+                                        dropdownColor: Colors.black, // Dropdown background color
+                                        underline: SizedBox(), // Remove default underline
+                                      ),
+                                    ),
+                                  ),
+                                  ),
+                                  SizedBox(height: 2.h),
                                   RichText(
                                     maxLines: 15,
                                     overflow: TextOverflow.ellipsis,
@@ -171,15 +219,15 @@ class _WatchSeriesDetailScreenState extends State<WatchSeriesDetailScreen> {
                                           width: 2.0,
                                         ),
                                       ),
-                                      child: DropdownButton<int>(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         iconEnabledColor: AppColors.red,
-                                        value: movieDetailController.selectedEpisode.value,
-                                        onChanged: (int? newValue) {
-                                          movieDetailController.selectedEpisode.value = newValue!;
+                                        value: watchSeriesDetailController.selectedEpisode.value,
+                                        onChanged: (String? newValue) {
+                                          watchSeriesDetailController.selectedEpisode.value = newValue!;
                                         },
-                                        items: movieDetailController.episodeMap.keys.map((int value) {
-                                          return DropdownMenuItem<int>(
+                                        items: snapshot.data!.episodeSeasonMap![watchSeriesDetailController.selectedSeason.value]!.keys.map((String value) {
+                                          return DropdownMenuItem<String>(
                                             value: value,
                                             child: Text("${value}"),
                                           );
@@ -190,12 +238,24 @@ class _WatchSeriesDetailScreenState extends State<WatchSeriesDetailScreen> {
                                     ),
                                   ),
                                   ),
-                                ],*/
+                                ],
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {
                                     LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links......");
-                                    Map<String,Map<String,String>> map = await  watchSeriesDetailController.getVideoServerLinks();
+                                    String mediaId = "";
+                                    late bool isTvshow;
+                                    if(snapshot.data!.url!.contains("/tv/"))
+                                      {
+                                          isTvshow = true;
+                                         mediaId = snapshot.data!.episodeSeasonMap![watchSeriesDetailController.selectedSeason.value]![watchSeriesDetailController.selectedEpisode.value]!;
+                                      }
+                                    else
+                                      {
+                                        isTvshow = false;
+                                        mediaId = snapshot.data!.id!;
+                                      }
+                                    Map<String,Map<String,String>> map = await  watchSeriesDetailController.getVideoServerLinks(mediaId,isTvShow: isTvshow);
                                     LoaderDialog.stopLoaderDialog();
                                     ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,widget.watchSeriesCover.title!,isDirectPlay: true,isNativemxPlayer: false);
 

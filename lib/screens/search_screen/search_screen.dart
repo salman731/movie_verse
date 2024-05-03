@@ -63,7 +63,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     searchScreenController.prMoviesScrollController.addListener(() {
       if (searchScreenController.prMoviesScrollController.position.extentAfter == 0) {
-        searchScreenController.isPrMoviesMoviesLoading.value = true;
+        //searchScreenController.isPrMoviesMoviesLoading.value = true;
         searchScreenController.loadPrMoviesMovies(searchEditingController.text,isLoadMore: true);
       }
     });
@@ -75,7 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     searchScreenController.hdMovie2ScrollController.addListener(() {
       if (searchScreenController.hdMovie2ScrollController.position.extentAfter == 0) {
-        searchScreenController.isHdMovie2MoviesLoading.value = true;
+        //searchScreenController.isHdMovie2MoviesLoading.value = true;
         searchScreenController.loadHdMovie2SearchList(searchEditingController.text,isLoadMore: true);
       }
     });

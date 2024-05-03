@@ -22,12 +22,15 @@ class WatchSeriesDetail extends WatchSeriesCover
 
   String? id;
 
+  Map<String,Map<String,String>>? episodeSeasonMap;
+
   WatchSeriesDetail(
       {String? title,
         String? url,
         String? coverUrl,
         String? tag1,
         String? tag2,
+        this.episodeSeasonMap,
         this.genre,
         this.id,
         this.ratings,

@@ -543,7 +543,7 @@ class SearchScreenController extends GetxController
          isWatchSeriesMoviesLoading.value = false;
 
        }
-     else
+     else if(!isLoadMore)
        {
          watchSeriesCurrentPage = 1;
          String finalSearchUrl = LocalUtils.getWatchSeriesSearchUrl(movieName);

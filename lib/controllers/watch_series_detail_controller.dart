@@ -12,9 +12,16 @@ class WatchSeriesDetailController extends GetxController
 {
   late dom.Document pageDocument;
   late String mediaId;
+  bool isTvShow = false;
+
+  RxString selectedSeason = "".obs;
+  RxString selectedEpisode = "".obs;
 
   final String WATCHSERIES_AJAX_EPISODE_SERVER = "https://watchseries.pe/ajax/episode/list/";
   final String WATCHSERIES_AJAX_SOURCE_SERVER = "https://watchseries.pe/ajax/episode/sources/";
+  final String WATCHSERIES_AJAX_SEASON_SERVER = "https://watchseries.pe/ajax/season/list/";
+  final String WATCHSERIES_AJAX_SEASON_EPISODE_SERVER = "https://watchseries.pe/ajax/season/episodes/";
+  final String WATCHSERIES_AJAX_SEASON_EPISODE_SERVERS = "https://watchseries.pe/ajax/episode/servers/";
   final String MEGACLOUD_AJAX_SOURCE_SERVER = "https://megacloud.tv/embed-1/ajax/e-1/getSources?id=";
 
 
@@ -85,21 +92,36 @@ class WatchSeriesDetailController extends GetxController
              }
           }
       }
-    return WatchSeriesDetail(tag2: watchSeriesCover.tag2,tag1: watchSeriesCover.tag1,title: watchSeriesCover.title,url: watchSeriesCover.url,duration: duration,genre: genre,description: description,coverUrl: watchSeriesCover.imageURL,actors: actors,country: country,production: production,ratings: ratings,releasedDate: releasedDate,id: id);
+    Map<String,Map<String,String>> seasonEpisodeMap = Map();
+    if(watchSeriesCover.url!.contains("/tv/"))
+      {
+        seasonEpisodeMap = await getSeasonEpisodes(mediaId);
+        selectedSeason.value = seasonEpisodeMap.keys.first;
+        selectedEpisode.value = seasonEpisodeMap[seasonEpisodeMap.keys.first]!.keys.first;
+      }
+    return WatchSeriesDetail(tag2: watchSeriesCover.tag2,tag1: watchSeriesCover.tag1,title: watchSeriesCover.title,url: watchSeriesCover.url,duration: duration,genre: genre,description: description,coverUrl: watchSeriesCover.imageURL,actors: actors,country: country,production: production,ratings: ratings,releasedDate: releasedDate,id: id,episodeSeasonMap: seasonEpisodeMap);
 
   }
 
-  Future<Map<String,Map<String,String>>> getVideoServerLinks () async
+  Future<Map<String,Map<String,String>>> getVideoServerLinks (String mediaID,{bool isTvShow = false}) async
   {
     Map<String,Map<String,String>> map = Map();
-    String finalEpisodeUrl = WATCHSERIES_AJAX_EPISODE_SERVER + mediaId;
+    late String finalEpisodeUrl;
+    if(!isTvShow)
+      {
+        finalEpisodeUrl = WATCHSERIES_AJAX_EPISODE_SERVER + mediaID;
+      }
+    else
+      {
+        finalEpisodeUrl = WATCHSERIES_AJAX_SEASON_EPISODE_SERVERS + mediaID;
+      }
     dom.Document serverDocument = await WebUtils.getDomFromURL_Get(finalEpisodeUrl);
     List<dom.Element> serverList = serverDocument.querySelectorAll(".nav-item");
 
     for(dom.Element element in serverList)
       {
         Map<String,String> qualityMap = Map();
-        String serverId = element.querySelector("a")!.attributes["data-linkid"]!;
+        String serverId = element.querySelector("a")!.attributes[!isTvShow? "data-linkid": "data-id"]!;
         String servername = element.querySelector("span")!.text;
         if(servername == "UpCloud" || servername == "MegaCloud")
           {
@@ -142,4 +164,35 @@ class WatchSeriesDetailController extends GetxController
 
     return map;
   }
+
+
+  Future<Map<String,Map<String,String>>> getSeasonEpisodes(String mediaId) async
+  {
+    Map<String,Map<String,String>> map = Map();
+    String finalSeasonUrl = WATCHSERIES_AJAX_SEASON_SERVER + mediaId;
+    dom.Document seasonDocument = await WebUtils.getDomFromURL_Get(finalSeasonUrl);
+    List<dom.Element> seasonList = seasonDocument.querySelectorAll(".dropdown-menu.dropdown-menu-new a");
+
+    for(dom.Element seasonElement in seasonList)
+      {
+        Map<String,String> episodeMap = Map();
+        String? seasonDataID = seasonElement.attributes["data-id"];
+        String? seasonName = seasonElement.text;
+
+        String finalEpisodeUrl = WATCHSERIES_AJAX_SEASON_EPISODE_SERVER + seasonDataID!;
+        dom.Document episodeDocument = await WebUtils.getDomFromURL_Get(finalEpisodeUrl);
+        List<dom.Element> episodeList = episodeDocument.querySelectorAll(".nav-item a");
+        for(dom.Element episodeElement in episodeList)
+          {
+            String episodeDataId = episodeElement.attributes["data-id"]!;
+            String episodeTitle = episodeElement.attributes["title"]!;
+            episodeMap[episodeTitle] = episodeDataId;
+          }
+        map[seasonName] = episodeMap;
+      }
+
+    return map;
+  }
+
+
 }

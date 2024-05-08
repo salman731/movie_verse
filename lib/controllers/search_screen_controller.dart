@@ -144,6 +144,7 @@ class SearchScreenController extends GetxController
      String searchUpMoviesURL = LocalUtils.getUpMoviesSearchURL(movieName,isLoadMore: loadMore,page: upMoviesCurrentPage);
      if(loadMore)
        {
+         isUpMovieMoreUpMoviesLoading.value = true;
          List<UpMoviesCover> list  = await searchMovieInUpMovies(searchUpMoviesURL,loadMore: loadMore);
          upMoviesSearchList.addAll(list);
          isUpMovieMoreUpMoviesLoading.value = false;
@@ -193,6 +194,7 @@ class SearchScreenController extends GetxController
                 "const bton = document.querySelector(\".search_container button\");"
                 "bton.click();");
      } else {
+       isPrimeWireMoreUpMoviesLoading.value = true;
        primeWireCurrentPage += 1;
        String searchUrl = LocalUtils.getPrimeWireSearchURL(movieName, primeWireCurrentPage, primeWireSearchHash!);
        List<PrimeWireCover> list = await getPrimeWireMoviesList(searchUrl,isLoadMore:isLoadMore);
@@ -249,6 +251,7 @@ class SearchScreenController extends GetxController
    {
      if(loadMore)
        {
+         isAllMovieLandMoviesLoading.value = true;
          allMovieLandCurrentPage += 1;
          List<AllMovieLandCover> list = await getAllMovieLandMoviesList(movieName, allMovieLandCurrentPage);
          allMovieLandSearchList.addAll(list);
@@ -537,6 +540,7 @@ class SearchScreenController extends GetxController
      if(isLoadMore && watchSeriesCurrentPage < maxWatchSeriesSearchPage)
        {
          watchSeriesCurrentPage += 1;
+         isWatchSeriesMoviesLoading.value = true;
          String finalSearchUrl = LocalUtils.getWatchSeriesSearchUrl(movieName,isLoadMore: isLoadMore,pageNo: watchSeriesCurrentPage);
          List<WatchSeriesCover> list = await getWatchSeriesList(finalSearchUrl, isLoadMore);
          watchSeriesSearchList.addAll(list);

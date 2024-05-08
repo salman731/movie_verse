@@ -1,11 +1,18 @@
 
 
+import 'dart:convert';
+
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/enums/video_quality_enum.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_detail.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_source.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_source_response.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_url_response.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -14,8 +21,12 @@ class PrMoviesDetailController extends GetxController {
   late dom.Document episodeSource;
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   final String MINOPLRES_SERVER_URL = "https://minoplres.xyz";
+  final String VIDSRCTO_SERVER_URL = "https://vidsrc.to";
+  final String VIDPLAY_SERVER_URL = "https://vidsrc.to";
+  final String VIDPLAY_KEY_URL = "https://raw.githubusercontent.com/KillerDogeEmpire/vidplay-keys/keys/keys.json";
   static bool isSeries = false;
   RxString selectedEpisode = "".obs;
+  MethodChannel intentMethodChannel = MethodChannel("KOTLIN_CHANNEL");
 
   Future<PrMoviesDetail> getMovieDetail(PrMoviesCover prMoviesCover) async
   {
@@ -86,44 +97,112 @@ class PrMoviesDetailController extends GetxController {
       episodeSource = await WebUtils.getDomFromURL_Get(episodeUrl!);
       list = episodeSource.querySelectorAll(".movieplay iframe");
     }
-    String? iframeSrc = list.where((element) => element.attributes["src"]!.contains("minoplres")).first.attributes["src"];
-    dom.Document document = await WebUtils.getDomFromURL_Get(list[0].attributes["src"]!,headers: {"Referer":PRMOVIES_SERVER_URL});
-    List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
-    String javaScriptText = listJavascript.where((element) => element.text.contains("sources: [{file:\"")).first.text;
-    String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
-    String urlSetLink = "";
-    if(!m3u8Url.contains(",l,h,.urlset"))
+    //String? iframeSrc = list.where((element) => element.attributes["src"]!.contains("minoplres")).first.attributes["src"];
+    for (dom.Element element  in list)
       {
-        urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
-        urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
-      }
-    else
-      {
-        urlSetLink = m3u8Url;
-      }
-    String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
-    if (!response!.contains("Not Found")) {
-      List<String> m3u8UrlList = response!.split("\n");
-      List<String> qualityUrlList = [];
-      for(String url in m3u8UrlList)
+        if(element.attributes["src"]!.contains("minoplres"))
+          {
+            dom.Document document = await WebUtils.getDomFromURL_Get(element.attributes["src"]!,headers: {"Referer":PRMOVIES_SERVER_URL});
+            List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
+            String javaScriptText = listJavascript.where((element) => element.text.contains("sources: [{file:\"")).first.text;
+            String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
+            String urlSetLink = "";
+            if(!m3u8Url.contains(",l,h,.urlset"))
             {
+              urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
+              urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
+            }
+            else
+            {
+              urlSetLink = m3u8Url;
+            }
+            String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
+            if (!response!.contains("Not Found")) {
+              List<String> m3u8UrlList = response!.split("\n");
+              List<String> qualityUrlList = [];
+              for(String url in m3u8UrlList)
+              {
 
-              if(url.contains("_l/") && url.contains("m3u8"))
+                if(url.contains("_l/") && url.contains("m3u8"))
                 {
                   map["Minoplres(${VideoQualityEnum.Low.name})"] = url;
                 }
-              else if(url.contains("_h/") && url.contains("m3u8"))
-              {
-                map["Minoplres(${VideoQualityEnum.High.name})"] = url;
+                else if(url.contains("_h/") && url.contains("m3u8"))
+                {
+                  map["Minoplres(${VideoQualityEnum.High.name})"] = url;
+                }
+                else if(url.contains("_o/") && url.contains("m3u8"))
+                {
+                  map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
+                }
               }
-              else if(url.contains("_o/") && url.contains("m3u8"))
-              {
-                map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
-              }
+            } else {
+              map["Minoplres(${VideoQualityEnum.Orginal.name})"] = m3u8Url;
             }
-    } else {
-      map["Minoplres(${VideoQualityEnum.Orginal.name})"] = m3u8Url;
-    }
+          }
+        else if (element.attributes["src"]!.contains("vidsrc.to"))
+          {
+
+            dom.Document vidSrcToDocument = await WebUtils.getDomFromURL_Get(element.attributes["src"]!);
+            String? mediaId = vidSrcToDocument.querySelector("ul.episodes li a")!.attributes["data-id"];
+            String finalSourceUrl = VIDSRCTO_SERVER_URL + "/ajax/embed/episode/$mediaId/sources";
+            String? sourceResponse = await WebUtils.makeGetRequest(finalSourceUrl);
+            VidSrcToSourceResponse vidSrcToSourceResponse = VidSrcToSourceResponse.fromJson(jsonDecode(sourceResponse!));
+
+            for (VidSrcToSource vidSrcToSource in vidSrcToSourceResponse.result!)
+              {
+                String finalSourceUrlLink = VIDSRCTO_SERVER_URL + "/ajax/embed/source/${vidSrcToSource.id}";
+                String? urlResponse = await WebUtils.makeGetRequest(finalSourceUrlLink);
+                VidSrcToUrlResponse vidSrcToUrlResponse = VidSrcToUrlResponse.fromJson(jsonDecode(urlResponse!));
+                String decodedUrl = await intentMethodChannel.invokeMethod("getDecodedVidSrcUrl",{"encString":vidSrcToUrlResponse.result!.url,});
+                if(vidSrcToSource.title == "Vidplay")
+                  {
+                    Map<String,String> vidPlayMap =  await getVidPlayM3U8Links(decodedUrl);
+                    map.addAll(vidPlayMap);
+                  }
+                else if(vidSrcToSource.title == "Filemoon")
+                  {
+                    Map<String,String> fileMoonMap = Map();
+                    String? finalEmbedUrl = decodedUrl.split("?")[0];
+                    await VideoHostProviderUtils.getM3U8UrlfromFileMoon(finalEmbedUrl, "",canReturn: (value){
+                      fileMoonMap[VideoHosterEnum.FileMoon.name] = value;
+                      map.addAll(fileMoonMap);
+                    });
+
+                  }
+              }
+
+
+          }
+        else if (element.attributes["src"]!.contains("vidsrc.net"))
+          {
+            dom.Document vidSrcDocument = await WebUtils.getDomFromURL_Get(element.attributes["src"]!);
+            List<dom.Element> serverList = vidSrcDocument.querySelectorAll(".serversList .server");
+            Map<String,String> vidSrcNetMap = Map();
+            for (dom.Element serverElement in serverList)
+              {
+                switch (serverElement!.text.trim())
+                {
+                  case "VidSrc PRO":
+                    try {
+                      String rcpStreamLink = "https://vidsrc.stream/rcp/${serverElement.attributes["data-hash"]}";
+                      dom.Document rcpDocument = await WebUtils.getDomFromURL_Get(rcpStreamLink,headers: {"Referer":"https://vidsrc.net/","User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"});
+                      String? javaScriptStr = rcpDocument.querySelectorAll("script").where((element) => element.text.contains("player_iframe")).first.text;
+                      String rcpSrcStreamUrl = "https:${LocalUtils.getStringBetweenTwoStrings("src: '", "',", javaScriptStr)}";
+                      dom.Document rcpSrcStreamDocument = await WebUtils.getDomFromURL_Get(rcpSrcStreamUrl,headers: {"Referer":"https://vidsrc.net/"});
+                      String rcpJavascript = rcpSrcStreamDocument.querySelectorAll("script").where((element) => element.text.contains("Playerjs")).first.text;
+                      String encodedUrl = LocalUtils.getStringBetweenTwoStrings("file:\"#9", "\"", rcpJavascript).replaceAll(RegExp(r'/@#@\S+?=?='), "");
+                      String decodedUrl = String.fromCharCodes(base64Decode(encodedUrl));
+                      vidSrcNetMap[serverElement!.text.trim()] = decodedUrl;
+                    } catch (e) {
+                      print(e);
+                    }
+
+                }
+              }
+
+          }
+      }
     return map;
   }
 
@@ -147,5 +226,51 @@ class PrMoviesDetailController extends GetxController {
   return episodeMap;
   }
 
+
+  Future<Map<String,String>> getVidPlayM3U8Links(String embedUrl) async
+  {
+    String currentVidPlayServer = LocalUtils.getStringBeforString("/e/", embedUrl);
+    Map<String,String> map = Map();
+    String? keysResponse = await WebUtils.makeGetRequest(VIDPLAY_KEY_URL);
+    List<String> keys = (jsonDecode(keysResponse!) as List<dynamic>).map((e) => e.toString()).toList();
+    String id = LocalUtils.getStringBetweenTwoStrings("/e/", "?", embedUrl);
+    String encodedId = await intentMethodChannel.invokeMethod("getEncodeId",{"id":id,"keys": keys,});
+    String futokenUrl = currentVidPlayServer + "/futoken";
+    String? scriptResponse = await WebUtils.makeGetRequest(futokenUrl,headers: {"Referer":embedUrl});
+    String decodedUrl = await intentMethodChannel.invokeMethod("getMediaUrl",{"script":scriptResponse,"mainUrl":currentVidPlayServer,"embededUrl":embedUrl,"id":encodedId});
+    String? sourceResponse = await WebUtils.makeGetRequest(decodedUrl);
+    String finalM3u8Link = jsonDecode(sourceResponse!)["result"]["sources"][0]["file"];
+    String? m3u8Links = await WebUtils.makeGetRequest(finalM3u8Link);
+    List<String> rawLinks = m3u8Links!.split("\n");
+
+    for(int i = 0; i< rawLinks.length;i++)
+      {
+        if(rawLinks[i].contains("1080"))
+          {
+            map[VideoHosterEnum.VidPlay.name+"(1080)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+          }
+        if(rawLinks[i].contains("720"))
+        {
+          map[VideoHosterEnum.VidPlay.name+"(720)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+
+        if(rawLinks[i].contains("480"))
+        {
+          map[VideoHosterEnum.VidPlay.name+"(480)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+
+        if(rawLinks[i].contains("360"))
+        {
+          map[VideoHosterEnum.VidPlay.name+"(360)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+      }
+
+    print(decodedUrl);
+
+
+
+
+    return map;
+  }
 
 }

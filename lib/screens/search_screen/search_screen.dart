@@ -38,26 +38,26 @@ class _SearchScreenState extends State<SearchScreen> {
     searchScreenController.initWebViewController();
     searchScreenController.upMoviesScrollController.addListener(() {
       if (searchScreenController.upMoviesScrollController.position.extentAfter == 0) {
-        searchScreenController.isUpMovieMoreUpMoviesLoading.value = true;
+        //searchScreenController.isUpMovieMoreUpMoviesLoading.value = true;
         searchScreenController.loadMoviesfromUpMovies(searchEditingController.text,loadMore: true);
       }
     });
     searchScreenController.primeWireScrollController.addListener(() {
       if (searchScreenController.primeWireScrollController.position.extentAfter == 0) {
-        searchScreenController.isPrimeWireMoreUpMoviesLoading.value = true;
+        //searchScreenController.isPrimeWireMoreUpMoviesLoading.value = true;
         searchScreenController.loadPrimeWireMovies(searchEditingController.text,isLoadMore: true);
       }
     });
 
     searchScreenController.film1kScrollController.addListener(() {
       if (searchScreenController.film1kScrollController.position.extentAfter == 0) {
-        searchScreenController.isFilm1kMoreUpMoviesLoading.value = true;
+        //searchScreenController.isFilm1kMoreUpMoviesLoading.value = true;
         searchScreenController.loadFilm1KMovies(searchEditingController.text,isLoadMore: true);
       }
     });
     searchScreenController.allMovieLandScrollController.addListener(() {
       if (searchScreenController.allMovieLandScrollController.position.extentAfter == 0) {
-        searchScreenController.isAllMovieLandMoviesLoading.value = true;
+        //searchScreenController.isAllMovieLandMoviesLoading.value = true;
         searchScreenController.loadAllMovieLand(searchEditingController.text,loadMore: true);
       }
     });
@@ -69,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     searchScreenController.watchMoviesScrollController.addListener(() {
       if (searchScreenController.watchMoviesScrollController.position.extentAfter == 0) {
-        searchScreenController.isWatchMoviesLoading.value = true;
+        //searchScreenController.isWatchMoviesLoading.value = true;
         searchScreenController.loadWatchMoviesSearchList(searchEditingController.text,isLoadMore: true);
       }
     });
@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
       searchScreenController.watchSeriesScrollController.addListener(() {
         if (searchScreenController.watchSeriesScrollController.position.extentAfter == 0) {
-          searchScreenController.isWatchSeriesMoviesLoading.value = true;
+          //searchScreenController.isWatchSeriesMoviesLoading.value = true;
           searchScreenController.loadWatchSeriesSearchList(searchEditingController.text,isLoadMore: true);
         }
       });

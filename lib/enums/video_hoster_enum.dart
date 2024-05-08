@@ -31,7 +31,8 @@ enum VideoHosterEnum
   Akamaicdn,
   OkRu,
   Upcloud,
-  Megacloud
+  Megacloud,
+  VidPlay
 
 
 }

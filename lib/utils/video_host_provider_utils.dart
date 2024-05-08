@@ -358,7 +358,7 @@ class VideoHostProviderUtils
     }
   }
 
-  static Future<String?> getM3U8UrlfromFileMoon(String embededUrl, String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers}) async
+  static Future<String?> getM3U8UrlfromFileMoon(String embededUrl, String title,{bool isVideotoEmbededAllowed = false,Map<String,String>? headers,Function(String)? canReturn}) async
   {
     if (isVideotoEmbededAllowed) {
       embededUrl =  embededUrl.replaceAll("https://upstream.to/", "https://upstream.to/embed-") + ".html";
@@ -373,7 +373,15 @@ class VideoHostProviderUtils
       late String mp4Url;
       dynamic logFn(dynamic args) {
         mp4Url = LocalUtils.getStringBetweenTwoStrings("sources:[{file:\"", "\"}]", args[1]);
-        LocalUtils.startVideoPlayer(mp4Url, title);
+        if(canReturn != null)
+          {
+            return canReturn(mp4Url);
+          }
+        else
+          {
+            LocalUtils.startVideoPlayer(mp4Url, title);
+          }
+
         //Get.to(VideoPlayerScreen(mp4Url,title!,));
         /*ExternalVideoPlayerLauncher.launchMxPlayer(
             mp4Url!, MIME.applicationVndAppleMpegurl, {

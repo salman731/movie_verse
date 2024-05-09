@@ -1,4 +1,5 @@
 
+import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
@@ -10,6 +11,7 @@ class SourceUtils
 {
 
   static final String WATCHSERIES_SERVER_URL = "https://watchseries.pe";
+  static final String CINEZONE_SERVER_URL = "https://cinezone.to";
   static List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
   {
     List<dom.Element> list = element.querySelectorAll(".ml-item");
@@ -80,6 +82,25 @@ class SourceUtils
       listMoviesCover.add(WatchSeriesCover(url: url,title: title,imageURL: posterUrl,tag1: tag1,tag2: tag2));
     }
     return listMoviesCover;
+  }
+
+  static List<CineZoneCover> getCineZoneList (dom.Element element)
+  {
+    List<CineZoneCover> coverList = [];
+    List<dom.Element> moviesList = element.querySelectorAll(".item .inner");
+
+    for(dom.Element movieElement in moviesList)
+      {
+        String? posterUrl = movieElement.querySelector(".poster img")!.attributes["data-src"];
+        dom.Element? urlTitleElement = movieElement!.querySelector(".info a");
+        String? title = urlTitleElement!.text;
+        String? url = CINEZONE_SERVER_URL + urlTitleElement!.attributes["href"]!;
+        String? tags =  movieElement!.querySelector(".info .sub-info span")!.text;
+        String? tag1 = tags.split("-")[0].trim();
+        String? tag2 = tags.split("-")[1].trim();
+        coverList.add(CineZoneCover(imageURL: posterUrl,title: title,tag1: tag1,tag2: tag2,url: url));
+      }
+    return coverList;
   }
 
 

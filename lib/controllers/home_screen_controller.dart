@@ -2,6 +2,7 @@
 
 import 'package:Movieverse/constants/category_urls_contants.dart';
 import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
+import 'package:Movieverse/enums/cinezone_home_category_enum.dart';
 import 'package:Movieverse/enums/hd_movie_2_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
@@ -10,6 +11,7 @@ import 'package:Movieverse/enums/up_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/watch_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/watch_series_home_screen_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
+import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
@@ -33,6 +35,8 @@ class HomeScreenController extends GetxController
   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
   final String HDMOVIE2_SERVER_URL = "https://hdmovie2.app";
   final String WATCHSERIES_HOME_SERVER_URL = "https://watchseries.pe/home";
+  final String CINEZONE_HOME_SERVER_URL = "https://cinezone.to/home";
+  final String CINEZONE_SERVER_URL = "https://cinezone.to";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
@@ -41,6 +45,7 @@ class HomeScreenController extends GetxController
   Map<String,List<WatchMoviesCover>> watchMoviesCategoryListMap = <String,List<WatchMoviesCover>>{};
   Map<String,List<HdMovie2Cover>> hdMovie2CategoryListMap = <String,List<HdMovie2Cover>>{};
   Map<String,List<WatchSeriesCover>> watchSeriesCategoryListMap = <String,List<WatchSeriesCover>>{};
+  Map<String,List<CineZoneCover>> cineZoneCategoryListMap = <String,List<CineZoneCover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
   RxBool isUpMoviesHomePageLoading = false.obs,
       isPrimewireHomePageLoading = false.obs,
@@ -49,7 +54,8 @@ class HomeScreenController extends GetxController
       isFilm1kHomePageLoading = false.obs,
       isWatchMoviesHomePageLoading = false.obs,
       isHdMovie2HomePageLoading = false.obs,
-      isWatchSeriesHomePageLoading = false.obs;
+      isWatchSeriesHomePageLoading = false.obs,
+      isCineZoneHomePageLoading = false.obs;
 
 
   Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
@@ -377,5 +383,54 @@ class HomeScreenController extends GetxController
     isWatchSeriesHomePageLoading.value = true;
     return watchSeriesCategoryListMap;
   }
+
+
+  Future<void> loadCineZoneHomeScreen() async
+  {
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(CINEZONE_HOME_SERVER_URL);
+    List<dom.Element> featuredList = pageDocument.querySelectorAll(".swiper.swiper-container.featured .swiper-wrapper .swiper-slide");
+    List<CineZoneCover> featuredCoverList = [];
+    for(dom.Element featuredElement in featuredList)
+      {
+        String? imgUrl = featuredElement.querySelector(".swiper-bg div img")!.attributes["src"];
+        dom.Element? titleUrlElement = featuredElement.querySelector(".container .swiper-info .title");
+        String? url = CINEZONE_SERVER_URL +  titleUrlElement!.attributes["href"]!;
+        String? title = titleUrlElement.text;
+        dom.Element? metaElement = featuredElement.querySelector(".container .swiper-info .meta");
+        String? tag1 = metaElement!.querySelector(".rating")!.text.trim();
+        String? tag2 = metaElement!.querySelectorAll("span")[1].text;
+        featuredCoverList.add(CineZoneCover(url: url,tag2: tag2,tag1: tag1,title: title,imageURL: imgUrl));
+      }
+    cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Featured.name] = featuredCoverList;
+
+    dom.Element? recommendedMoviesElement = pageDocument.querySelector(".mt-4.default-sliderz div[data-name=\"movies\"] .lg-card]");
+    cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Recommended_Movies.name] = SourceUtils.getCineZoneList(recommendedMoviesElement!);
+
+    dom.Element? recommendedSeriesElement = pageDocument.querySelector(".mt-4.default-sliderz div[data-name=\"series\"] .lg-card]");
+    cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Recommended_Tv_Shows.name] = SourceUtils.getCineZoneList(recommendedSeriesElement!);
+
+    dom.Element? trendingElement = pageDocument.querySelector(".mt-4.default-sliderz div[data-name=\"trending\"] .lg-card]");
+    cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Trending.name] = SourceUtils.getCineZoneList(trendingElement!);
+
+    List<dom.Element> latestList = pageDocument.querySelectorAll(".default-slider");
+
+    for(dom.Element element in latestList)
+      {
+        String? title = element.querySelector(".head.border-b h2")!.text;
+        dom.Element? latestElement = element.querySelector(".swiper.swiper-container.recommended-slider.lg-card .swiper-wrapper");
+        switch (title.trim())
+        {
+          case "Latest Movies":
+            cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Latest_Movies.name] = SourceUtils.getCineZoneList(latestElement!);
+          case "Latest TV Shows":
+            cineZoneCategoryListMap[CineZoneHomeCategoryEnum.Latest_Tv_Shows.name] = SourceUtils.getCineZoneList(latestElement!);
+        }
+      }
+
+    isCineZoneHomePageLoading.value = true;
+
+
+   }
+
 
 }

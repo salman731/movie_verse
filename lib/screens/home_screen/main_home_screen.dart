@@ -7,6 +7,7 @@ import 'package:Movieverse/controllers/search_screen_controller.dart';
 import 'package:Movieverse/dialogs/source_list_dialog.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/cine_zone_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/hd_movie2_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
@@ -179,6 +180,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           homeScreenController.loadWatchSeriesHomeScreen();
         }
         return const WatchSeriesHomeScreenWidget();
+      case SourceEnum.CineZone:
+        if (homeScreenController.cineZoneCategoryListMap.isEmpty) {
+          homeScreenController.isCineZoneHomePageLoading.value = false;
+          homeScreenController.loadCineZoneHomeScreen();
+        }
+        return const CineZoneHomeScreenWidget();
     }
     return Container();
   }

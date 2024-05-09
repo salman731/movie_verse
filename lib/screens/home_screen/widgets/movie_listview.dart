@@ -69,6 +69,8 @@ class MovieListView extends StatelessWidget {
                       Get.to(HdMovie2DetailsScreen(hdMovie2Cover: Get.find<SearchScreenController>().hdMovie2SearchList[index]));
                     case SourceEnum.WatchSeries:
                       Get.to(WatchSeriesDetailScreen(watchSeriesCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
+                    case SourceEnum.CineZone:
+                      // TODO: Handle this case.
                    }
                 } else {
                   switch (sourceEnum)
@@ -91,14 +93,16 @@ class MovieListView extends StatelessWidget {
                       Get.to(HdMovie2DetailsScreen(hdMovie2Cover:  moviesList[index]));
                     case SourceEnum.WatchSeries:
                       Get.to(WatchSeriesDetailScreen(watchSeriesCover: moviesList[index]));
+                    case SourceEnum.CineZone:
+                      // TODO: Handle this case.
                   }
                 }
               },
               child: MovieCard(
                 imgurl: moviesList[index].imageURL!,
                 title: moviesList[index].title!,
-                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries ?  moviesList[index].tag1 : "",
-                tag2: sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries ? moviesList[index].tag2 : "",
+                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone ?  moviesList[index].tag1 : "",
+                tag2: sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone ? moviesList[index].tag2 : "",
                 //rate: 2.4,
               ),
             );

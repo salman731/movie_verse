@@ -25,6 +25,9 @@ class CineZoneDetail extends CineZoneCover
 
   String? year;
 
+  String? serverId;
+
+  Map<String,Map<String,String>>? episodeSeasonMap;
 
   CineZoneDetail(
       {String? title,
@@ -33,6 +36,7 @@ class CineZoneDetail extends CineZoneCover
         String? tag1,
         String? tag2,
         this.genre,
+        this.serverId,
         this.ratings,
         this.releasedDate,
         this.country,
@@ -41,6 +45,7 @@ class CineZoneDetail extends CineZoneCover
         this.production,
         this.director,
         this.type,
+        this.episodeSeasonMap,
         this.year,
         this.description}):super(title: title,url: url,imageURL: coverUrl,tag1: tag1,tag2: tag2);
 }

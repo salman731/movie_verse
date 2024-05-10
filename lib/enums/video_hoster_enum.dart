@@ -32,7 +32,8 @@ enum VideoHosterEnum
   OkRu,
   Upcloud,
   Megacloud,
-  VidPlay
+  VidPlay,
+  MyCloud
 
 
 }

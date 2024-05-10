@@ -64,6 +64,7 @@ dependencies:
   sliver_fill_remaining_box_adapter: ^1.0.0
   flick_video_player: ^0.7.0
   string_validator: ^1.0.2
+  html_unescape: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -29,77 +29,79 @@ class SourceListDialog
           }, child: Text("Ok",)),
 
         ],
-        content: Obx(()=>Column(
-            children: [
-              for (SourceEnum sourceEnum in SourceEnum.values)...
-              [
+        content: Obx(()=>SingleChildScrollView(
+          child: Column(
+              children: [
+                for (SourceEnum sourceEnum in SourceEnum.values)...
+                [
+                  RadioListTile<String>(
+                    title: Text(sourceEnum.name,style: TextStyle(color: Colors.white),),
+                    value: sourceEnum.name,
+                    groupValue: selectedOption!.value,
+                    onChanged: (value) {
+                      selectedOption!.value = value!;
+                    },
+                  ),
+                ],
+               /* RadioListTile<String>(
+                  title: Text('UpMovies',style: TextStyle(color: Colors.white),),
+                  value: SourceEnum.UpMovies.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
+                      selectedOption!.value = value!;
+          
+                  },
+                ),
                 RadioListTile<String>(
-                  title: Text(sourceEnum.name,style: TextStyle(color: Colors.white),),
-                  value: sourceEnum.name,
+                  title: Text('Primewire',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.Primewire.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
+                      selectedOption!.value = value!;
+                  },
+                ),
+                RadioListTile<String>(
+                  title: Text('AllMovieLand',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.AllMovieLand.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
+                      selectedOption!.value = value!;
+                  },
+                ),
+                RadioListTile<String>(
+                  title: Text('PrMovies',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.PrMovies.name,
                   groupValue: selectedOption!.value,
                   onChanged: (value) {
                     selectedOption!.value = value!;
                   },
                 ),
-              ],
-             /* RadioListTile<String>(
-                title: Text('UpMovies',style: TextStyle(color: Colors.white),),
-                value: SourceEnum.UpMovies.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
+                RadioListTile<String>(
+                  title: Text('Film1k',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.Film1k.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
                     selectedOption!.value = value!;
-
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Primewire',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.Primewire.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
+                  },
+                ),
+                RadioListTile<String>(
+                  title: Text('WatchMovies',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.WatchMovies.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
                     selectedOption!.value = value!;
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('AllMovieLand',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.AllMovieLand.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
+                  },
+                ),
+                RadioListTile<String>(
+                  title: Text('HdMovie2',style: TextStyle(color: Colors.white)),
+                  value: SourceEnum.HdMovie2.name,
+                  groupValue: selectedOption!.value,
+                  onChanged: (value) {
                     selectedOption!.value = value!;
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('PrMovies',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.PrMovies.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
-                  selectedOption!.value = value!;
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('Film1k',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.Film1k.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
-                  selectedOption!.value = value!;
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('WatchMovies',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.WatchMovies.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
-                  selectedOption!.value = value!;
-                },
-              ),
-              RadioListTile<String>(
-                title: Text('HdMovie2',style: TextStyle(color: Colors.white)),
-                value: SourceEnum.HdMovie2.name,
-                groupValue: selectedOption!.value,
-                onChanged: (value) {
-                  selectedOption!.value = value!;
-                },
-              ),*/
-            ],),
+                  },
+                ),*/
+              ],),
+        ),
         ),
       );
       showDialog(barrierDismissible: false,

@@ -99,6 +99,27 @@ class MainActivity: FlutterActivity() {
 
                 result.success(mediaUrl)
             }
+            if(call.method == "getVrfEncryptedData")
+            {
+                val str = call.argument<Any>("data") as String?
+                var encryptedData = ""
+                if(str != null)
+                {
+                    encryptedData = CineZoneUtils.vrfEncrypt(str)
+                }
+                result.success(encryptedData)
+            }
+
+            if(call.method == "getVrfDecryptedData")
+            {
+                val str = call.argument<Any>("data") as String?
+                var decryptedData = ""
+                if(str != null)
+                {
+                    decryptedData = CineZoneUtils.vrfDecrypt(str)
+                }
+                result.success(decryptedData)
+            }
 
 
 

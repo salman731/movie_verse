@@ -151,7 +151,7 @@ class CineZoneDetailController extends GetxController
 
     for(int i = 0; i< rawLinks.length;i++)
     {
-      if(rawLinks[i].contains("1080"))
+      if(rawLinks[i].contains("x1080"))
       {
         if(videoHosterEnum == VideoHosterEnum.VidPlay)
           {
@@ -162,7 +162,7 @@ class CineZoneDetailController extends GetxController
             map["1080"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
           }
       }
-      if(rawLinks[i].contains("720"))
+      if(rawLinks[i].contains("x720"))
       {
         if(videoHosterEnum == VideoHosterEnum.VidPlay)
         {
@@ -174,7 +174,7 @@ class CineZoneDetailController extends GetxController
         }
       }
 
-      if(rawLinks[i].contains("480"))
+      if(rawLinks[i].contains("x480"))
       {
         if(videoHosterEnum == VideoHosterEnum.VidPlay)
         {
@@ -186,7 +186,7 @@ class CineZoneDetailController extends GetxController
         }
       }
 
-      if(rawLinks[i].contains("360"))
+      if(rawLinks[i].contains("x360"))
       {
         if(videoHosterEnum == VideoHosterEnum.VidPlay)
         {

@@ -72,6 +72,7 @@ class MovieListView extends StatelessWidget {
                     case SourceEnum.WatchSeries:
                       Get.to(WatchSeriesDetailScreen(watchSeriesCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                     case SourceEnum.CineZone:
+                      Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().cineZoneSearchList[index]));
                       //Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                   }
                 } else {

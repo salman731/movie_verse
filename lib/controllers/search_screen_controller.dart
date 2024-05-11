@@ -10,6 +10,7 @@ import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_search_request.dart';
+import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
@@ -40,7 +41,7 @@ class SearchScreenController extends GetxController
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
-   final String HDMOVIE2SERVER_URL = "https://hdmovie2.app";
+   final String HDMOVIE2SERVER_URL = "https://hdmovie2.video";
    final String WATCHSERIESSERVER_URL = "https://watchseries.pe";
 
    List<UpMoviesCover> upMoviesSearchList  = [];
@@ -51,6 +52,7 @@ class SearchScreenController extends GetxController
    List<WatchMoviesCover> watchMoviesSearchList  = [];
    List<HdMovie2Cover> hdMovie2SearchList  = [];
    List<WatchSeriesCover> watchSeriesSearchList  = [];
+   List<CineZoneCover> cineZoneSearchList  = [];
 
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
@@ -60,6 +62,7 @@ class SearchScreenController extends GetxController
    RxBool isWatchMoviesSourceLoading = false.obs;
    RxBool isHdMovie2SourceLoading = false.obs;
    RxBool isWatchSeriesSourceLoading = false.obs;
+   RxBool isCineZoneSourceLoading = false.obs;
 
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
@@ -69,6 +72,7 @@ class SearchScreenController extends GetxController
    RxBool isWatchMoviesLoading = false.obs;
    RxBool isHdMovie2MoviesLoading = false.obs;
    RxBool isWatchSeriesMoviesLoading = false.obs;
+   RxBool isCineZoneMoviesLoading = false.obs;
 
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
@@ -81,6 +85,7 @@ class SearchScreenController extends GetxController
    ScrollController watchMoviesScrollController = ScrollController();
    ScrollController hdMovie2ScrollController = ScrollController();
    ScrollController watchSeriesScrollController = ScrollController();
+   ScrollController cineZoneScrollController = ScrollController();
 
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
@@ -90,6 +95,7 @@ class SearchScreenController extends GetxController
    int watchMoviesCurrentPage = 1;
    int hdMovie2CurrentPage = 1;
    int watchSeriesCurrentPage = 1;
+   int cineZoneCurrentPage = 1;
 
    WebViewController? webViewController;
    String? primewireMovieTitle;
@@ -98,8 +104,10 @@ class SearchScreenController extends GetxController
    TextEditingController homeSearchBarEditingController = TextEditingController();
    Completer primeWireSearchCompleter = Completer();
    bool isPrMoviesHasMorePages = false;
+
    int maxHdMovie2SearchPage = 1;
    int maxWatchSeriesSearchPage = 1;
+   int maxCineZoneSearchPage = 1;
 
   startShowingLoadingSources()
   {
@@ -111,6 +119,7 @@ class SearchScreenController extends GetxController
     isWatchMoviesSourceLoading.value = true;
     isHdMovie2SourceLoading.value = true;
     isWatchSeriesSourceLoading.value = true;
+    isCineZoneSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -311,7 +320,9 @@ class SearchScreenController extends GetxController
                   onNavigationRequest: (NavigationRequest request) {
                     return NavigationDecision.navigate;
                   },
+
                 ),
+
               )
               ..loadRequest(Uri.parse('https://primewire.tf'));
      }
@@ -553,6 +564,47 @@ class SearchScreenController extends GetxController
          String finalSearchUrl = LocalUtils.getWatchSeriesSearchUrl(movieName);
          watchSeriesSearchList = await getWatchSeriesList(finalSearchUrl,isLoadMore);
          isWatchSeriesSourceLoading.value = false;
+       }
+   }
+
+
+   Future<List<CineZoneCover>> getCineZoneSearchList(String pageUrl,{bool isLoadMore = false}) async
+   {
+      dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+      dom.Element? searchElement = pageDocument.querySelector(".container .lg-card");
+      if(!isLoadMore)
+        {
+           dom.Element? navigationElement = pageDocument.querySelector(".pagination");
+           if(navigationElement != null)
+             {
+               String? url = pageDocument.querySelector(".page-item a[rel=\"last\"]")!.attributes["href"];
+               maxCineZoneSearchPage = int.parse(LocalUtils.getStringAfterStartStringToEnd("page=", url!));
+             }
+           else
+             {
+               maxCineZoneSearchPage = 1;
+             }
+        }
+      return SourceUtils.getCineZoneList(searchElement!);
+   }
+
+   loadCineZoneSearchList(String movieName, {bool isLoadMore = false}) async
+   {
+     if(isLoadMore && cineZoneCurrentPage < maxCineZoneSearchPage)
+       {
+         cineZoneCurrentPage += 1;
+         isCineZoneMoviesLoading.value = true;
+         String finalSearchUrl = LocalUtils.getCineZoneSearchUrl(movieName,isLoadMore: isLoadMore,pageNo: cineZoneCurrentPage);
+         List<CineZoneCover> list = await getCineZoneSearchList(finalSearchUrl,isLoadMore: isLoadMore);
+         cineZoneSearchList.addAll(list);
+         isCineZoneMoviesLoading.value = false;
+       }
+     else if (!isLoadMore)
+       {
+         cineZoneCurrentPage = 1;
+         String finalSearchUrl = LocalUtils.getCineZoneSearchUrl(movieName,isLoadMore: isLoadMore);
+         cineZoneSearchList = await getCineZoneSearchList(finalSearchUrl,isLoadMore: isLoadMore);
+         isCineZoneSourceLoading.value = false;
        }
    }
 

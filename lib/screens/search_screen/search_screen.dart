@@ -85,6 +85,12 @@ class _SearchScreenState extends State<SearchScreen> {
           searchScreenController.loadWatchSeriesSearchList(searchEditingController.text,isLoadMore: true);
         }
       });
+    searchScreenController.cineZoneScrollController.addListener(() {
+      if (searchScreenController.cineZoneScrollController.position.extentAfter == 0) {
+        //searchScreenController.isWatchSeriesMoviesLoading.value = true;
+        searchScreenController.loadCineZoneSearchList(searchEditingController.text,isLoadMore: true);
+      }
+    });
   }
 
   @override
@@ -154,6 +160,13 @@ class _SearchScreenState extends State<SearchScreen> {
             } catch (e) {
               searchScreenController.isWatchSeriesSourceLoading.value = false;
               LocalUtils.showExceptionToast("${SourceEnum.WatchSeries.name} : " + e.toString());
+            }
+
+            try {
+              await searchScreenController.loadCineZoneSearchList(searchEditingController.text);
+            } catch (e) {
+              searchScreenController.isCineZoneSourceLoading.value = false;
+              LocalUtils.showExceptionToast("${SourceEnum.CineZone.name} : " + e.toString());
             }
 
           },
@@ -365,7 +378,31 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                         ),
                       ],
-                    ),)
+                    ),),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          const CustomText(
+                            title: "CineZone",
+                            size: 12,
+                          ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          Obx(() => searchScreenController.isCineZoneSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                          Row(
+                            children: [
+                              Expanded(
+                                flex:8,
+                                child: MovieListView(
+                                  controller: searchScreenController.cineZoneScrollController,
+                                  moviesList:  searchScreenController.cineZoneSearchList,
+                                  hasReachedMax: searchScreenController.isCineZoneMoviesLoading.value,
+                                  sourceEnum: SourceEnum.CineZone,
+                                ),
+                              ),
+                            ],
+                          ),)
                         ],
                       )) : Container(),
                 )

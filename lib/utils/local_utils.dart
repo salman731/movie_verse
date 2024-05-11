@@ -172,11 +172,36 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://hdmovie2.app/page/${pageNo}?s=${queryMovieName}";
+      return "https://hdmovie2.video/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://hdmovie2.app/?s=${queryMovieName}";
+      return "https://hdmovie2.video/?s=${queryMovieName}";
+    }
+
+  }
+
+  static String getCineZoneSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://cinezone.to/filter?keyword=${queryMovieName}&page=${pageNo}";
+    }
+    else
+    {
+      return "https://cinezone.to/filter?keyword=${queryMovieName}";
     }
 
   }

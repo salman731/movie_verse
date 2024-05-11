@@ -111,7 +111,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
       id: "updateHomeScreen",
       builder: (_){
         return Scaffold(
-          floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: (){
+          floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: () async {
              //homeScreenController.loadWatchSeriesHomeScreen();
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),

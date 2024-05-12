@@ -185,19 +185,27 @@ class PrMoviesDetailController extends GetxController {
                 {
                   case "VidSrc PRO":
                     try {
-                      String rcpStreamLink = "https://vidsrc.stream/rcp/${serverElement.attributes["data-hash"]}";
-                      dom.Document rcpDocument = await WebUtils.getDomFromURL_Get(rcpStreamLink,headers: {"Referer":"https://vidsrc.net/","User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"});
-                      String? javaScriptStr = rcpDocument.querySelectorAll("script").where((element) => element.text.contains("player_iframe")).first.text;
-                      String rcpSrcStreamUrl = "https:${LocalUtils.getStringBetweenTwoStrings("src: '", "',", javaScriptStr)}";
-                      dom.Document rcpSrcStreamDocument = await WebUtils.getDomFromURL_Get(rcpSrcStreamUrl,headers: {"Referer":"https://vidsrc.net/"});
-                      String rcpJavascript = rcpSrcStreamDocument.querySelectorAll("script").where((element) => element.text.contains("Playerjs")).first.text;
-                      String encodedUrl = LocalUtils.getStringBetweenTwoStrings("file:\"#9", "\"", rcpJavascript).replaceAll(RegExp(r'/@#@\S+?=?='), "");
-                      String decodedUrl = String.fromCharCodes(base64Decode(encodedUrl));
-                      vidSrcNetMap[serverElement!.text.trim()] = decodedUrl;
+                      dom.Document? rcpSrcStreamDocument = await fetchandVerifyRcp(serverElement.attributes["data-hash"]!);
+                      if(rcpSrcStreamDocument != null)
+                        {
+                          String rcpJavascript = rcpSrcStreamDocument.querySelectorAll("script").where((element) => element.text.contains("Playerjs")).first.text;
+                          String encodedUrl = LocalUtils.getStringBetweenTwoStrings("file:\"#9", "\"", rcpJavascript).replaceAll(RegExp(r'/@#@\S+?=='), "");
+                          String decodedUrl = String.fromCharCodes(base64Decode(encodedUrl));
+                          vidSrcNetMap[serverElement!.text.trim()] = decodedUrl;
+                          map.addAll(vidSrcNetMap);
+                        }
                     } catch (e) {
                       print(e);
                     }
+                  case "Superembed":
+                    /*dom.Document? rcpSrcStreamDocument = await fetchandVerifyRcp(serverElement.attributes["data-hash"]!);
+                    if(rcpSrcStreamDocument != null)
+                      {
+                         String? javaScript = rcpSrcStreamDocument.querySelectorAll("script").where((element) => element.text.contains("streambucket.net/?play")).first.text;
+                         String? streamBucketUrl = LocalUtils.getStringBetweenTwoStrings("btoa(\"","\");", javaScript);
+                         String? token = Uri.parse(streamBucketUrl).queryParameters["play"];
 
+                      }*/
                 }
               }
 
@@ -271,6 +279,65 @@ class PrMoviesDetailController extends GetxController {
 
 
     return map;
+  }
+
+  Future<dom.Document?> fetchandVerifyRcp(String dataHash) async
+  {
+    String rcpStreamLink = "https://vidsrc.stream/rcp/$dataHash";
+    dom.Document? rcpDocument = await WebUtils.getDomFromURL_Get(rcpStreamLink,headers: {"Referer":"https://vidsrc.net/","User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"});
+    dom.Element? turnstileElement = rcpDocument.querySelector(".cf-turnstile");
+    if(turnstileElement != null)
+    {
+      dynamic response = await verifyRcp(rcpStreamLink);
+      if(response is dom.Document)
+      {
+        rcpDocument = response;
+      }
+      else if(response is bool && !response)
+      {
+        rcpDocument =  null;
+      }
+    }
+    if(rcpDocument != null)
+      {
+        String? javaScriptStr = rcpDocument.querySelectorAll("script").where((element) => element.text.contains("player_iframe")).first.text;
+        String rcpSrcStreamUrl = "https:${LocalUtils.getStringBetweenTwoStrings("src: '", "',", javaScriptStr)}";
+        dom.Document rcpSrcStreamDocument = await WebUtils.getDomFromURL_Get(rcpSrcStreamUrl,headers: {"Referer":"https://vidsrc.net/"});
+        return rcpSrcStreamDocument;
+      }
+    else
+      {
+        return null;
+      }
+
+  }
+
+  Future<dynamic> verifyRcp (String rcpStreamLink) async
+  {
+    late dom.Document rcpDocument;
+    var jsonBody = {
+      "sitekey": "0x4AAAAAAATD6DukOTUdZEnE",
+      "url": rcpStreamLink,
+      "invisible": "true"
+    };
+    var responseJson;
+    try {
+      String? response = await WebUtils.makePostRequest("https://turn.seized.live/solve",jsonEncode(jsonBody),headers: {"Content-Type":"application/json"});
+       responseJson = jsonDecode(response);
+    } catch (e) {
+      return false;
+    }
+
+    String? rcpVerrifyResponse = await WebUtils.makePostRequest("https://vidsrc.stream/rcp_verify",{"token":responseJson["token"]},headers: {"Content-Type": "application/x-www-form-urlencoded","Referer": rcpStreamLink,"X-Requested-With":"XMLHttpRequest","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"});
+    if(rcpVerrifyResponse == "1")
+      {
+        rcpDocument = await WebUtils.getDomFromURL_Get(rcpStreamLink,headers: {"Referer":"https://vidsrc.net/","User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"});
+        return rcpDocument;
+      }
+    else
+      {
+        return false;
+      }
   }
 
 }

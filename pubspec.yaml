@@ -65,6 +65,7 @@ dependencies:
   flick_video_player: ^0.7.0
   string_validator: ^1.0.2
   html_unescape: ^2.0.0
+  flutter_inappwebview: ^6.0.0
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@
 import 'package:Movieverse/constants/category_urls_contants.dart';
 import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
 import 'package:Movieverse/enums/cinezone_home_category_enum.dart';
+import 'package:Movieverse/enums/goku_home_category_enum.dart';
 import 'package:Movieverse/enums/hd_movie_2_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
@@ -13,6 +14,7 @@ import 'package:Movieverse/enums/watch_series_home_screen_category_enum.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_cover.dart';
 import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
@@ -37,6 +39,8 @@ class HomeScreenController extends GetxController
   final String WATCHSERIES_HOME_SERVER_URL = "https://watchseries.pe/home";
   final String CINEZONE_HOME_SERVER_URL = "https://cinezone.to/home";
   final String CINEZONE_SERVER_URL = "https://cinezone.to";
+  final String GOKU_SERVER_URL = "https://goku.sx";
+  final String GOKU_HOME_SERVER_URL = "https://goku.sx/home";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
@@ -46,6 +50,8 @@ class HomeScreenController extends GetxController
   Map<String,List<HdMovie2Cover>> hdMovie2CategoryListMap = <String,List<HdMovie2Cover>>{};
   Map<String,List<WatchSeriesCover>> watchSeriesCategoryListMap = <String,List<WatchSeriesCover>>{};
   Map<String,List<CineZoneCover>> cineZoneCategoryListMap = <String,List<CineZoneCover>>{};
+  Map<String,List<GokuCover>> gokuCategoryListMap = <String,List<GokuCover>>{};
+
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
   RxBool isUpMoviesHomePageLoading = false.obs,
       isPrimewireHomePageLoading = false.obs,
@@ -55,10 +61,11 @@ class HomeScreenController extends GetxController
       isWatchMoviesHomePageLoading = false.obs,
       isHdMovie2HomePageLoading = false.obs,
       isWatchSeriesHomePageLoading = false.obs,
-      isCineZoneHomePageLoading = false.obs;
+      isCineZoneHomePageLoading = false.obs,
+      isGokuHomePageLoading = false.obs;
 
 
-  Future<Map<String,List<UpMoviesCover>>> loadUpMoviesHomeScreen() async
+  Future<void> loadUpMoviesHomeScreen() async
    {
      dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(UPMOVIES_SERVER_URL);
      // Load Slider Movies (New Movies)
@@ -112,8 +119,6 @@ class HomeScreenController extends GetxController
 
      isUpMoviesHomePageLoading.value = true;
 
-     return upMoviesCategoryListMap;
-
    }
 
   List<UpMoviesCover> getUpMovieListByCategories(dom.Element element)
@@ -130,7 +135,7 @@ class HomeScreenController extends GetxController
      return list;
    }
 
-  Future<Map<String,List<PrimeWireCover>>> loadPrimewireHomeScreen() async
+  Future<void> loadPrimewireHomeScreen() async
    {
       for(MapEntry<String,String> mapEntry in PrimeWireCategoryUrlsContant.urlsMap.entries)
         {
@@ -170,10 +175,9 @@ class HomeScreenController extends GetxController
           }
         }
       isPrimewireHomePageLoading.value = true;
-      return primewireCategoryListMap;
    }
 
-  Future<Map<String,List<AllMovieLandCover>>> loadAllMovieLandHomeScreen() async
+  Future<void> loadAllMovieLandHomeScreen() async
   {
     dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(AllMOVIELAND_SERVER_URL);
     List<dom.Element> list = sourceDocument.querySelectorAll(".owl-carousel.main__block--carousel-big .short-big.new-short");
@@ -208,8 +212,6 @@ class HomeScreenController extends GetxController
       }
     isAllMovieLandHomePageLoading.value = true;
 
-    return allMovieLandCategoryListMap;
-
   }
 
   List<AllMovieLandCover> getAllMovieLandCategorisList(dom.Element element)
@@ -232,7 +234,7 @@ class HomeScreenController extends GetxController
     update(["updateHomeScreen"]);
   }
 
-  Future<Map<String,List<PrMoviesCover>>> loadPrMoviesHomeScreen() async
+  Future<void> loadPrMoviesHomeScreen() async
   {
     dom.Document sourceDocument = await WebUtils.getDomFromURL_Get(PRMOVIES_SERVER_URL);
     dom.Element featuredElement = sourceDocument.querySelector("#movie-featured")!;
@@ -264,10 +266,9 @@ class HomeScreenController extends GetxController
       }
 
     isPrMoviesHomePageLoading.value = true;
-    return prMoviesCategoryListMap;
   }
 
-  Future<Map<String,List<Film1kCover>>> loadFilm1kHomeScreen() async
+  Future<void> loadFilm1kHomeScreen() async
   {
     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(FILM1K_SERVER_URL);
     film1kCategoryListMap["Featured"] = SourceUtils.getFilm1kMoviesList(pageDocument);
@@ -283,12 +284,11 @@ class HomeScreenController extends GetxController
 
     isFilm1kHomePageLoading.value = true;
 
-    return film1kCategoryListMap;
 
 
   }
 
-  Future<Map<String,List<WatchMoviesCover>>> loadWatchMoviesHomeScreen() async
+  Future<void> loadWatchMoviesHomeScreen() async
   {
     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(WATCHMOVIES_SERVER_URL);
     dom.Element moviesElement = pageDocument.querySelector("#hpost")!;
@@ -307,12 +307,11 @@ class HomeScreenController extends GetxController
       }
 
     isWatchMoviesHomePageLoading.value =true;
-    return watchMoviesCategoryListMap;
 
   }
 
 
-  Future<Map<String,List<HdMovie2Cover>>> loadHdMovie2HomeScreen () async
+  Future<void> loadHdMovie2HomeScreen () async
   {
     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(HDMOVIE2_SERVER_URL);
     dom.Element featuredElement = pageDocument.querySelector(".items.featured")!;
@@ -335,7 +334,6 @@ class HomeScreenController extends GetxController
     hdMovie2CategoryListMap[HdMovie2HomeScreenCategoryEnum.Popular_Movies.name] = coverList;
 
     isHdMovie2HomePageLoading.value = true;
-    return hdMovie2CategoryListMap;
   }
 
   List<HdMovie2Cover> getHdMovie2List(dom.Element element)
@@ -360,7 +358,7 @@ class HomeScreenController extends GetxController
     return coverList;
   }
 
-  Future<Map<String,List<WatchSeriesCover>>> loadWatchSeriesHomeScreen() async
+  Future<void> loadWatchSeriesHomeScreen() async
   {
 
     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(WATCHSERIES_HOME_SERVER_URL);
@@ -381,7 +379,6 @@ class HomeScreenController extends GetxController
     watchSeriesCategoryListMap[WatchSeriesHomeScreenCategoryEnum.Latest_Tv_Shows.name] = SourceUtils.getWatchSeriesList(latestTvShowsElement);
 
     isWatchSeriesHomePageLoading.value = true;
-    return watchSeriesCategoryListMap;
   }
 
 
@@ -429,6 +426,50 @@ class HomeScreenController extends GetxController
 
     isCineZoneHomePageLoading.value = true;
 
+   }
+
+   Future<void> loadGokuHomeScreen () async
+   {
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(GOKU_HOME_SERVER_URL);
+     List<dom.Element> featuredElementList = pageDocument.querySelectorAll(".swiper-wrapper .swiper-slide .item-content");
+
+     List<GokuCover> featuredCoverList = [];
+     for(dom.Element featuredElement in featuredElementList)
+       {
+         String? url = GOKU_SERVER_URL + featuredElement.querySelector(".movie-thumbnail a")!.attributes["href"]!;
+         String? posterUrl = featuredElement.querySelector(".movie-thumbnail a img")!.attributes["src"];
+         String? title = featuredElement.querySelector(".movie-info a")!.text;
+         String? tag1 = featuredElement.querySelector(".movie-info .info-split .is-rated")!.text.trim().replaceAll("\n", "");
+         String? tag2 = featuredElement.querySelectorAll(".movie-info .info-split div")[2]!.text;
+         featuredCoverList.add(GokuCover(url: url,tag2: tag2,tag1: tag1,title: title,imageURL: posterUrl));
+       }
+
+     gokuCategoryListMap[GokuHomeCategoryEnum.Featured.name] = featuredCoverList;
+
+     dom.Element? trendinMoviesElement = pageDocument.querySelector("#trending-movies .section-items.section-items-default");
+     gokuCategoryListMap[GokuHomeCategoryEnum.Trending_Movies.name] = SourceUtils.getGokuList(trendinMoviesElement!);
+
+     dom.Element? trendinSeriesElement = pageDocument.querySelector("#trending-series .section-items.section-items-default");
+     gokuCategoryListMap[GokuHomeCategoryEnum.Trending_Tv_Shows.name] = SourceUtils.getGokuList(trendinSeriesElement!);
+
+     List<dom.Element> latestElementList = pageDocument.querySelectorAll(".section-row.section-padding.section-last");
+
+     for(dom.Element latestElement in latestElementList)
+       {
+          String? key = latestElement.querySelector(".section-header .section-name")!.text;
+
+          switch (key)
+          {
+            case "Latest Movies":
+              dom.Element? latestMoviesElement = latestElement.querySelector(".section-items.section-items-default");
+              gokuCategoryListMap[GokuHomeCategoryEnum.Latest_Movies.name] = SourceUtils.getGokuList(latestMoviesElement!);
+            case "Latest TV Series":
+              dom.Element? latestTvShowsElement = latestElement.querySelector(".section-items.section-items-default");
+              gokuCategoryListMap[GokuHomeCategoryEnum.Latest_Tv_Shows.name] = SourceUtils.getGokuList(latestTvShowsElement!);
+          }
+       }
+
+     isGokuHomePageLoading.value = true;
 
    }
 

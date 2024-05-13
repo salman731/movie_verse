@@ -69,6 +69,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                 case SourceEnum.CineZone:
                   await searchScreenController.loadCineZoneSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.cineZoneSearchList;
+          case SourceEnum.Goku:
+            // TODO: Handle this case.
             }
         isMoviesLoading.value = false;
       }
@@ -108,6 +110,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
       case SourceEnum.CineZone:
         await searchScreenController.loadCineZoneSearchList(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.cineZoneSearchList;
+      case SourceEnum.Goku:
+        // TODO: Handle this case.
     }
     isSourceLoading.value = false;
   }
@@ -143,6 +147,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                             Get.to(WatchSeriesDetailScreen(watchSeriesCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                           case SourceEnum.CineZone:
                             Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().cineZoneSearchList[index]));
+                          case SourceEnum.Goku:
+                            // TODO: Handle this case.
                         }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag1: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag1 : "" ,tag2: homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag2 : "",));
                     },childCount: selectedSourceList.length), gridDelegate:

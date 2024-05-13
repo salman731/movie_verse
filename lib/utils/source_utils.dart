@@ -1,6 +1,7 @@
 
 import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
@@ -12,6 +13,7 @@ class SourceUtils
 
   static final String WATCHSERIES_SERVER_URL = "https://watchseries.pe";
   static final String CINEZONE_SERVER_URL = "https://cinezone.to";
+  static final String GOKU_SERVER_URL = "https://goku.sx";
   static List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
   {
     List<dom.Element> list = element.querySelectorAll(".ml-item");
@@ -99,6 +101,24 @@ class SourceUtils
         String? tag1 = tags.split("-")[0].trim();
         String? tag2 = tags.split("-")[1].trim();
         coverList.add(CineZoneCover(imageURL: posterUrl,title: title,tag1: tag1,tag2: tag2,url: url));
+      }
+    return coverList;
+  }
+
+  static List<GokuCover> getGokuList (dom.Element element)
+  {
+    List<GokuCover> coverList = [];
+    List<dom.Element> coverElementList= element.querySelectorAll(".item");
+
+    for(dom.Element coverElement in coverElementList)
+      {
+        String? posterUrl = coverElement.querySelector(".movie-thumbnail a img")!.attributes["src"];
+        String? url = GOKU_SERVER_URL + coverElement.querySelector(".movie-info .movie-link")!.attributes["href"]!;
+        String? title = coverElement.querySelector(".movie-info .movie-name")!.text;
+        List<dom.Element> movieInfoList = coverElement.querySelectorAll(".info-split div");
+        String? tag1 = movieInfoList[0]!.text;
+        String? tag2 = movieInfoList[2]!.text;
+        coverList.add(GokuCover(title: title,imageURL: posterUrl,tag1: tag1,tag2: tag2,url: url));
       }
     return coverList;
   }

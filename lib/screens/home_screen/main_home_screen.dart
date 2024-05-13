@@ -9,6 +9,7 @@ import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/screens/home_screen/all_movie_land_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/cine_zone_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/goku_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/hd_movie2_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
@@ -19,6 +20,7 @@ import 'package:Movieverse/screens/home_screen/widgets/carousel_widget.dart';
 import 'package:Movieverse/screens/home_screen/widgets/movie_listview.dart';
 import 'package:Movieverse/utils/shared_prefs_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
+import 'package:Movieverse/utils/web_view_utils.dart';
 import 'package:Movieverse/widgets/custom_error_widget.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:Movieverse/widgets/source_search_bottom_sheet_widget.dart';
@@ -113,6 +115,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         return Scaffold(
           floatingActionButton: Obx(()=> FloatingActionButton.extended(onPressed: () async {
              //homeScreenController.loadWatchSeriesHomeScreen();
+           /* await WebViewUtils.loadUrlInWebView("https://rabbitstream.net/v2/embed-4/lUazELlqq97k?z=","playlist.m3u8",header: {"Referer" : "https://flixhq.to/"},(resultURL){
+              print("resultURL :" + resultURL);
+            });*/
               SourceListDialog.showSourceListDialog(context);
             }, label: Text(homeScreenController.selectedSource.value.name),backgroundColor: AppColors.red,icon: Icon(Icons.segment_rounded),),
           ),/*FloatingActionButton(onPressed: (){
@@ -186,6 +191,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           homeScreenController.loadCineZoneHomeScreen();
         }
         return const CineZoneHomeScreenWidget();
+      case SourceEnum.Goku:
+        if (homeScreenController.gokuCategoryListMap.isEmpty) {
+          homeScreenController.isGokuHomePageLoading.value = false;
+          homeScreenController.loadGokuHomeScreen();
+        }
+        return const GokuHomeScreenWidget();
     }
     return Container();
   }

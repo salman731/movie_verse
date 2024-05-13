@@ -69,6 +69,8 @@ class CarouselWidget extends StatelessWidget {
                               Get.to(WatchSeriesDetailScreen(watchSeriesCover: item));
                             case SourceEnum.CineZone:
                               // TODO: Handle this case.
+                            case SourceEnum.Goku:
+                              // TODO: Handle this case.
                           }
                         }),
                   )

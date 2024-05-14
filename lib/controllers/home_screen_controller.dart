@@ -436,7 +436,7 @@ class HomeScreenController extends GetxController
      List<GokuCover> featuredCoverList = [];
      for(dom.Element featuredElement in featuredElementList)
        {
-         String? url = GOKU_SERVER_URL + featuredElement.querySelector(".movie-thumbnail a")!.attributes["href"]!;
+         String? url = GOKU_SERVER_URL + featuredElement.querySelector(".movie-thumbnail a")!.attributes["href"]!.replaceAll("/series/", "/watch-series/").replaceAll("/movie/", "/watch-movie/");
          String? posterUrl = featuredElement.querySelector(".movie-thumbnail a img")!.attributes["src"];
          String? title = featuredElement.querySelector(".movie-info a")!.text;
          String? tag1 = featuredElement.querySelector(".movie-info .info-split .is-rated")!.text.trim().replaceAll("\n", "");

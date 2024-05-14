@@ -25,6 +25,7 @@ import 'package:Movieverse/widgets/custom_error_widget.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:Movieverse/widgets/source_search_bottom_sheet_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -77,6 +78,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     // _popularmoviescontroller.addListener(_onPopularMovieScroll);
     // _recentmoviescontroller.addListener(_onRecentMovieScroll);
     // _upcomingmoviescontroller.addListener(_onUpcomingMovieScroll);
+    InAppWebViewController.setWebContentsDebuggingEnabled(false);
     searchScreenController.initWebViewController();
     Get.find<HomeScreenController>().selectedSource.value = SourceEnum.values.firstWhere((e) => e.toString() == 'SourceEnum.' + SharedPrefsUtil.getString(SharedPrefsUtil.KEY_SELECTED_SOURCE,defaultValue: SourceEnum.UpMovies.name));
     listener = _checker.onStatusChange.listen((status) {

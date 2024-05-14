@@ -113,7 +113,7 @@ class SourceUtils
     for(dom.Element coverElement in coverElementList)
       {
         String? posterUrl = coverElement.querySelector(".movie-thumbnail a img")!.attributes["src"];
-        String? url = GOKU_SERVER_URL + coverElement.querySelector(".movie-info .movie-link")!.attributes["href"]!;
+        String? url = GOKU_SERVER_URL + coverElement.querySelector(".movie-thumbnail .pos-center .is-watch a")!.attributes["href"]!;
         String? title = coverElement.querySelector(".movie-info .movie-name")!.text;
         List<dom.Element> movieInfoList = coverElement.querySelectorAll(".info-split div");
         String? tag1 = movieInfoList[0]!.text;

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:http/io_client.dart';
 
 class WebUtils
 {
@@ -34,6 +35,16 @@ class WebUtils
    {
      http.Response  response = await http.Client().post(Uri.parse(url),body: body,headers: headers);
      return response.body;
+   }
+
+   static Future<String> requestWithBadCertificate (String url) async
+   {
+     final ioc = new HttpClient();
+     ioc.badCertificateCallback =
+         (X509Certificate cert, String host, int port) => true;
+     final http = new IOClient(ioc);
+    var response =  await http.get(Uri.parse(url));
+    return response.body;
    }
 
    static dom.Document getDomfromHtml (String html)

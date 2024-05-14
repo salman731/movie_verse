@@ -9,6 +9,7 @@ import 'package:Movieverse/models/cinezone/cinezone_detail.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/cine_zone/cinezone_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/goku/goku_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/hdmovie2/hd_movie2_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
@@ -75,7 +76,7 @@ class MovieListView extends StatelessWidget {
                       Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().cineZoneSearchList[index]));
                       //Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                     case SourceEnum.Goku:
-                      // TODO: Handle this case.
+                      //Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>()))
                   }
                 } else {
                   switch (sourceEnum)
@@ -101,15 +102,15 @@ class MovieListView extends StatelessWidget {
                     case SourceEnum.CineZone:
                       Get.to(CineZoneDetailScreen(cineZoneCover: moviesList[index],));
                     case SourceEnum.Goku:
-                      // TODO: Handle this case.
+                      Get.to(GokuDetailScreen(gokuCover: moviesList[index]));
                   }
                 }
               },
               child: MovieCard(
                 imgurl: moviesList[index].imageURL!,
                 title: moviesList[index].title!,
-                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone ?  moviesList[index].tag1 : "",
-                tag2: sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone ? moviesList[index].tag2 : "",
+                tag1: sourceEnum == SourceEnum.PrMovies ? moviesList[index].tag : sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone || sourceEnum == SourceEnum.Goku ?  moviesList[index].tag1 : "",
+                tag2: sourceEnum == SourceEnum.HdMovie2 || sourceEnum == SourceEnum.WatchSeries || sourceEnum == SourceEnum.CineZone || sourceEnum == SourceEnum.Goku ? moviesList[index].tag2 : "",
                 //rate: 2.4,
               ),
             );

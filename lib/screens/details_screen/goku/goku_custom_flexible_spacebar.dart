@@ -1,6 +1,7 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/models/cinezone/cinezone_detail.dart';
 import 'package:Movieverse/models/goku/goku_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -106,13 +107,13 @@ class GokuCustomFlexibleSpaceBarState extends State<GokuCustomFlexibleSpaceBar> 
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Duration',
                     content:
                     widget.gokuDetail.duration!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content: widget.gokuDetail.country!,
                   ),
@@ -187,25 +188,5 @@ class GokuCustomFlexibleSpaceBarState extends State<GokuCustomFlexibleSpaceBar> 
       ),
     );
   }
-
-  Expanded _buildCoulmnInfo({required String title, required String content}) {
-    return Expanded(
-      child: Column(
-        children: [
-          CustomText(
-            title: title,
-            color: Colors.grey,
-            size: 8,
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          CustomText(
-            title: content,
-            size: 10,
-          ),
-        ],
-      ),
-    );
-  }
+  
 }

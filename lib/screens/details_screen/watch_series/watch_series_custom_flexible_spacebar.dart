@@ -1,6 +1,7 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/watch_series/watch_series_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -138,18 +139,18 @@ class WatchSeriesCustomFlexibleSpaceBarState extends State<WatchSeriesCustomFlex
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Released Date',
                     content: widget.watchSeriesDetail.releasedDate!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Duration',
                     content:
                     widget.watchSeriesDetail.duration!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content: widget.watchSeriesDetail.country!,
                   ),
@@ -225,24 +226,5 @@ class WatchSeriesCustomFlexibleSpaceBarState extends State<WatchSeriesCustomFlex
     );
   }
 
-  Expanded _buildCoulmnInfo({required String title, required String content}) {
-    return Expanded(
-      child: Column(
-        children: [
-          CustomText(
-            title: title,
-            color: Colors.grey,
-            size: 8,
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          CustomText(
-            title: content,
-            size: 10,
-          ),
-        ],
-      ),
-    );
-  }
+
 }

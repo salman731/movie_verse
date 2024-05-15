@@ -1,5 +1,6 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/models/cinezone/cinezone_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -136,18 +137,18 @@ class CineZoneCustomFlexibleSpaceBarState extends State<CineZoneCustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Released Date',
                     content: widget.cineZoneDetail.releasedDate!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Duration',
                     content:
                     widget.cineZoneDetail.duration!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content: widget.cineZoneDetail.country!,
                   ),
@@ -157,18 +158,18 @@ class CineZoneCustomFlexibleSpaceBarState extends State<CineZoneCustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content: widget.cineZoneDetail.director!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Type',
                     content:
                     widget.cineZoneDetail.type!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Year',
                     content: widget.cineZoneDetail.year!,
                   ),
@@ -243,25 +244,5 @@ class CineZoneCustomFlexibleSpaceBarState extends State<CineZoneCustomFlexibleSp
       ),
     );
   }
-
-  Expanded _buildCoulmnInfo({required String title, required String content}) {
-    return Expanded(
-      child: Column(
-        children: [
-          CustomText(
-            title: title,
-            color: Colors.grey,
-            size: 8,
-          ),
-          SizedBox(
-            height: 1.h,
-          ),
-          CustomText(
-            title: content,
-            size: 10,
-          ),
-        ],
-      ),
-    );
-  }
+  
 }

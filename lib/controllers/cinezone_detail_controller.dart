@@ -218,7 +218,7 @@ class CineZoneDetailController extends GetxController
         Map<String,String> episodeMap = Map();
         for (dom.Element episodeElement in episodesList)
           {
-            String? episodeName = episodeElement.querySelector("p")!.text + " - " + _parseHtmlString(episodeElement.querySelector("span")!.text);
+            String? episodeName = episodeElement.querySelector("p")!.text + " - " + LocalUtils.convertHtmlToUnescape(episodeElement.querySelector("span")!.text);
             episodeMap[episodeName] = episodeElement.querySelector("a")!.attributes["data-id"]!;
           }
         map[seasonNo] = episodeMap;
@@ -242,11 +242,7 @@ class CineZoneDetailController extends GetxController
   }
 
 
-  String _parseHtmlString(String htmlString) {
-    var unescape = new HtmlUnescape();
-    var text = unescape.convert(htmlString);
-    return text;
-  }
+
 
  String? getServerName(String? id)
   {

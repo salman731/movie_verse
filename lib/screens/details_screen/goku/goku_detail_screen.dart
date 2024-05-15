@@ -145,7 +145,7 @@ class _GokuDetailScreenState extends State<GokuDetailScreen> {
                                     ],
                                   ),
                                 ),
-                                /*if(snapshot.data!.url!.contains("/tv/") && snapshot.data!.episodeSeasonMap!.isNotEmpty)...[
+                                if(snapshot.data!.url!.contains("/watch-series/") && snapshot.data!.episodeSeasonMap!.isNotEmpty)...[
                                   RichText(
                                     maxLines: 15,
                                     overflow: TextOverflow.ellipsis,
@@ -176,10 +176,10 @@ class _GokuDetailScreenState extends State<GokuDetailScreen> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         iconEnabledColor: AppColors.red,
-                                        value: cineZoneDetailController.selectedSeason.value,
+                                        value: gokuDetailController.selectedSeason.value,
                                         onChanged: (String? newValue) {
-                                          cineZoneDetailController.selectedSeason.value = newValue!;
-                                          cineZoneDetailController.selectedEpisode.value = snapshot.data!.episodeSeasonMap![newValue]!.keys.first;
+                                          gokuDetailController.selectedSeason.value = newValue!;
+                                          gokuDetailController.selectedEpisode.value = snapshot.data!.episodeSeasonMap![newValue]!.keys.first;
                                         },
                                         items: snapshot!.data!.episodeSeasonMap!.keys.map((String value) {
                                           return DropdownMenuItem<String>(
@@ -224,11 +224,11 @@ class _GokuDetailScreenState extends State<GokuDetailScreen> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         iconEnabledColor: AppColors.red,
-                                        value: cineZoneDetailController.selectedEpisode.value,
+                                        value: gokuDetailController.selectedEpisode.value,
                                         onChanged: (String? newValue) {
-                                          cineZoneDetailController.selectedEpisode.value = newValue!;
+                                          gokuDetailController.selectedEpisode.value = newValue!;
                                         },
-                                        items: snapshot.data!.episodeSeasonMap![cineZoneDetailController.selectedSeason.value]!.keys.map((String value) {
+                                        items: snapshot.data!.episodeSeasonMap![gokuDetailController.selectedSeason.value]!.keys.map((String value) {
                                           return DropdownMenuItem<String>(
                                             value: value,
                                             child: Text("${value}"),
@@ -240,24 +240,22 @@ class _GokuDetailScreenState extends State<GokuDetailScreen> {
                                     ),
                                   ),
                                   ),
-                                ],*/
+                                ],
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {
                                     LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links......");
                                     String serverId = "";
-                                    late bool isTvshow;
-                                    if(snapshot.data!.url!.contains("/series/"))
+                                    if(snapshot.data!.url!.contains("/watch-series/"))
                                     {
-                                      // isTvshow = true;
-                                      // serverId = snapshot.data!.episodeSeasonMap![cineZoneDetailController.selectedSeason.value]![cineZoneDetailController.selectedEpisode.value]!;
+
+                                      serverId = snapshot.data!.episodeSeasonMap![gokuDetailController.selectedSeason.value]![gokuDetailController.selectedEpisode.value]!;
                                     }
                                     else
                                     {
-                                      isTvshow = false;
                                       serverId = snapshot.data!.serverId!;
                                     }
-                                    Map<String,Map<String,String>> map = await  gokuDetailController.getVideoServerLinks(serverId,isTvshow);
+                                    Map<String,Map<String,String>> map = await  gokuDetailController.getVideoServerLinks(serverId);
                                     LoaderDialog.stopLoaderDialog();
                                     ServerListDialog.showServerListDialog(navigatorKey.currentContext!, map,widget.gokuCover.title!,isDirectPlay: true,isNativemxPlayer: false);
 

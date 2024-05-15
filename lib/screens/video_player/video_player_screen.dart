@@ -57,6 +57,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             flickVideoWithControls: FlickVideoWithControls(
               videoFit: videoPlayerScreenController.flickVideoPlayerBoxfit.value,
               controls: LandscapePlayerControls(title: widget.title,),
+
             ),
           ),
         ),

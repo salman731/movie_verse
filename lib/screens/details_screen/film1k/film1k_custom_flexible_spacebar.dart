@@ -1,5 +1,6 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/models/film_1k/film_1k_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -134,23 +135,23 @@ class Film1kCustomFlexibleSpaceBarState extends State<Film1kCustomFlexibleSpaceB
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Released Date',
                     content: widget.film1kDetail.released!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'RunTime',
                     content:
                         widget.film1kDetail.runtime!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content: widget.film1kDetail.director!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Language',
                     content: widget.film1kDetail.language!,
                   ),
@@ -171,24 +172,5 @@ class Film1kCustomFlexibleSpaceBarState extends State<Film1kCustomFlexibleSpaceB
       ),
     );
   }
-
-  Column _buildCoulmnInfo({required String title, required String content}) {
-    return Column(
-      children: [
-        CustomText(
-          title: title,
-          color: Colors.grey,
-          size: 8,
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        CustomText(
-          title: content,
-          maxlines: 2,
-          size: 10,
-        ),
-      ],
-    );
-  }
+  
 }

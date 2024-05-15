@@ -91,6 +91,12 @@ class _SearchScreenState extends State<SearchScreen> {
         searchScreenController.loadCineZoneSearchList(searchEditingController.text,isLoadMore: true);
       }
     });
+
+    searchScreenController.gokuScrollController.addListener(() {
+      if (searchScreenController.cineZoneScrollController.position.extentAfter == 0) {
+        searchScreenController.loadGokuSearchList(searchEditingController.text,isLoadMore: true);
+      }
+    });
   }
 
   @override
@@ -167,6 +173,13 @@ class _SearchScreenState extends State<SearchScreen> {
             } catch (e) {
               searchScreenController.isCineZoneSourceLoading.value = false;
               LocalUtils.showExceptionToast("${SourceEnum.CineZone.name} : " + e.toString());
+            }
+
+            try {
+              await searchScreenController.loadGokuSearchList(searchEditingController.text);
+            } catch (e) {
+              searchScreenController.isGokuSourceLoading.value = false;
+              LocalUtils.showExceptionToast("${SourceEnum.Goku.name} : " + e.toString());
             }
 
           },
@@ -399,6 +412,30 @@ class _SearchScreenState extends State<SearchScreen> {
                                   moviesList:  searchScreenController.cineZoneSearchList,
                                   hasReachedMax: searchScreenController.isCineZoneMoviesLoading.value,
                                   sourceEnum: SourceEnum.CineZone,
+                                ),
+                              ),
+                            ],
+                          ),),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          const CustomText(
+                            title: "Goku",
+                            size: 12,
+                          ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          Obx(() => searchScreenController.isGokuSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                          Row(
+                            children: [
+                              Expanded(
+                                flex:8,
+                                child: MovieListView(
+                                  controller: searchScreenController.gokuScrollController,
+                                  moviesList:  searchScreenController.gokuSearchList,
+                                  hasReachedMax: searchScreenController.isGokuMoviesLoading.value,
+                                  sourceEnum: SourceEnum.Goku,
                                 ),
                               ),
                             ],

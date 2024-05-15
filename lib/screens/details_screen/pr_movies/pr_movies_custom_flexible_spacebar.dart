@@ -3,6 +3,7 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_detail.dart';
 import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -137,18 +138,18 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Language/Quality',
                     content: widget.prMoviesDetail.languageQuality!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.languageQuality! ,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Runtime',
                     content:
                     widget.prMoviesDetail.runtime!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.runtime!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Released',
                     content:
                     widget.prMoviesDetail.released!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.released!,
@@ -160,14 +161,14 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if(widget.prMoviesDetail.studio!.isNotEmpty)...[
-                    _buildCoulmnInfo(
+                    BuildColumnInfo(
                       title: 'Studio',
                       content: widget.prMoviesDetail.studio!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.studio! ,
                     ),
                   ],
                   if(widget.prMoviesDetail.tvStatus!.isNotEmpty)...[
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Tv Status',
                     content:
                     widget.prMoviesDetail.tvStatus!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.tvStatus!,
@@ -175,7 +176,7 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
                   ],
                   if(widget.prMoviesDetail.networks!.isNotEmpty)...[
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Networks',
                     content:
                     widget.prMoviesDetail.networks!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.networks!,
@@ -187,12 +188,12 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content:widget.prMoviesDetail.country!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.country!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content:
                     widget.prMoviesDetail.director!.trim().isEmpty ? "N/A" : widget.prMoviesDetail.director!,
@@ -268,23 +269,5 @@ class PrMoviesCustomFlexibleSpaceBarState extends State<PrMoviesCustomFlexibleSp
       ),
     );
   }
-
-  Column _buildCoulmnInfo({required String title, required String content}) {
-    return Column(
-      children: [
-        CustomText(
-          title: title,
-          color: Colors.grey,
-          size: 8,
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        CustomText(
-          title: content,
-          size: 10,
-        ),
-      ],
-    );
-  }
+  
 }

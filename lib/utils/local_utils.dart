@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
+import 'package:html_unescape/html_unescape.dart';
 
 class LocalUtils
 {
@@ -172,11 +173,11 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://hdmovie2.video/page/${pageNo}?s=${queryMovieName}";
+      return "https://hdmovie2.cab/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://hdmovie2.video/?s=${queryMovieName}";
+      return "https://hdmovie2.cab/?s=${queryMovieName}";
     }
 
   }
@@ -202,6 +203,31 @@ class LocalUtils
     else
     {
       return "https://cinezone.to/filter?keyword=${queryMovieName}";
+    }
+
+  }
+
+  static String getGokuSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("+");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://goku.sx/search?keyword=${queryMovieName}&page=${pageNo}";
+    }
+    else
+    {
+      return "https://goku.sx/search?keyword=${queryMovieName}";
     }
 
   }
@@ -301,5 +327,13 @@ class LocalUtils
   {
     final whitespaceRE = RegExp(r"(?! )\s+| \s+");
     return str.split(whitespaceRE).join(" ");
+  }
+
+  static String convertHtmlToUnescape (String txt)
+  {
+      var unescape = new HtmlUnescape();
+      var text = unescape.convert(txt);
+      return text;
+
   }
 }

@@ -35,7 +35,7 @@ class HomeScreenController extends GetxController
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
   final String FILM1K_SERVER_URL = "https://www.film1k.com";
   final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
-  final String HDMOVIE2_SERVER_URL = "https://hdmovie2.video";
+  final String HDMOVIE2_SERVER_URL = "https://hdmovie2.cab";
   final String WATCHSERIES_HOME_SERVER_URL = "https://watchseries.pe/home";
   final String CINEZONE_HOME_SERVER_URL = "https://cinezone.to/home";
   final String CINEZONE_SERVER_URL = "https://cinezone.to";

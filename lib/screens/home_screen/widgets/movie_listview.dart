@@ -6,6 +6,7 @@ import 'package:Movieverse/controllers/watch_movies_detail_controller.dart';
 import 'package:Movieverse/controllers/watch_series_detail_controller.dart';
 import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/models/cinezone/cinezone_detail.dart';
+import 'package:Movieverse/models/goku/goku_detail.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/cine_zone/cinezone_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
@@ -76,7 +77,7 @@ class MovieListView extends StatelessWidget {
                       Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().cineZoneSearchList[index]));
                       //Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().watchSeriesSearchList[index]));
                     case SourceEnum.Goku:
-                      //Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>()))
+                      Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>().gokuSearchList[index]));
                   }
                 } else {
                   switch (sourceEnum)
@@ -90,7 +91,6 @@ class MovieListView extends StatelessWidget {
                       Get.to(Film1kDetailScreen(film1kCover: moviesList[index]));
                     case SourceEnum.AllMovieLand:
                       Get.to(AllMovieLandDetailsScreen(allMovieLandCover: moviesList[index]));
-
                     case SourceEnum.PrMovies:
                       Get.to(PrMoviesDetailScreen(prMoviesCover: moviesList[index]));
                     case SourceEnum.WatchMovies:

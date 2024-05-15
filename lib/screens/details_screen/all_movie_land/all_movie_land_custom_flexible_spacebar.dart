@@ -2,6 +2,7 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -137,12 +138,12 @@ class AllMovieLandCustomFlexibleSpaceBarState extends State<AllMovieLandCustomFl
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Orginal Language',
                     content: widget.allMovieLandDetail.oringalLanguage!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.oringalLanguage! ,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Runtime',
                     content:
                     widget.allMovieLandDetail.runtime!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.runtime!,
@@ -153,18 +154,18 @@ class AllMovieLandCustomFlexibleSpaceBarState extends State<AllMovieLandCustomFl
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Translation Language',
                     content:widget.allMovieLandDetail.translationLanguage!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.translationLanguage!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content:
                     widget.allMovieLandDetail.director!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.director!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content: widget.allMovieLandDetail.country!.trim().isEmpty ? "N/A" : widget.allMovieLandDetail.country!,
                   ),
@@ -240,22 +241,5 @@ class AllMovieLandCustomFlexibleSpaceBarState extends State<AllMovieLandCustomFl
     );
   }
 
-  Column _buildCoulmnInfo({required String title, required String content}) {
-    return Column(
-      children: [
-        CustomText(
-          title: title,
-          color: Colors.grey,
-          size: 8,
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        CustomText(
-          title: content,
-          size: 10,
-        ),
-      ],
-    );
-  }
+
 }

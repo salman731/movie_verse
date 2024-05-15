@@ -3,6 +3,7 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_detail.dart';
 import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
@@ -139,12 +140,12 @@ class HdMovie2CustomFlexibleSpaceBarState extends State<HdMovie2CustomFlexibleSp
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Runtime',
                     content: widget.hdMovie2Detail.duration!.trim().isEmpty ? "N/A" : widget.hdMovie2Detail.duration! ,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Released Date',
                     content:
                     widget.hdMovie2Detail.releasedDate!.trim().isEmpty ? "N/A" : widget.hdMovie2Detail.releasedDate!,
@@ -156,13 +157,13 @@ class HdMovie2CustomFlexibleSpaceBarState extends State<HdMovie2CustomFlexibleSp
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Country',
                     content:
                     widget.hdMovie2Detail.country!.trim().isEmpty ? "N/A" : widget.hdMovie2Detail.country!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content:
                     widget.hdMovie2Detail.director!.trim().isEmpty ? "N/A" : widget.hdMovie2Detail.director!,
@@ -182,24 +183,5 @@ class HdMovie2CustomFlexibleSpaceBarState extends State<HdMovie2CustomFlexibleSp
       ),
     );
   }
-
-  Column _buildCoulmnInfo({required String title, required String content}) {
-    return Column(
-      children: [
-        CustomText(
-          title: title,
-          color: Colors.grey,
-          size: 8,
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        CustomText(
-          title: content,
-          size: 10,
-          maxlines: 3,
-        ),
-      ],
-    );
-  }
+  
 }

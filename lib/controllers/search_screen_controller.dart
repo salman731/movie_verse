@@ -12,6 +12,7 @@ import 'package:Movieverse/models/all_movie_land/all_movie_land_detail.dart';
 import 'package:Movieverse/models/all_movie_land/all_movie_land_search_request.dart';
 import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
+import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
@@ -41,7 +42,7 @@ class SearchScreenController extends GetxController
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
-   final String HDMOVIE2SERVER_URL = "https://hdmovie2.video";
+   final String HDMOVIE2SERVER_URL = "https://hdmovie2.cab";
    final String WATCHSERIESSERVER_URL = "https://watchseries.pe";
 
    List<UpMoviesCover> upMoviesSearchList  = [];
@@ -53,6 +54,7 @@ class SearchScreenController extends GetxController
    List<HdMovie2Cover> hdMovie2SearchList  = [];
    List<WatchSeriesCover> watchSeriesSearchList  = [];
    List<CineZoneCover> cineZoneSearchList  = [];
+   List<GokuCover> gokuSearchList  = [];
 
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
@@ -63,6 +65,7 @@ class SearchScreenController extends GetxController
    RxBool isHdMovie2SourceLoading = false.obs;
    RxBool isWatchSeriesSourceLoading = false.obs;
    RxBool isCineZoneSourceLoading = false.obs;
+   RxBool isGokuSourceLoading = false.obs;
 
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
@@ -73,6 +76,7 @@ class SearchScreenController extends GetxController
    RxBool isHdMovie2MoviesLoading = false.obs;
    RxBool isWatchSeriesMoviesLoading = false.obs;
    RxBool isCineZoneMoviesLoading = false.obs;
+   RxBool isGokuMoviesLoading = false.obs;
 
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
@@ -86,6 +90,7 @@ class SearchScreenController extends GetxController
    ScrollController hdMovie2ScrollController = ScrollController();
    ScrollController watchSeriesScrollController = ScrollController();
    ScrollController cineZoneScrollController = ScrollController();
+   ScrollController gokuScrollController = ScrollController();
 
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
@@ -96,6 +101,7 @@ class SearchScreenController extends GetxController
    int hdMovie2CurrentPage = 1;
    int watchSeriesCurrentPage = 1;
    int cineZoneCurrentPage = 1;
+   int gokuCurrentPage = 1;
 
    WebViewController? webViewController;
    String? primewireMovieTitle;
@@ -108,6 +114,7 @@ class SearchScreenController extends GetxController
    int maxHdMovie2SearchPage = 1;
    int maxWatchSeriesSearchPage = 1;
    int maxCineZoneSearchPage = 1;
+   int maxGokuSearchPage = 1;
 
   startShowingLoadingSources()
   {
@@ -120,6 +127,7 @@ class SearchScreenController extends GetxController
     isHdMovie2SourceLoading.value = true;
     isWatchSeriesSourceLoading.value = true;
     isCineZoneSourceLoading.value = true;
+    isGokuSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -606,6 +614,52 @@ class SearchScreenController extends GetxController
          cineZoneSearchList = await getCineZoneSearchList(finalSearchUrl,isLoadMore: isLoadMore);
          isCineZoneSourceLoading.value = false;
        }
+   }
+
+
+   Future<List<GokuCover>> getGokuSearchList (String pageUrl, {bool isLoadMore= false}) async
+   {
+     List<GokuCover> coverList = [];
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(pageUrl);
+     dom.Element? searchElement = pageDocument.querySelector(".section-items.section-items-default");
+     coverList = SourceUtils.getGokuList(searchElement!);
+     if(!isLoadMore)
+       {
+          dom.Element? navigationElement = pageDocument.querySelector(".section-pagination.section-padding");
+          if(navigationElement != null)
+            {
+               String maxPageUrl = navigationElement.querySelector(".pagination.justify-content-center.mb-0 li a[title=\"Last\"]")!.attributes["href"]!;
+               maxGokuSearchPage = int.parse(LocalUtils.getStringAfterStartStringToEnd("page=", maxPageUrl));
+            }
+          else
+            {
+
+              maxGokuSearchPage = 1;
+            }
+       }
+
+     return coverList;
+   }
+
+   loadGokuSearchList (String keyword , {bool isLoadMore = false}) async
+   {
+     if(isLoadMore && gokuCurrentPage < maxGokuSearchPage)
+       {
+         gokuCurrentPage += 1;
+         isGokuMoviesLoading.value = true;
+         String finalSearchUrl = LocalUtils.getGokuSearchUrl(keyword,isLoadMore: isLoadMore,pageNo: gokuCurrentPage);
+         List<GokuCover> list = await getGokuSearchList(finalSearchUrl,isLoadMore: isLoadMore);
+         gokuSearchList.addAll(list);
+         isGokuMoviesLoading.value = false;
+       }
+     else if (!isLoadMore)
+       {
+         gokuCurrentPage = 1;
+         String finalSearchUrl = LocalUtils.getGokuSearchUrl(keyword,isLoadMore: isLoadMore);
+         gokuSearchList = await getGokuSearchList(finalSearchUrl,isLoadMore: isLoadMore);
+         isGokuSourceLoading.value = false;
+       }
+
    }
 
 

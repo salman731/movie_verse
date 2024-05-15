@@ -5,6 +5,7 @@ import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_detail.dart';
+import 'package:Movieverse/screens/details_screen/widgets/build_column_info.dart';
 import 'package:Movieverse/screens/details_screen/widgets/favorite_button.dart';
 import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -110,18 +111,18 @@ class WatchMoviesCustomFlexibleSpaceBarState extends State<WatchMoviesCustomFlex
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Duration',
                     content: widget.watchMoviesDetail.duration!.trim().isEmpty ? "N/A" : widget.watchMoviesDetail.duration! ,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Director',
                     content:
                     widget.watchMoviesDetail.director!.trim().isEmpty ? "N/A" : widget.watchMoviesDetail.director!,
                   ),
                   SizedBox(width: 4.w),
-                  _buildCoulmnInfo(
+                  BuildColumnInfo(
                     title: 'Added Date',
                     content:
                     widget.watchMoviesDetail.addedDate!.trim().isEmpty ? "N/A" : widget.watchMoviesDetail.addedDate!,
@@ -142,23 +143,5 @@ class WatchMoviesCustomFlexibleSpaceBarState extends State<WatchMoviesCustomFlex
       ),
     );
   }
-
-  Column _buildCoulmnInfo({required String title, required String content}) {
-    return Column(
-      children: [
-        CustomText(
-          title: title,
-          color: Colors.grey,
-          size: 8,
-        ),
-        SizedBox(
-          height: 1.h,
-        ),
-        CustomText(
-          title: content,
-          size: 10,
-        ),
-      ],
-    );
-  }
+  
 }

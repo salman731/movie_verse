@@ -326,7 +326,7 @@ class HomeScreenController extends GetxController
         String? title = popularElement.querySelector(".data h3")!.text;
         String? url = popularElement.querySelector("a")!.attributes["href"];
         String? tag1 = popularElement.querySelector(".data .wextra span")!.text;
-        String? posterUrl = popularElement.querySelector(".image img")!.attributes["data-wpfc-original-src"];
+        String? posterUrl = popularElement.querySelector(".image img")!.attributes["src"];
         String? tag2 = popularElement.querySelector(".data .wextra b")!.text;
         coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2));
       }
@@ -350,7 +350,7 @@ class HomeScreenController extends GetxController
           {
             tag1 = tag1.split(",").last.trim();
           }
-        String? posterUrl = postElement.querySelector(".poster img")!.attributes["data-wpfc-original-src"];
+        String? posterUrl = postElement.querySelector(".poster img")!.attributes["src"];
         String? tag2 = postElement.querySelector(".poster .rating")!.text;
         coverList.add(HdMovie2Cover(title: title,url: url,imageURL: posterUrl,tag1: tag1,tag2: tag2));
       }

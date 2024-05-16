@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/goku/goku_detail.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/web_view_utils.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -94,41 +95,7 @@ class GokuDetailController extends GetxController
                   String? jsonResponse = await WebUtils.makeGetRequest(serverSourceUrl);
                   var json = jsonDecode(jsonResponse!);
                   String embedUrl = json["data"]["link"];
-                  WebViewUtils webViewUtils = WebViewUtils();
-                  Map<String,String> serverMap = await webViewUtils.loadUrlInWebView(embedUrl,"playlist.m3u8",serverName,header: {"Referer" : GOKU_BASE_URL});
-                  webViewUtils.disposeWebView();
-                  String? qualityLinks;
-                 /* if(serverName == "UpCloud")
-                    {*/
-                      qualityLinks =  await WebUtils.makeGetRequest(serverMap[serverName]!);
-                   /* }
-                  else
-                    {
-                      qualityLinks = await WebUtils.requestWithBadCertificate(serverMap[serverName]!);
-                    }*/
-                  List<String> qualityList = qualityLinks!.split("\n");
-
-                  for(int i = 0; i< qualityList.length;i++)
-                  {
-                      if(qualityList[i].contains("x1080"))
-                      {
-                        qualityMap["1080"] = qualityList[i+1];
-                      }
-                      else if(qualityList[i].contains("x720"))
-                      {
-                        qualityMap["720"] = qualityList[i+1];
-                      }
-                      else if(qualityList[i].contains("x480"))
-                      {
-                        qualityMap["480"] = qualityList[i+1];
-                      }
-                      else if(qualityList[i].contains("x360"))
-                      {
-                        qualityMap["360"] = qualityList[i+1];
-                      }
-
-                  }
-
+                  qualityMap = await VideoHostProviderUtils.getVidCloudAndUpCloudM3U8Links(embedUrl, "playlist.m3u8", serverName,header: {"Referer" : GOKU_BASE_URL} );
                   map[serverName] = qualityMap;
 
                 }

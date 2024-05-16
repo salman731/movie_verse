@@ -11,6 +11,7 @@ import 'package:Movieverse/models/hd_movie2/hd_movie2_video_detail.dart';
 import 'package:Movieverse/models/hd_movie2/hdmovie2_player_request.dart';
 import 'package:Movieverse/models/hd_movie2/hdmovie2_player_response.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
@@ -107,85 +108,22 @@ class HdMovie2DetailController extends GetxController
                           orignalUrl = await WebUtils.getOriginalUrl(hostVideUrl!.trim());
                         if (orignalUrl!.contains("abysscdn.com")) {
 
-                          dom.Document playerDocument = await WebUtils.getDomFromURL_Get(orignalUrl!);
-                          List<dom.Element> scriptList = playerDocument.querySelectorAll("script");
-                          String? javascript = scriptList.where((element) => element.text.contains("new PLAYER(atob(")).first.text;
-                          String encodedBase64 = LocalUtils.getStringBetweenTwoStrings("new PLAYER(atob(\"", "\"));", javascript);
-                          String decodedBase64 = String.fromCharCodes(base64Decode(encodedBase64));
-                          HDMovie2VideoDetail hdMovie2VideoDetail = HDMovie2VideoDetail.fromJson(jsonDecode(decodedBase64));
-
-                          Map<String,String> map2 = Map();
-                          for(String qualitySource in hdMovie2VideoDetail.sources!)
-                            {
-                              String? q_prefix = abyssQualityCdn[qualitySource];
-                              String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
-                              map2[qualitySource.toUpperCase()] = fullM3U8Url;
-
-                            }
-
-                          map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orignalUrl};
-                          map[VideoHosterEnum.Abysscdn.name] = map2;
+                          Map<String,Map<String,String>> abysscdnMap = await VideoHostProviderUtils.getAbysscdnM3U8Links(orignalUrl);
+                          map.addAll(abysscdnMap);
 
                         }
                        }
                       else if (hostVideUrl.contains("akamaicdn"))
                         {
-                          dom.Document pageDocument = await WebUtils.getDomFromURL_Get(hostVideUrl,headers: {"Referer":HDMOVIE2_SERVER_URL});
-                          String javascript = pageDocument.querySelectorAll("script").where((element) => element.text.contains("sniff")).first.text;
-                          List<String> idsList = LocalUtils.getStringBetweenTwoStrings("sniff(", ");", javascript).split(",");
-                          String m3u8Url = AKAMAICDN_SERVER_URL + "m3u8/${(idsList[1]).replaceAll("\"","")}/${idsList[2].replaceAll("\"","")}/master.txt?s=1&cache=1";
-                          String? m3u8QualityLinksResponse = await WebUtils.makeGetRequest(m3u8Url);
-                          List<String> m3u8QualityUrls = m3u8QualityLinksResponse!.split("\n");
-                          Map<String,String> qualityMap = Map();
-                          for(int i = 0;i< m3u8QualityUrls.length;i++)
-                            {
-                              if(m3u8QualityUrls[i].contains("akamaicdn"))
-                                {
-                                  if(m3u8QualityUrls[i -1].contains("1080"))
-                                    {
-                                      qualityMap["1080"] = m3u8QualityUrls[i];
-                                    }
-                                  else if(m3u8QualityUrls[i -1].contains("720"))
-                                  {
-                                    qualityMap["720"] = m3u8QualityUrls[i];
-                                  }
-                                  else if(m3u8QualityUrls[i -1].contains("360"))
-                                  {
-                                    qualityMap["360"] = m3u8QualityUrls[i];
-                                  }
-                                }
-                            }
-
-                          map[VideoHosterEnum.Akamaicdn.name] = qualityMap;
-                          map[VideoHosterEnum.Akamaicdn.name + "_headers"] = {"Referer":AKAMAICDN_SERVER_URL,"Accept" : "*/*","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
+                          Map<String,Map<String,String>> akamaicdnMap = await VideoHostProviderUtils.getAkamaicdnM3U8Links(hostVideUrl,header: {"Referer":HDMOVIE2_SERVER_URL});
+                          map.addAll(akamaicdnMap);
 
                         }
                       else if(hostVideUrl!.contains("ok.ru"))
                         {
-                          String cookie = "XSRF-TOKEN=eyJpdiI6Im1oNEcyOEpndGhyTW9JNHA5ZGhLTkE9PSIsInZhbHVlIjoiQkRYd2loWVh1c3YzN280VkwwTDdPbnpJVWlWaWJNOVplK0MydmNCM0hmXC9RQlRvNVlaazk2c1ZNc25lV2FMRlgiLCJtYWMiOiI1OWIzYjdjOWI2MGZhYzQ4NGYwZTg4Y2RlYjFlYWI4MzFiNmI4NGMzNTMwMTc3MTk0ZDU3Mjk2YTA2NzNhYTlkIn0%3D; s_id=QVH0JEya2VJApNM1ASB0lJiOScfhGI7LYPMZYvwz";
-                          String finalURl = TWDOWN_SEARCH_SERVER_URL + hostVideUrl;
-                          dom.Document pageDocument = await WebUtils.getDomFromURL_Get(finalURl,headers: {"Cookie" : cookie} );
-                          List<dom.Element> trElements = pageDocument.querySelectorAll("tbody tr");
-                          Map<String,String> okruQualityLinksMap = Map();
-                          for(dom.Element tdElement in trElements)
-                            {
-                              List<dom.Element> tdElementList = tdElement.querySelectorAll("td");
-                              if (tdElementList[0].text.contains("x")) {
 
-                                try {
-                                  String? url = tdElementList[2].querySelector("a")!.attributes["href"];
-                                  String? finalUrl = url!.split("#")[1];
-                                  String downloadURL = TWDOWN_DOWNLOAD_SERVER_URL + finalUrl;
-                                  String? finalDownloadURL = await WebUtils.makeGetRequest(downloadURL);
-                                  okruQualityLinksMap[tdElementList[0].text] = finalDownloadURL!;
-                                } catch (e) {
-                                  print(e);
-                                }
-                              }
-                            }
-
-                          map[VideoHosterEnum.OkRu.name + "_headers"] = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
-                          map[VideoHosterEnum.OkRu.name] = okruQualityLinksMap;
+                          Map<String,Map<String,String>> okruMap = await VideoHostProviderUtils.getOkRuM3U8Links(hostVideUrl);
+                          map.addAll(okruMap);
                         }
              
                         // Not yet needed

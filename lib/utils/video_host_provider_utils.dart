@@ -3,21 +3,27 @@ import 'dart:convert';
 
 import 'package:Movieverse/controllers/video_player_screen_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
+import 'package:Movieverse/enums/video_hoster_enum.dart';
+import 'package:Movieverse/models/hd_movie2/hd_movie2_video_detail.dart';
 import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:Movieverse/utils/web_view_utils.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:http/http.dart';
 import 'package:string_validator/string_validator.dart';
 
 // PowVideo and StreamPlay has captcha due to it can't scrape
 class VideoHostProviderUtils
 {
   VideoPlayerScreenController videoPlayerScreenController = Get.put(VideoPlayerScreenController());
+  static MethodChannel kotlinMethodChannel = MethodChannel("KOTLIN_CHANNEL");
   static Future<String?> getM3U8UrlFromFileLions(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
   {
     if (isVideotoEmbededAllowed) {
@@ -499,5 +505,273 @@ class VideoHostProviderUtils
     }
   }
 
+  static Future<Map<String,String>> getVidPlayMyCloudM3U8Links(String embedUrl,VideoHosterEnum videoHosterEnum,{bool isWithServerName = false}) async
+  {
+    String currentVidPlayServer = LocalUtils.getStringBeforString("/e/", embedUrl);
+    Map<String,String> map = Map();
+    const String VIDPLAY_KEY_URL = "https://raw.githubusercontent.com/KillerDogeEmpire/vidplay-keys/keys/keys.json";
+    String? keysResponse = await WebUtils.makeGetRequest(VIDPLAY_KEY_URL);
+    List<String> keys = (jsonDecode(keysResponse!) as List<dynamic>).map((e) => e.toString()).toList();
+    String id = LocalUtils.getStringBetweenTwoStrings("/e/", "?", embedUrl);
+    String encodedId = await kotlinMethodChannel.invokeMethod("getEncodeId",{"id":id,"keys": keys,});
+    String futokenUrl = currentVidPlayServer + "/futoken";
+    String? scriptResponse = await WebUtils.makeGetRequest(futokenUrl,headers: {"Referer":embedUrl});
+    String decodedUrl = await kotlinMethodChannel.invokeMethod("getMediaUrl",{"script":scriptResponse,"mainUrl":currentVidPlayServer,"embededUrl":embedUrl,"id":encodedId});
+    String? sourceResponse = await WebUtils.makeGetRequest(decodedUrl);
+    String finalM3u8Link = jsonDecode(sourceResponse!)["result"]["sources"][0]["file"];
+    String? m3u8Links = await WebUtils.makeGetRequest(finalM3u8Link);
+    List<String> rawLinks = m3u8Links!.split("\n");
+
+    for(int i = 0; i< rawLinks.length;i++)
+    {
+      if(rawLinks[i].contains("x1080"))
+      {
+        if(videoHosterEnum == VideoHosterEnum.VidPlay)
+        {
+          String title = "";
+          if(isWithServerName)
+            {
+              title = VideoHosterEnum.VidPlay.name+"(1080)";
+            }
+          else
+            {
+              title = "1080";
+            }
+          map[title] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
+        {
+          map["1080"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
+        }
+      }
+      if(rawLinks[i].contains("x720"))
+      {
+        if(videoHosterEnum == VideoHosterEnum.VidPlay)
+        {
+          String title = "";
+          if(isWithServerName)
+          {
+            title = VideoHosterEnum.VidPlay.name+"(720)";
+          }
+          else
+          {
+            title = "720";
+          }
+          map[title] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
+        {
+          map["720"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
+        }
+      }
+
+      if(rawLinks[i].contains("x480"))
+      {
+        if(videoHosterEnum == VideoHosterEnum.VidPlay)
+        {
+          String title = "";
+          if(isWithServerName)
+          {
+            title = VideoHosterEnum.VidPlay.name+"(480)";
+          }
+          else
+          {
+            title = "480";
+          }
+          map[title] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
+        {
+          map["480"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
+        }
+      }
+
+      if(rawLinks[i].contains("x360"))
+      {
+        if(videoHosterEnum == VideoHosterEnum.VidPlay)
+        {
+          String title = "";
+          if(isWithServerName)
+          {
+            title = VideoHosterEnum.VidPlay.name+"(360)";
+          }
+          else
+          {
+            title = "360";
+          }
+          map[title] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
+        }
+        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
+        {
+          map["360"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
+        }
+      }
+    }
+    return map;
+  }
+
+  // For rabbit stream
+  static Future<Map<String,String>> getVidCloudAndUpCloudM3U8Links (String embedUrl, String extension,String serverName,{Map<String,String>? header}) async
+  {
+    Map<String,String> linksMap = Map();
+    WebViewUtils webViewUtils = WebViewUtils();
+    Map<String,String> serverMap = await webViewUtils.loadUrlInWebView(embedUrl,extension,serverName,header: header);
+    webViewUtils.disposeWebView();
+    String? qualityLinks;
+    qualityLinks =  await WebUtils.makeGetRequest(serverMap[serverName]!);
+    List<String> qualityList = qualityLinks!.split("\n");
+
+    for(int i = 0; i< qualityList.length;i++)
+    {
+      if(qualityList[i].contains("x1080"))
+      {
+        linksMap["1080"] = qualityList[i+1];
+      }
+      else if(qualityList[i].contains("x720"))
+      {
+        linksMap["720"] = qualityList[i+1];
+      }
+      else if(qualityList[i].contains("x480"))
+      {
+        linksMap["480"] = qualityList[i+1];
+      }
+      else if(qualityList[i].contains("x360"))
+      {
+        linksMap["360"] = qualityList[i+1];
+      }
+
+    }
+    return linksMap;
+  }
+
+
+  static Future<Map<String,Map<String,String>>> getAbysscdnM3U8Links(String orginalUrl) async
+  {
+    Map<String,Map<String,String>> map = Map();
+    Map<String,String> abyssQualityCdn = {"sd":"","hd":"www","fullHd":"whw"};
+    dom.Document playerDocument = await WebUtils.getDomFromURL_Get(orginalUrl!);
+    List<dom.Element> scriptList = playerDocument.querySelectorAll("script");
+    String? javascript = scriptList.where((element) => element.text.contains("new PLAYER(atob(")).first.text;
+    String encodedBase64 = LocalUtils.getStringBetweenTwoStrings("new PLAYER(atob(\"", "\"));", javascript);
+    String decodedBase64 = String.fromCharCodes(base64Decode(encodedBase64));
+    HDMovie2VideoDetail hdMovie2VideoDetail = HDMovie2VideoDetail.fromJson(jsonDecode(decodedBase64));
+
+    Map<String,String> map2 = Map();
+    for(String qualitySource in hdMovie2VideoDetail.sources!)
+    {
+      String? q_prefix = abyssQualityCdn[qualitySource];
+      String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
+      map2[qualitySource.toUpperCase()] = fullM3U8Url;
+
+    }
+
+    map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orginalUrl};
+    map[VideoHosterEnum.Abysscdn.name] = map2;
+    return map;
+  }
+
+  static Future<Map<String,Map<String,String>>> getAkamaicdnM3U8Links(String url,{Map<String,String>? header}) async
+  {
+    Map<String,Map<String,String>> map = Map();
+    String  AKAMAICDN_SERVER_URL = "https://akamaicdn.life/";
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(url,headers: header);
+    String javascript = pageDocument.querySelectorAll("script").where((element) => element.text.contains("sniff")).first.text;
+    List<String> idsList = LocalUtils.getStringBetweenTwoStrings("sniff(", ");", javascript).split(",");
+    String m3u8Url = AKAMAICDN_SERVER_URL + "m3u8/${(idsList[1]).replaceAll("\"","")}/${idsList[2].replaceAll("\"","")}/master.txt?s=1&cache=1";
+    String? m3u8QualityLinksResponse = await WebUtils.makeGetRequest(m3u8Url);
+    List<String> m3u8QualityUrls = m3u8QualityLinksResponse!.split("\n");
+    Map<String,String> qualityMap = Map();
+    for(int i = 0;i< m3u8QualityUrls.length;i++)
+    {
+      if(m3u8QualityUrls[i].contains("akamaicdn"))
+      {
+        if(m3u8QualityUrls[i -1].contains("1080"))
+        {
+          qualityMap["1080"] = m3u8QualityUrls[i];
+        }
+        else if(m3u8QualityUrls[i -1].contains("720"))
+        {
+          qualityMap["720"] = m3u8QualityUrls[i];
+        }
+        else if(m3u8QualityUrls[i -1].contains("360"))
+        {
+          qualityMap["360"] = m3u8QualityUrls[i];
+        }
+      }
+    }
+
+    map[VideoHosterEnum.Akamaicdn.name] = qualityMap;
+    map[VideoHosterEnum.Akamaicdn.name + "_headers"] = {"Referer":AKAMAICDN_SERVER_URL,"Accept" : "*/*","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
+
+    return map;
+  }
+
+  //ok.ru
+  static Future<Map<String,Map<String,String>>> getOkRuM3U8Links(String url) async
+  {
+    Map<String,Map<String,String>> map = Map();
+    final TWDOWN_SEARCH_SERVER_URL = "https://twdown.online/search?url=";
+    final TWDOWN_DOWNLOAD_SERVER_URL = "https://downloader.twdown.online/load_url?";
+    String cookie = "XSRF-TOKEN=eyJpdiI6Im1oNEcyOEpndGhyTW9JNHA5ZGhLTkE9PSIsInZhbHVlIjoiQkRYd2loWVh1c3YzN280VkwwTDdPbnpJVWlWaWJNOVplK0MydmNCM0hmXC9RQlRvNVlaazk2c1ZNc25lV2FMRlgiLCJtYWMiOiI1OWIzYjdjOWI2MGZhYzQ4NGYwZTg4Y2RlYjFlYWI4MzFiNmI4NGMzNTMwMTc3MTk0ZDU3Mjk2YTA2NzNhYTlkIn0%3D; s_id=QVH0JEya2VJApNM1ASB0lJiOScfhGI7LYPMZYvwz";
+    String finalURl = TWDOWN_SEARCH_SERVER_URL + url;
+    dom.Document pageDocument = await WebUtils.getDomFromURL_Get(finalURl,headers: {"Cookie" : cookie} );
+    List<dom.Element> trElements = pageDocument.querySelectorAll("tbody tr");
+    Map<String,String> okruQualityLinksMap = Map();
+    for(dom.Element tdElement in trElements)
+    {
+      List<dom.Element> tdElementList = tdElement.querySelectorAll("td");
+      if (tdElementList[0].text.contains("x")) {
+
+        try {
+          String? url = tdElementList[2].querySelector("a")!.attributes["href"];
+          String? finalUrl = url!.split("#")[1];
+          String downloadURL = TWDOWN_DOWNLOAD_SERVER_URL + finalUrl;
+          String? finalDownloadURL = await WebUtils.makeGetRequest(downloadURL);
+          okruQualityLinksMap[tdElementList[0].text] = finalDownloadURL!;
+        } catch (e) {
+          print(e);
+        }
+      }
+    }
+
+    map[VideoHosterEnum.OkRu.name + "_headers"] = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"};
+    map[VideoHosterEnum.OkRu.name] = okruQualityLinksMap;
+    return map;
+  }
+
+  static Future<Map<String,String>> getUpCloudMegaCloudM3U8Links(String serverId) async
+  {
+    Map<String,String> qualityMap = Map();
+    String finalCloudUrl = "https://megacloud.tv/embed-1/ajax/e-1/getSources?id=" + serverId;
+    Map<String,String> headers = {"X-Requested-With":"XMLHttpRequest"};
+    String? response = await WebUtils.makeGetRequest(finalCloudUrl,headers:headers);
+    String m3u8Link = jsonDecode(response!)["sources"][0]["file"];
+    String? qualityLinks = await WebUtils.makeGetRequest(m3u8Link);
+    List<String> qualityList = qualityLinks!.split("\n");
+
+    for(String link in qualityList)
+    {
+      if(link.contains("m3u8"))
+      {
+        if(link.contains("1080"))
+        {
+          qualityMap["1080"] = link;
+        }
+        else if(link.contains("720"))
+        {
+          qualityMap["720"] = link;
+        }
+        else if(link.contains("480"))
+        {
+          qualityMap["480"] = link;
+        }
+        else if(link.contains("360"))
+        {
+          qualityMap["360"] = link;
+        }
+      }
+    }
+    return qualityMap;
+  }
 
 }

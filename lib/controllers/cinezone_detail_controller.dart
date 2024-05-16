@@ -22,13 +22,11 @@ class CineZoneDetailController extends GetxController
   final CINEZONE_EPISODE_LIST_AJAX_URL = "https://cinezone.to/ajax/episode/list/";
   final CINEZONE_SERVER_LIST_AJAX_URL = "https://cinezone.to/ajax/server/list/";
   final CINEZONE_SERVER_AJAX_URL = "https://cinezone.to/ajax/server/";
-  final String VIDPLAY_KEY_URL = "https://raw.githubusercontent.com/KillerDogeEmpire/vidplay-keys/keys/keys.json";
   late dom.Document pageDocument;
   late String mediaId;
   RxString selectedEpisode = "".obs;
   RxString selectedSeason = "".obs;
   MethodChannel kotlinMethodChannel = MethodChannel("KOTLIN_CHANNEL");
-
   Future<CineZoneDetail> getMovieDetail (CineZoneCover cineZoneCover) async
   {
      pageDocument = await WebUtils.getDomFromURL_Get(cineZoneCover.url!);
@@ -112,11 +110,11 @@ class CineZoneDetailController extends GetxController
         {
           case "Vidplay":
             Map<String,Map<String,String>> vidPlayMap = Map();
-            vidPlayMap[VideoHosterEnum.VidPlay.name] = await getVidPlayMyCloudM3U8Links(finalDecryptedUrl,VideoHosterEnum.VidPlay);
+            vidPlayMap[VideoHosterEnum.VidPlay.name] = await VideoHostProviderUtils.getVidPlayMyCloudM3U8Links(finalDecryptedUrl,VideoHosterEnum.VidPlay);
             map.addAll(vidPlayMap);
           case "MyCloud":
             Map<String,Map<String,String>> myCloudMap = Map();
-            myCloudMap[VideoHosterEnum.MyCloud.name] = await getVidPlayMyCloudM3U8Links(finalDecryptedUrl,VideoHosterEnum.MyCloud);
+            myCloudMap[VideoHosterEnum.MyCloud.name] = await VideoHostProviderUtils.getVidPlayMyCloudM3U8Links(finalDecryptedUrl,VideoHosterEnum.MyCloud);
             map.addAll(myCloudMap);
 
           case "Filemoon":
@@ -130,80 +128,6 @@ class CineZoneDetailController extends GetxController
           });
         }
       }
-    return map;
-  }
-
-  Future<Map<String,String>> getVidPlayMyCloudM3U8Links(String embedUrl,VideoHosterEnum videoHosterEnum) async
-  {
-    String currentVidPlayServer = LocalUtils.getStringBeforString("/e/", embedUrl);
-    Map<String,String> map = Map();
-    String? keysResponse = await WebUtils.makeGetRequest(VIDPLAY_KEY_URL);
-    List<String> keys = (jsonDecode(keysResponse!) as List<dynamic>).map((e) => e.toString()).toList();
-    String id = LocalUtils.getStringBetweenTwoStrings("/e/", "?", embedUrl);
-    String encodedId = await kotlinMethodChannel.invokeMethod("getEncodeId",{"id":id,"keys": keys,});
-    String futokenUrl = currentVidPlayServer + "/futoken";
-    String? scriptResponse = await WebUtils.makeGetRequest(futokenUrl,headers: {"Referer":embedUrl});
-    String decodedUrl = await kotlinMethodChannel.invokeMethod("getMediaUrl",{"script":scriptResponse,"mainUrl":currentVidPlayServer,"embededUrl":embedUrl,"id":encodedId});
-    String? sourceResponse = await WebUtils.makeGetRequest(decodedUrl);
-    String finalM3u8Link = jsonDecode(sourceResponse!)["result"]["sources"][0]["file"];
-    String? m3u8Links = await WebUtils.makeGetRequest(finalM3u8Link);
-    List<String> rawLinks = m3u8Links!.split("\n");
-
-    for(int i = 0; i< rawLinks.length;i++)
-    {
-      if(rawLinks[i].contains("x1080"))
-      {
-        if(videoHosterEnum == VideoHosterEnum.VidPlay)
-          {
-            map["1080"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-          }
-        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
-          {
-            map["1080"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
-          }
-      }
-      if(rawLinks[i].contains("x720"))
-      {
-        if(videoHosterEnum == VideoHosterEnum.VidPlay)
-        {
-          map["720"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
-        {
-          map["720"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
-        }
-      }
-
-      if(rawLinks[i].contains("x480"))
-      {
-        if(videoHosterEnum == VideoHosterEnum.VidPlay)
-        {
-          map["480"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
-        {
-          map["480"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
-        }
-      }
-
-      if(rawLinks[i].contains("x360"))
-      {
-        if(videoHosterEnum == VideoHosterEnum.VidPlay)
-        {
-          map["360"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-        else if(videoHosterEnum == VideoHosterEnum.MyCloud)
-        {
-          map["360"] = finalM3u8Link.replaceAll("list.m3u8",rawLinks[i+1]);
-        }
-      }
-    }
-
-    print(decodedUrl);
-
-
-
-
     return map;
   }
 

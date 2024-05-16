@@ -157,7 +157,7 @@ class PrMoviesDetailController extends GetxController {
                 String decodedUrl = await intentMethodChannel.invokeMethod("getDecodedVidSrcUrl",{"encString":vidSrcToUrlResponse.result!.url,});
                 if(vidSrcToSource.title == "Vidplay")
                   {
-                    Map<String,String> vidPlayMap =  await getVidPlayM3U8Links(decodedUrl);
+                    Map<String,String> vidPlayMap =  await VideoHostProviderUtils.getVidPlayMyCloudM3U8Links(decodedUrl, VideoHosterEnum.VidPlay,isWithServerName: true);
                     map.addAll(vidPlayMap);
                   }
                 else if(vidSrcToSource.title == "Filemoon")
@@ -232,53 +232,6 @@ class PrMoviesDetailController extends GetxController {
         isSeries = false;
       }
   return episodeMap;
-  }
-
-
-  Future<Map<String,String>> getVidPlayM3U8Links(String embedUrl) async
-  {
-    String currentVidPlayServer = LocalUtils.getStringBeforString("/e/", embedUrl);
-    Map<String,String> map = Map();
-    String? keysResponse = await WebUtils.makeGetRequest(VIDPLAY_KEY_URL);
-    List<String> keys = (jsonDecode(keysResponse!) as List<dynamic>).map((e) => e.toString()).toList();
-    String id = LocalUtils.getStringBetweenTwoStrings("/e/", "?", embedUrl);
-    String encodedId = await intentMethodChannel.invokeMethod("getEncodeId",{"id":id,"keys": keys,});
-    String futokenUrl = currentVidPlayServer + "/futoken";
-    String? scriptResponse = await WebUtils.makeGetRequest(futokenUrl,headers: {"Referer":embedUrl});
-    String decodedUrl = await intentMethodChannel.invokeMethod("getMediaUrl",{"script":scriptResponse,"mainUrl":currentVidPlayServer,"embededUrl":embedUrl,"id":encodedId});
-    String? sourceResponse = await WebUtils.makeGetRequest(decodedUrl);
-    String finalM3u8Link = jsonDecode(sourceResponse!)["result"]["sources"][0]["file"];
-    String? m3u8Links = await WebUtils.makeGetRequest(finalM3u8Link);
-    List<String> rawLinks = m3u8Links!.split("\n");
-
-    for(int i = 0; i< rawLinks.length;i++)
-      {
-        if(rawLinks[i].contains("1080"))
-          {
-            map[VideoHosterEnum.VidPlay.name+"(1080)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-          }
-        if(rawLinks[i].contains("720"))
-        {
-          map[VideoHosterEnum.VidPlay.name+"(720)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-
-        if(rawLinks[i].contains("480"))
-        {
-          map[VideoHosterEnum.VidPlay.name+"(480)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-
-        if(rawLinks[i].contains("360"))
-        {
-          map[VideoHosterEnum.VidPlay.name+"(360)"] = LocalUtils.getStringBeforString("list", finalM3u8Link) + rawLinks[i+1];
-        }
-      }
-
-    print(decodedUrl);
-
-
-
-
-    return map;
   }
 
   Future<dom.Document?> fetchandVerifyRcp(String dataHash) async

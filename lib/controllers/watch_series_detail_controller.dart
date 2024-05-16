@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
 import 'package:Movieverse/models/watch_series/watch_series_detail.dart';
 import 'package:Movieverse/utils/local_utils.dart';
+import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
@@ -129,35 +130,7 @@ class WatchSeriesDetailController extends GetxController
             String? iframeJson = await WebUtils.makeGetRequest(finalServerUrl);
             Map<String,dynamic> jsonMap = jsonDecode(iframeJson!);
             String cloudId = jsonMap["link"].split("/").last.split("?")[0];
-            String finalCloudUrl = MEGACLOUD_AJAX_SOURCE_SERVER + cloudId;
-            Map<String,String> headers = {"X-Requested-With":"XMLHttpRequest"};
-            String? response = await WebUtils.makeGetRequest(finalCloudUrl,headers:headers);
-            String m3u8Link = jsonDecode(response!)["sources"][0]["file"];
-            String? qualityLinks = await WebUtils.makeGetRequest(m3u8Link);
-            List<String> qualityList = qualityLinks!.split("\n");
-
-            for(String link in qualityList)
-            {
-              if(link.contains("m3u8"))
-              {
-                if(link.contains("1080"))
-                {
-                  qualityMap["1080"] = link;
-                }
-                else if(link.contains("720"))
-                {
-                  qualityMap["720"] = link;
-                }
-                else if(link.contains("480"))
-                {
-                  qualityMap["480"] = link;
-                }
-                else if(link.contains("360"))
-                {
-                  qualityMap["360"] = link;
-                }
-              }
-            }
+            qualityMap = await VideoHostProviderUtils.getUpCloudMegaCloudM3U8Links(cloudId);
             map[servername] = qualityMap;
           }
       }

@@ -3,8 +3,9 @@ import 'package:Movieverse/controllers/home_screen_controller.dart';
 import 'package:Movieverse/screens/details_screen/details_screen.dart';
 import 'package:Movieverse/screens/home_screen/main_home_screen.dart';
 import 'package:Movieverse/screens/search_screen/search_screen.dart';
+import 'package:Movieverse/screens/settings_screen/settings_screen.dart';
 import 'package:Movieverse/utils/shared_prefs_utils.dart';
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:Movieverse/widgets/custom_bottom_navy_bar.dart' as custom_bottom_navy_bar;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -47,11 +48,12 @@ class _MainScreenState extends State<MainScreen> {
           children: <Widget>[
             MainHomeScreen(),
             SearchScreen(),
-            Container(color: Colors.green,),
+            SettingsScreen(),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavyBar(
+      // add custom bottom navy bar due to some error in orginal library because of flutter upgrade
+      bottomNavigationBar: custom_bottom_navy_bar.CustomBottomNavyBar(
         backgroundColor: AppColors.black,
 
         selectedIndex: _currentIndex,
@@ -59,21 +61,22 @@ class _MainScreenState extends State<MainScreen> {
           setState(() => _currentIndex = index);
           _pageController!.jumpToPage(index);
         },
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
+        items: <custom_bottom_navy_bar.BottomNavyBarItem>[
+          custom_bottom_navy_bar.BottomNavyBarItem(
               activeColor: AppColors.red,
               inactiveColor: AppColors.red.shade400,
               title: Text('Home'),
               icon: Icon(Icons.home)
           ),
-          BottomNavyBarItem(
+          custom_bottom_navy_bar.BottomNavyBarItem(
               activeColor: AppColors.red,
               inactiveColor: AppColors.red.shade400,
               title: Text('Search'),
               icon: Icon(Icons.search)
           ),
-          BottomNavyBarItem(
+          custom_bottom_navy_bar.BottomNavyBarItem(
               activeColor: AppColors.red,
+
               inactiveColor: AppColors.red.shade400,
               title: Text('Settings'),
               icon: Icon(Icons.settings)

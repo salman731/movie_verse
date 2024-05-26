@@ -1,31 +1,62 @@
 import 'package:Movieverse/config/app_theme.dart';
+import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/screens/splash_screen.dart';
-import 'package:Movieverse/utils/colors_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-void main() {
+void main() async {
+  await  Settings.init(cacheProvider : SharePreferenceCache(),);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static final ThemeData lightTheme = ThemeData(
-    primaryColor: Colors.blue,
-    appBarTheme: AppBarTheme(color: Color(0xff171d49),),
-    textSelectionTheme: TextSelectionThemeData(
-      selectionColor: Colors.grey,
-      cursorColor: Color(0xff171d49),
-      selectionHandleColor: Color(0xff005e91),
-    ),
-    brightness: Brightness.light,
-
-  );
+  static final ThemeData darkTheme = ThemeData.dark().copyWith(
+    colorScheme: ColorScheme.dark(secondary: AppColors.red),
+      checkboxTheme: CheckboxThemeData(
+        //fillColor: WidgetStateProperty.all(AppColors.red),
+        //checkColor: WidgetStateProperty.all(AppColors.red),
+      ),
+      radioTheme: RadioThemeData(
+        fillColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
+                return null;
+              }
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.red;
+              }
+              return null;
+            }),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
+                return null;
+              }
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.red;
+              }
+              return null;
+            }),
+        trackColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
+                return null;
+              }
+              if (states.contains(WidgetState.selected)) {
+                return AppColors.red;
+              }
+              return null;
+            }),
+  ));
 
   // This widget is the root of your application.
   @override
@@ -36,7 +67,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: AppThemes.dark/*ThemeData(
+        theme: darkTheme/*ThemeData(
           // This is the theme of your application.
           //
           // TRY THIS: Try running your application with "flutter run". You'll see

@@ -20,12 +20,14 @@ import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
+import 'package:Movieverse/utils/shared_prefs_utils.dart';
 import 'package:Movieverse/utils/source_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:external_video_player_launcher/external_video_player_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:open_file/open_file.dart';
@@ -295,10 +297,10 @@ class SearchScreenController extends GetxController
                     // Update loading bar.
                   },
                   onPageStarted: (String url) {
-                    if (url == "https://www.primewire.tf/" )
-                      {
-                        LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
-                      }
+                    // if (url == "https://www.primewire.tf/" )
+                    //   {
+                    //     LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
+                    //   }
                   },
                   onPageFinished: (String url) async {
 
@@ -320,8 +322,6 @@ class SearchScreenController extends GetxController
                   else if (url == "https://www.primewire.tf/" )
                     {
                       await loginIntoPrimeWire();
-                      LoaderDialog.stopLoaderDialog();
-
                     }
                   },
                   onWebResourceError: (WebResourceError error) {},
@@ -395,14 +395,23 @@ class SearchScreenController extends GetxController
 
    loginIntoPrimeWire() async
    {
-     String email = "salmanilyas731@gmail.com";
-     String password = "internet50";
-     await webViewController!.runJavaScript(""
-         "document.getElementById(\"session_email\").value = \"${email}\";"
-         "document.getElementById(\"session_password\").value = \"${password}\";"
-         "const form = document.querySelector(\".secure\");"
-         "form.submit();");
-
+     String? html = await getHtmlFromPrimewire();
+     dom.Document pageDocument = WebUtils.getDomfromHtml(html!);
+     dom.Element? loginElement = pageDocument.querySelector(".logged_in");
+     dom.NodeList bodyNodeList = pageDocument.querySelector("body")!.nodes;
+     bool isPrimewireLoginEnabled = Settings.getValue<bool>(SharedPrefsUtil.KEY_PRIMEWIRE_LOGIN,defaultValue: false)!;
+     if(loginElement == null && bodyNodeList.length > 0 && isPrimewireLoginEnabled)
+       {
+         LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Logging Into Primewire.....");
+         String email = Settings.getValue<String>(SharedPrefsUtil.KEY_PRIMEWIRE_USERNAME, defaultValue: "")!;
+         String password = Settings.getValue<String>(SharedPrefsUtil.KEY_PRIMEWIRE_PASSWORD, defaultValue: "")!;;
+         await webViewController!.runJavaScript(""
+             "document.getElementById(\"session_email\").value = \"${email}\";"
+             "document.getElementById(\"session_password\").value = \"${password}\";"
+             "const form = document.querySelector(\".secure\");"
+             "form.submit();");
+         LoaderDialog.stopLoaderDialog();
+       }
    }
 
    Future<List<PrMoviesCover>> searchPrMoviesList (String pageUrl,bool isLoadMore) async

@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPrefsUtil
 {
   static final KEY_SELECTED_SOURCE = "SP_KEY_SELECTED_SOURCE";
+  static final KEY_PRIMEWIRE_LOGIN = "SP_KEY_PRIMEWIRE_LOGIN";
+  static final KEY_PRIMEWIRE_USERNAME = "SP_KEY_PRIMEWIRE_USERNAME";
+  static final KEY_PRIMEWIRE_PASSWORD = "SP_KEY_PRIMEWIRE_PASSWORD";
 
   static late SharedPreferences sharedPreferences;
 

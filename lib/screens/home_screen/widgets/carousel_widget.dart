@@ -3,8 +3,11 @@ import 'package:Movieverse/enums/source_enum.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_detail.dart';
 import 'package:Movieverse/screens/details_screen/all_movie_land/all_movie_land_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/cine_zone/cinezone_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/goku/goku_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/hdmovie2/hd_movie2_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/m4ufree/m4ufree_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
@@ -68,9 +71,11 @@ class CarouselWidget extends StatelessWidget {
                             case SourceEnum.WatchSeries:
                               Get.to(WatchSeriesDetailScreen(watchSeriesCover: item));
                             case SourceEnum.CineZone:
-                              // TODO: Handle this case.
+                              Get.to(CineZoneDetailScreen(cineZoneCover: item));
                             case SourceEnum.Goku:
-                              // TODO: Handle this case.
+                              Get.to(GokuDetailScreen(gokuCover: item));
+                            case SourceEnum.M4UFree:
+                              Get.to(M4UFreeDetailScreen(m4uFreeCover: item));
                           }
                         }),
                   )

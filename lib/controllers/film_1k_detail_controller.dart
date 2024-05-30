@@ -12,7 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
 
-class Film1kController extends GetxController
+class Film1kDetailController extends GetxController
 {
   late dom.Document movieDocument;
 

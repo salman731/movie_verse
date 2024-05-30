@@ -5,6 +5,7 @@ import 'package:Movieverse/enums/all_movie_land_home_category_enum.dart';
 import 'package:Movieverse/enums/cinezone_home_category_enum.dart';
 import 'package:Movieverse/enums/goku_home_category_enum.dart';
 import 'package:Movieverse/enums/hd_movie_2_home_screen_category_enum.dart';
+import 'package:Movieverse/enums/m4ufree_home_category_emum.dart';
 import 'package:Movieverse/enums/pr_movies_home_category_enum.dart';
 import 'package:Movieverse/enums/primewire_home_screen_category_enum.dart';
 import 'package:Movieverse/enums/source_enum.dart';
@@ -16,6 +17,7 @@ import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movies_cover.dart';
@@ -41,6 +43,7 @@ class HomeScreenController extends GetxController
   final String CINEZONE_SERVER_URL = "https://cinezone.to";
   final String GOKU_SERVER_URL = "https://goku.sx";
   final String GOKU_HOME_SERVER_URL = "https://goku.sx/home";
+  final String M4UFREE_HOME_SERVER_URL = "https://ww2.m4ufree.com/home.html";
   Map<String,List<UpMoviesCover>> upMoviesCategoryListMap = <String,List<UpMoviesCover>>{};
   Map<String,List<PrimeWireCover>> primewireCategoryListMap = <String,List<PrimeWireCover>>{};
   Map<String,List<AllMovieLandCover>> allMovieLandCategoryListMap = <String,List<AllMovieLandCover>>{};
@@ -51,7 +54,7 @@ class HomeScreenController extends GetxController
   Map<String,List<WatchSeriesCover>> watchSeriesCategoryListMap = <String,List<WatchSeriesCover>>{};
   Map<String,List<CineZoneCover>> cineZoneCategoryListMap = <String,List<CineZoneCover>>{};
   Map<String,List<GokuCover>> gokuCategoryListMap = <String,List<GokuCover>>{};
-
+  Map<String,List<M4UFreeCover>> mp4ufreeCategoryListMap = <String,List<M4UFreeCover>>{};
   Rx<SourceEnum> selectedSource = SourceEnum.PrMovies.obs;
   RxBool isUpMoviesHomePageLoading = false.obs,
       isPrimewireHomePageLoading = false.obs,
@@ -62,7 +65,8 @@ class HomeScreenController extends GetxController
       isHdMovie2HomePageLoading = false.obs,
       isWatchSeriesHomePageLoading = false.obs,
       isCineZoneHomePageLoading = false.obs,
-      isGokuHomePageLoading = false.obs;
+      isGokuHomePageLoading = false.obs,
+      isM4UFreePageLoading = false.obs;
 
 
   Future<void> loadUpMoviesHomeScreen() async
@@ -471,6 +475,37 @@ class HomeScreenController extends GetxController
 
      isGokuHomePageLoading.value = true;
 
+   }
+
+  Future<void> loadM4UFreeHomeScreen () async
+   {
+     dom.Document pageDocument = await WebUtils.getDomFromURL_Get(M4UFREE_HOME_SERVER_URL);
+
+     List<dom.Element> rowList = pageDocument.querySelectorAll(".col-lg-10.col-xl-10.col-md-9 .row");
+
+     for(int i = 0;i<rowList.length;i++)
+       {
+         dom.Element? titleElement = rowList[i].querySelector(".more");
+         if(titleElement != null)
+           {
+             String? key = titleElement!.text.trim();
+             switch (key)
+             {
+               case "Top Movies":
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Movies.name] = SourceUtils.getM4UList(rowList[i+1]);
+               case "Top TV Series":
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Tv_Shows.name] = SourceUtils.getM4UList(rowList[i+1]);
+               case "2024 Movies":
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Featured.name] = SourceUtils.getM4UList(rowList[i+1]);
+               case "New Movies":
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Movies.name] = SourceUtils.getM4UList(rowList[i+1]);
+               case "Tvshows":
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Tv_Shows.name] = SourceUtils.getM4UList(rowList[i+1]);
+             }
+           }
+       }
+
+     isM4UFreePageLoading.value = true;
    }
 
 

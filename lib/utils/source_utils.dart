@@ -2,6 +2,7 @@
 import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/goku/goku_cover.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/watch_movies/watch_movies_cover.dart';
 import 'package:Movieverse/models/watch_series/watch_series_cover.dart';
@@ -14,6 +15,7 @@ class SourceUtils
   static final String WATCHSERIES_SERVER_URL = "https://watchseries.pe";
   static final String CINEZONE_SERVER_URL = "https://cinezone.to";
   static final String GOKU_SERVER_URL = "https://goku.sx";
+  static final String M4UFREE_SERVER_URL = "https://ww2.m4ufree.com/";
   static List<PrMoviesCover> getPrMoviesCategoriesDetailList(dom.Element element)
   {
     List<dom.Element> list = element.querySelectorAll(".ml-item");
@@ -122,6 +124,26 @@ class SourceUtils
       }
     return coverList;
   }
+
+  static List<M4UFreeCover> getM4UList (dom.Element rowElement)
+  {
+    List<M4UFreeCover> coverList = [];
+    List<dom.Element> itemList = rowElement.querySelectorAll(".item");
+
+    for (dom.Element itemElement in itemList)
+      {
+        String? title = itemElement.querySelector(".title-mv")!.text;
+        String? url  = M4UFREE_SERVER_URL + itemElement.querySelector(".imagecover a")!.attributes["href"]!;
+        String? posterUrl = itemElement.querySelector(".imagecover a img")!.attributes["src"]!;
+        List<dom.Element> tagElement = itemElement.querySelectorAll(".popcontents .jtip-top .jt-info");
+        String? tag1 = tagElement[0]!.text.replaceAll("IMDb:", "");
+        String? tag2 = tagElement[1]!.text;
+        coverList.add(M4UFreeCover(imageURL: posterUrl,tag1: tag1,tag2: tag2,title: title,url: url));
+      }
+
+    return coverList;
+  }
+
 
 
 }

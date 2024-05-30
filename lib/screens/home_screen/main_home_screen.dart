@@ -11,6 +11,7 @@ import 'package:Movieverse/screens/home_screen/cine_zone_home_screen_widget.dart
 import 'package:Movieverse/screens/home_screen/film_1k_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/goku_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/hd_movie2_home_screen_widget.dart';
+import 'package:Movieverse/screens/home_screen/m4ufree_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/pr_movies_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/primewire_home_screen_widget.dart';
 import 'package:Movieverse/screens/home_screen/up_movies_home_screen_widget.dart';
@@ -200,6 +201,12 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
           homeScreenController.loadGokuHomeScreen();
         }
         return const GokuHomeScreenWidget();
+      case SourceEnum.M4UFree:
+        if (homeScreenController.mp4ufreeCategoryListMap.isEmpty) {
+          homeScreenController.isM4UFreePageLoading.value = false;
+          homeScreenController.loadM4UFreeHomeScreen();
+        }
+        return const M4UFreeHomeScreenWidget();
     }
     return Container();
   }

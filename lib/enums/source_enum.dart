@@ -10,5 +10,6 @@ enum SourceEnum
   HdMovie2,
   WatchSeries,
   CineZone,
-  Goku
+  Goku,
+  M4UFree
 }

@@ -1,12 +1,16 @@
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/film_1k_detail_controller.dart';
+import 'package:Movieverse/controllers/m4ufree_detail_controller.dart';
 import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_detail.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_detail.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_custom_flexible_spacebar.dart';
+import 'package:Movieverse/screens/details_screen/m4ufree/m4ufree_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/widgets/back_button.dart';
 import 'package:Movieverse/screens/details_screen/widgets/custom_flexible_spacebar.dart';
@@ -22,17 +26,17 @@ import 'package:sizer/sizer.dart';
 
 
 
-class Film1kDetailScreen extends StatefulWidget {
-  Film1kCover  film1kCover;
-  Film1kDetailScreen({super.key, required this.film1kCover});
+class M4UFreeDetailScreen extends StatefulWidget {
+  M4UFreeCover  m4uFreeCover;
+  M4UFreeDetailScreen({super.key, required this.m4uFreeCover});
 
   @override
-  State<Film1kDetailScreen> createState() => _Film1kDetailScreenState();
+  State<M4UFreeDetailScreen> createState() => _M4UFreeDetailScreenState();
 }
 
-class _Film1kDetailScreenState extends State<Film1kDetailScreen> {
+class _M4UFreeDetailScreenState extends State<M4UFreeDetailScreen> {
 
-  Film1kDetailController film1kController = Get.put(Film1kDetailController());
+  M4UFreeDetailController m4uFreeDetailController = Get.put(M4UFreeDetailController());
   @override
   void initState() {
     super.initState();
@@ -49,8 +53,8 @@ class _Film1kDetailScreenState extends State<Film1kDetailScreen> {
           ));
         } else if (moviestate is MovieDetailsSuccess) {
           return*/ Scaffold(
-        body: FutureBuilder<Film1kDetail>(
-            future: film1kController.getMovieDetail(widget.film1kCover!)!,
+        body: FutureBuilder<M4UFreeDetail>(
+            future: m4uFreeDetailController.getMovieDetail(widget.m4uFreeCover!)!,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return CustomScrollView(
@@ -59,7 +63,7 @@ class _Film1kDetailScreenState extends State<Film1kDetailScreen> {
                       pinned: true,
                       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       leading: const CustomBackButton(),
-                      flexibleSpace: Film1kCustomFlexibleSpaceBar(film1kDetail: snapshot.data!,),
+                      flexibleSpace: M4UFreeCustomFlexibleSpaceBar(m4uFreeDetail: snapshot.data!,),
                       expandedHeight: 65.h,
                     ),
                     SliverList(
@@ -124,7 +128,6 @@ class _Film1kDetailScreenState extends State<Film1kDetailScreen> {
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {
-                                    ServerListDialog.showServerListDialog(navigatorKey.currentContext!, await film1kController.getServerPages(),widget.film1kCover.title!,isDirectProviderLink: true,headers: {"Referer":"https://www.film1k.com/"});
 
                                   }, title: "Play",
                                     color: AppColors.red,

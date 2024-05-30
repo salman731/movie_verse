@@ -74,6 +74,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                   await searchScreenController.loadGokuSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.gokuSearchList;
 
+          case SourceEnum.M4UFree:
+            // TODO: Handle this case.
             }
         isMoviesLoading.value = false;
       }
@@ -116,6 +118,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
       case SourceEnum.Goku:
         await searchScreenController.loadGokuSearchList(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.gokuSearchList;
+      case SourceEnum.M4UFree:
+        // TODO: Handle this case.
     }
     isSourceLoading.value = false;
   }
@@ -153,6 +157,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                             Get.to(CineZoneDetailScreen(cineZoneCover: Get.find<SearchScreenController>().cineZoneSearchList[index]));
                           case SourceEnum.Goku:
                             Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>().gokuSearchList[index]));
+                          case SourceEnum.M4UFree:
+                            // TODO: Handle this case.
                         }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag1: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag1 : "" ,tag2: homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag2 : "",));
                     },childCount: selectedSourceList.length), gridDelegate:

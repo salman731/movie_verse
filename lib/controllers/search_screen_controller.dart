@@ -44,7 +44,7 @@ class SearchScreenController extends GetxController
    final String ALLMOVIELAND_HOST_SERVER_URL = "https://allmovieland.fun";
    final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
    final String WATCHMOVIES_SERVER_URL = "https://www.watch-movies.com.pk";
-   final String HDMOVIE2SERVER_URL = "https://hdmovie2.cab";
+   final String HDMOVIE2SERVER_URL = "https://hdmovie2.love";
    final String WATCHSERIESSERVER_URL = "https://watchseries.pe";
 
    List<UpMoviesCover> upMoviesSearchList  = [];

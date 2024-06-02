@@ -33,7 +33,10 @@ enum VideoHosterEnum
   Upcloud,
   Megacloud,
   VidPlay,
-  MyCloud
+  MyCloud,
+  VidHidePre,
+  Playm4U,
+  Hihihaha1
 
 
 }

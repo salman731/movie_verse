@@ -2,6 +2,7 @@ import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/controllers/film_1k_detail_controller.dart';
 import 'package:Movieverse/controllers/m4ufree_detail_controller.dart';
 import 'package:Movieverse/controllers/up_movie_detail_controller.dart';
+import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/dialogs/server_list_dialog.dart';
 import 'package:Movieverse/main.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
@@ -128,6 +129,10 @@ class _M4UFreeDetailScreenState extends State<M4UFreeDetailScreen> {
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {
+                                    LoaderDialog.showLoaderDialog(navigatorKey.currentContext!,text: "Fetching Server Links.....");
+                                    Map<String,Map<String,String>> map = await m4uFreeDetailController.getVideoServerLinks(widget.m4uFreeCover!.url!);
+                                    LoaderDialog.stopLoaderDialog();
+                                    ServerListDialog.showServerListDialog(navigatorKey.currentContext!,map,widget.m4uFreeCover.title!,isDirectPlay: true,isNativemxPlayer: true,isDirectProviderLink: true,hasOwnHeaders: true);
 
                                   }, title: "Play",
                                     color: AppColors.red,

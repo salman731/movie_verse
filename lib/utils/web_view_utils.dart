@@ -9,12 +9,12 @@ class WebViewUtils
    HeadlessInAppWebView? headlessWebView;
    String? resultUrl;
    Completer? videoLinkCompleter;
-   Map<String,String>? serverMap;
+   String? finalUrl;
 
-  Future loadUrlInWebView(String url,String urlExtension,String serverName,{Map<String,String>? header}) async
+  Future<String> loadUrlInWebView(String url,String urlExtension,{Map<String,String>? header}) async
   {
     videoLinkCompleter = Completer();
-    serverMap = Map();
+    finalUrl = "";
     headlessWebView = HeadlessInAppWebView(
       initialUrlRequest: URLRequest(url: WebUri(url),headers: header),
       initialSize: Size(1366,768),
@@ -23,9 +23,9 @@ class WebViewUtils
         {
           if(request.url.rawValue.contains(urlExtension))
             {
-              if(serverMap!.isEmpty)
+              if(finalUrl!.isEmpty)
                 {
-                  serverMap![serverName] = request.url.rawValue;
+                  finalUrl = request.url.rawValue;
                   videoLinkCompleter!.complete();
                 }
             }
@@ -38,7 +38,7 @@ class WebViewUtils
       }
     await headlessWebView!.run();
     await videoLinkCompleter!.future;
-    return serverMap;
+    return finalUrl!;
   }
 
   Future disposeWebView() async

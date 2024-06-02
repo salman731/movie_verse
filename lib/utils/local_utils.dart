@@ -173,11 +173,11 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://hdmovie2.cab/page/${pageNo}?s=${queryMovieName}";
+      return "https://hdmovie2.love/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://hdmovie2.cab/?s=${queryMovieName}";
+      return "https://hdmovie2.love/?s=${queryMovieName}";
     }
 
   }

@@ -20,8 +20,6 @@ class PrMoviesDetailController extends GetxController {
   late dom.Document pageSource;
   late dom.Document episodeSource;
   final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
-  final String MINOPLRES_SERVER_URL = "https://minoplres.xyz";
-  final String VIDSRCTO_SERVER_URL = "https://vidsrc.to";
   final String VIDPLAY_SERVER_URL = "https://vidsrc.to";
   final String VIDPLAY_KEY_URL = "https://raw.githubusercontent.com/KillerDogeEmpire/vidplay-keys/keys/keys.json";
   static bool isSeries = false;
@@ -102,77 +100,13 @@ class PrMoviesDetailController extends GetxController {
       {
         if(element.attributes["src"]!.contains("minoplres"))
           {
-            dom.Document document = await WebUtils.getDomFromURL_Get(element.attributes["src"]!,headers: {"Referer":PRMOVIES_SERVER_URL});
-            List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
-            String javaScriptText = listJavascript.where((element) => element.text.contains("sources: [{file:\"")).first.text;
-            String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
-            String urlSetLink = "";
-            if(!m3u8Url.contains(",l,h,.urlset"))
-            {
-              urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
-              urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
-            }
-            else
-            {
-              urlSetLink = m3u8Url;
-            }
-            String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
-            if (!response!.contains("Not Found")) {
-              List<String> m3u8UrlList = response!.split("\n");
-              List<String> qualityUrlList = [];
-              for(String url in m3u8UrlList)
-              {
-
-                if(url.contains("_l/") && url.contains("m3u8"))
-                {
-                  map["Minoplres(${VideoQualityEnum.Low.name})"] = url;
-                }
-                else if(url.contains("_h/") && url.contains("m3u8"))
-                {
-                  map["Minoplres(${VideoQualityEnum.High.name})"] = url;
-                }
-                else if(url.contains("_o/") && url.contains("m3u8"))
-                {
-                  map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
-                }
-              }
-            } else {
-              map["Minoplres(${VideoQualityEnum.Orginal.name})"] = m3u8Url;
-            }
+            Map<String,String> serverMap = await VideoHostProviderUtils.getMinoplresM3U8Links(element.attributes["src"]!, header:{"Referer":PRMOVIES_SERVER_URL}, );
+            map.addAll(serverMap);
           }
         else if (element.attributes["src"]!.contains("vidsrc.to"))
           {
-
-            dom.Document vidSrcToDocument = await WebUtils.getDomFromURL_Get(element.attributes["src"]!);
-            String? mediaId = vidSrcToDocument.querySelector("ul.episodes li a")!.attributes["data-id"];
-            String finalSourceUrl = VIDSRCTO_SERVER_URL + "/ajax/embed/episode/$mediaId/sources";
-            String? sourceResponse = await WebUtils.makeGetRequest(finalSourceUrl);
-            VidSrcToSourceResponse vidSrcToSourceResponse = VidSrcToSourceResponse.fromJson(jsonDecode(sourceResponse!));
-
-            for (VidSrcToSource vidSrcToSource in vidSrcToSourceResponse.result!)
-              {
-                String finalSourceUrlLink = VIDSRCTO_SERVER_URL + "/ajax/embed/source/${vidSrcToSource.id}";
-                String? urlResponse = await WebUtils.makeGetRequest(finalSourceUrlLink);
-                VidSrcToUrlResponse vidSrcToUrlResponse = VidSrcToUrlResponse.fromJson(jsonDecode(urlResponse!));
-                String decodedUrl = await intentMethodChannel.invokeMethod("getDecodedVidSrcUrl",{"encString":vidSrcToUrlResponse.result!.url,});
-                if(vidSrcToSource.title == "Vidplay")
-                  {
-                    Map<String,String> vidPlayMap =  await VideoHostProviderUtils.getVidPlayMyCloudM3U8Links(decodedUrl, VideoHosterEnum.VidPlay,isWithServerName: true);
-                    map.addAll(vidPlayMap);
-                  }
-                else if(vidSrcToSource.title == "Filemoon")
-                  {
-                    Map<String,String> fileMoonMap = Map();
-                    String? finalEmbedUrl = decodedUrl.split("?")[0];
-                    await VideoHostProviderUtils.getM3U8UrlfromFileMoon(finalEmbedUrl, "",canReturn: (value){
-                      fileMoonMap[VideoHosterEnum.FileMoon.name] = value;
-                      map.addAll(fileMoonMap);
-                    });
-
-                  }
-              }
-
-
+            Map<String,String> serverMap = await VideoHostProviderUtils.getVidSrcToM3U8Links(element.attributes["src"]!);
+            map.addAll(serverMap);
           }
         else if (element.attributes["src"]!.contains("vidsrc.net"))
           {

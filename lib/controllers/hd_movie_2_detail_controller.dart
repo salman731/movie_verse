@@ -41,8 +41,8 @@ class HdMovie2DetailController extends GetxController
    Map<String,String> abyssQualityCdn = {"sd":"","hd":"www","fullHd":"whw"};
    late dom.Document pageSource;
 
-   static final HDMOVIE2_SERVER_URL = "https://hdmovie2.cab";
-   static final HDMOVIE2_ADMIN_AJAX_SERVER_URL = "https://hdmovie2.cab/wp-admin/admin-ajax.php";
+   static final HDMOVIE2_SERVER_URL = "https://hdmovie2.love";
+   static final HDMOVIE2_ADMIN_AJAX_SERVER_URL = "https://hdmovie2.love/wp-admin/admin-ajax.php";
    static final AKAMAICDN_SERVER_URL = "https://akamaicdn.life/";
    static final TWDOWN_SEARCH_SERVER_URL = "https://twdown.online/search?url=";
    static final TWDOWN_DOWNLOAD_SERVER_URL = "https://downloader.twdown.online/load_url?";
@@ -108,7 +108,7 @@ class HdMovie2DetailController extends GetxController
                           orignalUrl = await WebUtils.getOriginalUrl(hostVideUrl!.trim());
                         if (orignalUrl!.contains("abysscdn.com")) {
 
-                          Map<String,Map<String,String>> abysscdnMap = await VideoHostProviderUtils.getAbysscdnM3U8Links(orignalUrl);
+                          Map<String,Map<String,String>> abysscdnMap = await VideoHostProviderUtils.getAbysscdnHihihaha1M3U8Links(orignalUrl,VideoHosterEnum.Abysscdn.name);
                           map.addAll(abysscdnMap);
 
                         }

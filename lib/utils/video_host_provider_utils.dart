@@ -4,7 +4,11 @@ import 'dart:convert';
 import 'package:Movieverse/controllers/video_player_screen_controller.dart';
 import 'package:Movieverse/dialogs/loader_dialog.dart';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
+import 'package:Movieverse/enums/video_quality_enum.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_video_detail.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_source.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_source_response.dart';
+import 'package:Movieverse/models/pr_movies/vid_src_to_url_response.dart';
 import 'package:Movieverse/screens/video_player/video_player_screen.dart';
 import 'package:Movieverse/utils/web_utils.dart';
 import 'package:Movieverse/utils/local_utils.dart';
@@ -615,10 +619,10 @@ class VideoHostProviderUtils
   {
     Map<String,String> linksMap = Map();
     WebViewUtils webViewUtils = WebViewUtils();
-    Map<String,String> serverMap = await webViewUtils.loadUrlInWebView(embedUrl,extension,serverName,header: header);
+    String finalUrl = await webViewUtils.loadUrlInWebView(embedUrl,extension,header: header);
     webViewUtils.disposeWebView();
     String? qualityLinks;
-    qualityLinks =  await WebUtils.makeGetRequest(serverMap[serverName]!);
+    qualityLinks =  await WebUtils.makeGetRequest(finalUrl!);
     List<String> qualityList = qualityLinks!.split("\n");
 
     for(int i = 0; i< qualityList.length;i++)
@@ -645,7 +649,7 @@ class VideoHostProviderUtils
   }
 
 
-  static Future<Map<String,Map<String,String>>> getAbysscdnM3U8Links(String orginalUrl) async
+  static Future<Map<String,Map<String,String>>> getAbysscdnHihihaha1M3U8Links(String orginalUrl,String serverName) async
   {
     Map<String,Map<String,String>> map = Map();
     Map<String,String> abyssQualityCdn = {"sd":"","hd":"www","fullHd":"whw"};
@@ -665,8 +669,8 @@ class VideoHostProviderUtils
 
     }
 
-    map[VideoHosterEnum.Abysscdn.name + "_headers"] = {"Referer":orginalUrl};
-    map[VideoHosterEnum.Abysscdn.name] = map2;
+    map[serverName + "_headers"] = {"Referer":orginalUrl};
+    map[serverName] = map2;
     return map;
   }
 
@@ -773,5 +777,171 @@ class VideoHostProviderUtils
     }
     return qualityMap;
   }
+
+  static Future<String?> getM3U8UrlFromVidHidePre(String embededUrl,String title,{bool isVideotoEmbededAllowed = false, Map<String,String>? headers}) async
+  {
+    if (isVideotoEmbededAllowed) {
+      embededUrl = embededUrl.replaceAll("/f/", "/embed/");
+    }
+    try {
+      dom.Document document = await WebUtils.getDomFromURL_Get(embededUrl,headers: headers);
+      List<dom.Element> list = document.querySelectorAll("script[type=\"text/javascript\"]");
+      String javaScriptText = list.where((element) => element.text.contains("sources: [{file:\"")).first.text;
+      String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]," , javaScriptText);
+      //Get.to(VideoPlayerScreen(m3u8Url,title!,));
+      LocalUtils.startVideoPlayer(m3u8Url, title);
+      /*ExternalVideoPlayerLauncher.launchMxPlayer(
+              m3u8Url!, MIME.applicationVndAppleMpegurl, {
+            "title": title,
+          });*/
+    } catch (e) {
+      LoaderDialog.stopLoaderDialog();
+      Fluttertoast.showToast(msg: "Video has bee removed.Try another server...",toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+    }
+
+  }
+
+
+  static Future<String> getPlaym4UM3U8Links(String embedUrl,{Map<String, String>? headers}) async
+  {
+    WebViewUtils webViewUtils = WebViewUtils();
+    String? finalUrl = await webViewUtils.loadUrlInWebView(embedUrl,".m3u8",header: headers);
+    webViewUtils.disposeWebView();
+    return finalUrl;
+  }
+
+  static Future<Map<String,String>> getMinoplresM3U8Links (String embedUrl,{Map<String,String>? header,bool isWithServerName = true}) async
+  {
+    Map<String,String> map = Map();
+    final String MINOPLRES_SERVER_URL = "https://minoplres.xyz";
+    dom.Document document = await WebUtils.getDomFromURL_Get(embedUrl!,headers: header);
+    List<dom.Element> listJavascript = document.querySelectorAll("script[type=\"text/javascript\"]");
+    String javaScriptText = listJavascript.where((element) => element.text.contains("sources: [{file:\"")).first.text;
+    String m3u8Url = LocalUtils.getStringBetweenTwoStrings("sources: [{file:\"","\"}]" , javaScriptText);
+    String urlSetLink = "";
+    if(!m3u8Url.contains(",l,h,.urlset"))
+    {
+      urlSetLink = m3u8Url.replaceAll("_l", "_,l,h,.urlset");
+      urlSetLink = m3u8Url.replaceAll("_h", "_,l,h,.urlset");
+    }
+    else
+    {
+      urlSetLink = m3u8Url;
+    }
+    String? response = await WebUtils.makeGetRequest(urlSetLink,headers: {"Referer":MINOPLRES_SERVER_URL});
+    if (!response!.contains("Not Found")) {
+      List<String> m3u8UrlList = response!.split("\n");
+      List<String> qualityUrlList = [];
+      for(String url in m3u8UrlList)
+      {
+
+        if(url.contains("_l/") && url.contains("m3u8"))
+        {
+          if(isWithServerName)
+            {
+              map["Minoplres(${VideoQualityEnum.Low.name})"] = url;
+            }
+          else
+            {
+              map[VideoQualityEnum.Low.name] = url;
+            }
+
+        }
+        else if(url.contains("_h/") && url.contains("m3u8"))
+        {
+          if(isWithServerName)
+          {
+            map["Minoplres(${VideoQualityEnum.High.name})"] = url;
+          }
+          else
+          {
+            map[VideoQualityEnum.High.name] = url;
+          }
+        }
+        else if(url.contains("_o/") && url.contains("m3u8"))
+        {
+          if(isWithServerName)
+          {
+            map["Minoplres(${VideoQualityEnum.Orginal.name})"] = url;
+          }
+          else
+          {
+            map[VideoQualityEnum.Orginal.name] = url;
+          }
+        }
+      }
+    } else {
+      if(isWithServerName)
+      {
+        map["Minoplres(${VideoQualityEnum.Orginal.name})"] = m3u8Url;
+      }
+      else
+      {
+        map[VideoQualityEnum.Orginal.name] = m3u8Url;
+      }
+    }
+
+    return map;
+  }
+
+  static Future<dynamic> getVidSrcToM3U8Links (String embedUrl,{Map<String,String>? header,bool isWithServerName = true}) async
+  {
+    Map<String,String> map = Map();
+    Map<String,Map<String,String>> map2 = Map();
+    final String VIDSRCTO_SERVER_URL = "https://vidsrc.to";
+    dom.Document vidSrcToDocument = await WebUtils.getDomFromURL_Get(embedUrl!);
+    String? mediaId = vidSrcToDocument.querySelector("ul.episodes li a")!.attributes["data-id"];
+    String finalSourceUrl = VIDSRCTO_SERVER_URL + "/ajax/embed/episode/$mediaId/sources";
+    String? sourceResponse = await WebUtils.makeGetRequest(finalSourceUrl);
+    VidSrcToSourceResponse vidSrcToSourceResponse = VidSrcToSourceResponse.fromJson(jsonDecode(sourceResponse!));
+
+    for (VidSrcToSource vidSrcToSource in vidSrcToSourceResponse.result!)
+    {
+      String finalSourceUrlLink = VIDSRCTO_SERVER_URL + "/ajax/embed/source/${vidSrcToSource.id}";
+      String? urlResponse = await WebUtils.makeGetRequest(finalSourceUrlLink);
+      VidSrcToUrlResponse vidSrcToUrlResponse = VidSrcToUrlResponse.fromJson(jsonDecode(urlResponse!));
+      String decodedUrl = await kotlinMethodChannel.invokeMethod("getDecodedVidSrcUrl",{"encString":vidSrcToUrlResponse.result!.url,});
+      if(vidSrcToSource.title == "Vidplay")
+      {
+        Map<String,String> vidPlayMap =  await VideoHostProviderUtils.getVidPlayMyCloudM3U8Links(decodedUrl, VideoHosterEnum.VidPlay,isWithServerName: isWithServerName);
+        if(isWithServerName)
+          {
+            map.addAll(vidPlayMap);
+          }
+        else
+          {
+            map2[VideoHosterEnum.VidPlay.name] = vidPlayMap;
+          }
+      }
+      else if(vidSrcToSource.title == "Filemoon")
+      {
+        Map<String,String> fileMoonMap = Map();
+        String? finalEmbedUrl = decodedUrl.split("?")[0];
+        await VideoHostProviderUtils.getM3U8UrlfromFileMoon(finalEmbedUrl, "",canReturn: (value){
+          if(isWithServerName)
+            {
+              fileMoonMap[VideoHosterEnum.FileMoon.name + "(HD)"] = value;
+              map.addAll(fileMoonMap);
+            }
+          else
+            {
+              fileMoonMap["HD"] = value;
+              map2[VideoHosterEnum.FileMoon.name] = fileMoonMap;
+            }
+
+        });
+
+      }
+    }
+    if(isWithServerName) {
+      return map;
+    }
+    else
+      {
+        return map2;
+      }
+  }
+
+
 
 }

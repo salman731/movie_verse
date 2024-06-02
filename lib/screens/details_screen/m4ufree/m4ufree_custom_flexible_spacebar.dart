@@ -146,16 +146,6 @@ class M4UFreeCustomFlexibleSpaceBarState extends State<M4UFreeCustomFlexibleSpac
                     content:
                     widget.m4uFreeDetail.runtime!,
                   ),
-                  SizedBox(width: 4.w),
-                  BuildColumnInfo(
-                    title: 'Director',
-                    content: widget.m4uFreeDetail.director!,
-                  ),
-                  SizedBox(width: 4.w),
-                  BuildColumnInfo(
-                    title: 'Quality',
-                    content: widget.m4uFreeDetail.quality!,
-                  ),
                 ],
               ),
               SizedBox(height: 2.h),

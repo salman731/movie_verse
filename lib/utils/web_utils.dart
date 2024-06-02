@@ -8,12 +8,16 @@ import 'package:http/io_client.dart';
 
 class WebUtils
 {
-   static Future<dom.Document> getDomFromURL_Get (String url,{Map<String,String>? headers,Function(int)? onStatusCode}) async
+   static Future<dom.Document> getDomFromURL_Get (String url,{Map<String,String>? headers,Function(int)? onStatusCode,Function(String?)? onCookie}) async
    {
      http.Response response = await http.Client().get(Uri.parse(url),headers: headers);
      if(onStatusCode!=null)
        {
          onStatusCode(response.statusCode);
+       }
+     if(onCookie != null)
+       {
+         onCookie(response.headers["set-cookie"]);
        }
      return parser.parse(response.body);
    }
@@ -31,9 +35,13 @@ class WebUtils
      return response.body!;
    }
 
-   static Future<String> makePostRequest (String url,Object body, {Map<String,String>? headers}) async
+   static Future<String> makePostRequest (String url,Object body, {Map<String,String>? headers,Function(String?)? requestCookieCallBack}) async
    {
      http.Response  response = await http.Client().post(Uri.parse(url),body: body,headers: headers);
+     if(requestCookieCallBack != null)
+       {
+         requestCookieCallBack(response.headers["set-cookie"]);
+       }
      return response.body;
    }
 

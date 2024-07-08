@@ -743,14 +743,17 @@ class VideoHostProviderUtils
     return map;
   }
 
-  static Future<Map<String,String>> getUpCloudMegaCloudM3U8Links(String serverId) async
+  static Future<Map<String,String>> getUpCloudMegaCloudM3U8Links(String url,String extension,Map<String,String>? headers) async
   {
     Map<String,String> qualityMap = Map();
-    String finalCloudUrl = "https://megacloud.tv/embed-1/ajax/e-1/getSources?id=" + serverId;
-    Map<String,String> headers = {"X-Requested-With":"XMLHttpRequest"};
-    String? response = await WebUtils.makeGetRequest(finalCloudUrl,headers:headers);
-    String m3u8Link = jsonDecode(response!)["sources"][0]["file"];
-    String? qualityLinks = await WebUtils.makeGetRequest(m3u8Link);
+    /*String finalCloudUrl = "https://megacloud.tv/embed-1/ajax/e-1/getSources?id=" + serverId;
+    Map<String,String> headers = {"X-Requested-With":"XMLHttpRequest"};*/
+    WebViewUtils webViewUtils = WebViewUtils();
+    String finalUrl = await webViewUtils.loadUrlInWebView(url,extension,header: headers);
+    webViewUtils.disposeWebView();
+    /*String? response = await WebUtils.makeGetRequest(finalCloudUrl,headers:headers);
+    String m3u8Link = jsonDecode(response!)["sources"][0]["file"];*/
+    String? qualityLinks = await WebUtils.makeGetRequest(finalUrl);
     List<String> qualityList = qualityLinks!.split("\n");
 
     for(String link in qualityList)
@@ -942,6 +945,41 @@ class VideoHostProviderUtils
       }
   }
 
+  static Future<Map<String,String>> getVidSrcToSingleM3U8Links(String url,String extension, {Map<String, String>? headers}) async
+  {
+    Map<String,String> qualityMap = Map();
+    /*String finalCloudUrl = "https://megacloud.tv/embed-1/ajax/e-1/getSources?id=" + serverId;
+    Map<String,String> headers = {"X-Requested-With":"XMLHttpRequest"};*/
+    WebViewUtils webViewUtils = WebViewUtils();
+    String finalUrl = await webViewUtils.loadUrlInWebView(url,extension,header: headers);
+    webViewUtils.disposeWebView();
+    /*String? response = await WebUtils.makeGetRequest(finalCloudUrl,headers:headers);
+    String m3u8Link = jsonDecode(response!)["sources"][0]["file"];*/
+    String? qualityLink = await WebUtils.makeGetRequest(finalUrl);
+    List<String> qualityList = qualityLink!.split("\n");
+
+    for(int i = 0;i<qualityList.length;i++)
+    {
+        if(qualityList[i].contains("x1080"))
+        {
+          qualityMap["1080"] = LocalUtils.getStringBeforString("list", finalUrl) + qualityList[i+1];
+        }
+        else if(qualityList[i].contains("x720"))
+        {
+          qualityMap["720"] = LocalUtils.getStringBeforString("list", finalUrl) + qualityList[i+1];
+        }
+        else if(qualityList[i].contains("x480"))
+        {
+          qualityMap["480"] = LocalUtils.getStringBeforString("list", finalUrl) + qualityList[i+1];
+        }
+        else if(qualityList[i].contains("x360"))
+        {
+          qualityMap["360"] = LocalUtils.getStringBeforString("list", finalUrl) + qualityList[i+1];
+        }
+
+    }
+    return qualityMap;
+  }
 
 
 }

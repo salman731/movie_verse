@@ -18,6 +18,7 @@ class WatchSeriesDetailController extends GetxController
   RxString selectedSeason = "".obs;
   RxString selectedEpisode = "".obs;
 
+  final String WATCHSERIES_MAIN_URL = "https://watchseries.pe";
   final String WATCHSERIES_AJAX_EPISODE_SERVER = "https://watchseries.pe/ajax/episode/list/";
   final String WATCHSERIES_AJAX_SOURCE_SERVER = "https://watchseries.pe/ajax/episode/sources/";
   final String WATCHSERIES_AJAX_SEASON_SERVER = "https://watchseries.pe/ajax/season/list/";
@@ -129,8 +130,8 @@ class WatchSeriesDetailController extends GetxController
             String finalServerUrl = WATCHSERIES_AJAX_SOURCE_SERVER + serverId;
             String? iframeJson = await WebUtils.makeGetRequest(finalServerUrl);
             Map<String,dynamic> jsonMap = jsonDecode(iframeJson!);
-            String cloudId = jsonMap["link"].split("/").last.split("?")[0];
-            qualityMap = await VideoHostProviderUtils.getUpCloudMegaCloudM3U8Links(cloudId);
+            String cloudUrl = jsonMap["link"];
+            qualityMap = await VideoHostProviderUtils.getUpCloudMegaCloudM3U8Links(cloudUrl,".m3u8",{"Referer": WATCHSERIES_MAIN_URL});
             map[servername] = qualityMap;
           }
       }

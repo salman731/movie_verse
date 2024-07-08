@@ -99,11 +99,11 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://prmovies.rent/page/${pageNo}?s=${queryMovieName}";
+      return "https://prmovies.agency/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://prmovies.rent/?s=${queryMovieName}";
+      return "https://prmovies.agency/?s=${queryMovieName}";
     }
 
   }
@@ -173,11 +173,11 @@ class LocalUtils
     }
     if(isLoadMore)
     {
-      return "https://hdmovie2.love/page/${pageNo}?s=${queryMovieName}";
+      return "https://hdmovie2.my/page/${pageNo}?s=${queryMovieName}";
     }
     else
     {
-      return "https://hdmovie2.love/?s=${queryMovieName}";
+      return "https://hdmovie2.my/?s=${queryMovieName}";
     }
 
   }

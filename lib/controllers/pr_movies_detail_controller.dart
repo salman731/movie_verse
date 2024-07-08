@@ -19,7 +19,7 @@ import 'package:html/dom.dart' as dom;
 class PrMoviesDetailController extends GetxController {
   late dom.Document pageSource;
   late dom.Document episodeSource;
-  final String PRMOVIES_SERVER_URL = "https://prmovies.rent";
+  final String PRMOVIES_SERVER_URL = "https://prmovies.agency";
   final String VIDPLAY_SERVER_URL = "https://vidsrc.to";
   final String VIDPLAY_KEY_URL = "https://raw.githubusercontent.com/KillerDogeEmpire/vidplay-keys/keys/keys.json";
   static bool isSeries = false;

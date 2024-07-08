@@ -126,6 +126,19 @@ class CineZoneDetailController extends GetxController
             fileMoonMap[VideoHosterEnum.FileMoon.name] = linkMap;
             map.addAll(fileMoonMap);
           });
+
+          case "F2Cloud":
+            Map<String,Map<String,String>> linkMap = Map();
+            Map<String,String> qualityMap = await VideoHostProviderUtils.getVidSrcToSingleM3U8Links(finalDecryptedUrl, ".m3u8");
+            linkMap[VideoHosterEnum.F2Cloud.name] = qualityMap;
+            map.addAll(linkMap);
+          case "MegaCloud":
+
+            Map<String,Map<String,String>> linkMap = Map();
+            Map<String,String> qualityMap = await VideoHostProviderUtils.getVidSrcToSingleM3U8Links(finalDecryptedUrl, ".m3u8");
+            linkMap[VideoHosterEnum.Megacloud.name] = qualityMap;
+            map.addAll(linkMap);
+
         }
       }
     return map;

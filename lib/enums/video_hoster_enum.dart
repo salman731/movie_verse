@@ -36,7 +36,7 @@ enum VideoHosterEnum
   MyCloud,
   VidHidePre,
   Playm4U,
-  Hihihaha1
-
+  Hihihaha1,
+  F2Cloud,
 
 }

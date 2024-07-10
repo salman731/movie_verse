@@ -80,7 +80,7 @@ class MovieListView extends StatelessWidget {
                     case SourceEnum.Goku:
                       Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>().gokuSearchList[index]));
                     case SourceEnum.M4UFree:
-                      //Get.to(M4UFreeDetailScreen(m4uFreeCover: Get,))
+                      Get.to(M4UFreeDetailScreen(m4uFreeCover: Get.find<SearchScreenController>().m4UFreeSearchList[index]));
                   }
                 } else {
                   switch (sourceEnum)

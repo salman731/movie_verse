@@ -661,12 +661,20 @@ class VideoHostProviderUtils
     HDMovie2VideoDetail hdMovie2VideoDetail = HDMovie2VideoDetail.fromJson(jsonDecode(decodedBase64));
 
     Map<String,String> map2 = Map();
-    for(String qualitySource in hdMovie2VideoDetail.sources!)
-    {
-      String? q_prefix = abyssQualityCdn[qualitySource];
-      String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
-      map2[qualitySource.toUpperCase()] = fullM3U8Url;
+    if (hdMovie2VideoDetail.sources!.isNotEmpty) {
+      for(String qualitySource in hdMovie2VideoDetail.sources!)
+          {
+            String? q_prefix = abyssQualityCdn[qualitySource];
+            String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${q_prefix}${hdMovie2VideoDetail.id}";
+            map2[qualitySource.toUpperCase()] = fullM3U8Url;
 
+          }
+    } else {
+      for(String key in abyssQualityCdn.keys)
+        {
+          String fullM3U8Url = "https://${hdMovie2VideoDetail.domain}/${abyssQualityCdn[key]}${hdMovie2VideoDetail.id}";
+          map2[key.toUpperCase()] = fullM3U8Url;
+        }
     }
 
     map[serverName + "_headers"] = {"Referer":orginalUrl};
@@ -979,6 +987,16 @@ class VideoHostProviderUtils
 
     }
     return qualityMap;
+  }
+
+  static Future<Map<String,String>> getNetuM3U8Link (String url) async
+  {
+    Map<String,String> map = Map();
+    WebViewUtils webViewUtils = WebViewUtils();
+    url = url.replaceAll("/e/", "/f/");
+    //String? oUrl = await WebUtils.getOriginalUrl(url);
+    String fUrl = await webViewUtils.loadUrlInWebView(url!, "get_md5.php");
+    return map;
   }
 
 

@@ -14,6 +14,7 @@ import 'package:Movieverse/models/cinezone/cinezone_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/goku/goku_cover.dart';
 import 'package:Movieverse/models/hd_movie2/hd_movie2_cover.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
 import 'package:Movieverse/models/pr_movies/pr_movies_cover.dart';
 import 'package:Movieverse/models/primewire/prime_wire_cover.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
@@ -57,6 +58,7 @@ class SearchScreenController extends GetxController
    List<WatchSeriesCover> watchSeriesSearchList  = [];
    List<CineZoneCover> cineZoneSearchList  = [];
    List<GokuCover> gokuSearchList  = [];
+   List<M4UFreeCover> m4UFreeSearchList  = [];
 
    RxBool isUpMoviesSourceLoading = false.obs;
    RxBool isPrimeWireSourceLoading = false.obs;
@@ -68,6 +70,7 @@ class SearchScreenController extends GetxController
    RxBool isWatchSeriesSourceLoading = false.obs;
    RxBool isCineZoneSourceLoading = false.obs;
    RxBool isGokuSourceLoading = false.obs;
+   RxBool isM4UFreeSourceLoading = false.obs;
 
    RxBool isUpMovieMoreUpMoviesLoading = false.obs;
    RxBool isPrimeWireMoreUpMoviesLoading = false.obs;
@@ -79,6 +82,7 @@ class SearchScreenController extends GetxController
    RxBool isWatchSeriesMoviesLoading = false.obs;
    RxBool isCineZoneMoviesLoading = false.obs;
    RxBool isGokuMoviesLoading = false.obs;
+   RxBool isM4UFreeMoviesLoading = false.obs;
 
    RxBool isSearchStarted = false.obs;
    String? primeWireSearchHash;
@@ -93,6 +97,7 @@ class SearchScreenController extends GetxController
    ScrollController watchSeriesScrollController = ScrollController();
    ScrollController cineZoneScrollController = ScrollController();
    ScrollController gokuScrollController = ScrollController();
+   ScrollController m4UFreeScrollController = ScrollController();
 
    int upMoviesCurrentPage = 1;
    int primeWireCurrentPage = 1;
@@ -104,6 +109,7 @@ class SearchScreenController extends GetxController
    int watchSeriesCurrentPage = 1;
    int cineZoneCurrentPage = 1;
    int gokuCurrentPage = 1;
+   int m4UFreeCurrentPage = 1;
 
    WebViewController? webViewController;
    String? primewireMovieTitle;
@@ -117,6 +123,7 @@ class SearchScreenController extends GetxController
    int maxWatchSeriesSearchPage = 1;
    int maxCineZoneSearchPage = 1;
    int maxGokuSearchPage = 1;
+   int maxM4UFreeSearchPage = 1;
 
   startShowingLoadingSources()
   {
@@ -130,6 +137,7 @@ class SearchScreenController extends GetxController
     isWatchSeriesSourceLoading.value = true;
     isCineZoneSourceLoading.value = true;
     isGokuSourceLoading.value = true;
+    isM4UFreeSourceLoading.value = true;
   }
 
   Future<List<UpMoviesCover>> searchMovieInUpMovies(String pageUrl,{bool loadMore = false}) async
@@ -669,6 +677,50 @@ class SearchScreenController extends GetxController
          isGokuSourceLoading.value = false;
        }
 
+   }
+
+   loadM4UFreeSearchList (String keyword, {bool isLoadMore = false}) async
+   {
+     if(isLoadMore && m4UFreeCurrentPage < maxM4UFreeSearchPage)
+       {
+         isM4UFreeMoviesLoading.value = true;
+         m4UFreeCurrentPage += 1;
+         String finalUrl = LocalUtils.getM4UFreeSearchUrl(keyword,isLoadMore: isLoadMore,pageNo: m4UFreeCurrentPage);
+         List<M4UFreeCover> coverList = await getM4UFreeSearchList(finalUrl,isLoadMore: isLoadMore);
+         m4UFreeSearchList.addAll(coverList);
+         isM4UFreeMoviesLoading.value = false;
+       }
+     else if(!isLoadMore)
+       {
+         m4UFreeCurrentPage = 1;
+         String finalUrl = LocalUtils.getM4UFreeSearchUrl(keyword,isLoadMore: isLoadMore);
+         m4UFreeSearchList = await getM4UFreeSearchList(finalUrl,isLoadMore: isLoadMore);
+         isM4UFreeSourceLoading.value = false;
+       }
+   }
+
+  Future<List<M4UFreeCover>> getM4UFreeSearchList (String url,{bool isLoadMore = false}) async
+   {
+      List<M4UFreeCover> coverList = [];
+      dom.Document pageDocument = await WebUtils.getDomFromURL_Get(url);
+      dom.Element? searchElement = pageDocument.querySelectorAll(".col-lg-10.col-xl-10.col-md-9 .row")[1];
+      coverList = SourceUtils.getM4UFreeList(searchElement!);
+      if(!isLoadMore)
+        {
+          dom.Element? paginationElement;
+          paginationElement = pageDocument.querySelector(".pagination");
+          if(paginationElement != null)
+            {
+              String lastPage = pageDocument.querySelectorAll(".pagination li a").last!.attributes["href"]!.split("/").last;
+              maxM4UFreeSearchPage = int.parse(lastPage);
+            }
+          else
+            {
+              maxM4UFreeSearchPage = 1;
+            }
+        }
+
+      return coverList;
    }
 
 

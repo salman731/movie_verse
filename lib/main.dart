@@ -1,17 +1,34 @@
+import 'dart:async';
+
 import 'package:Movieverse/config/app_theme.dart';
 import 'package:Movieverse/constants/app_colors.dart';
 import 'package:Movieverse/screens/splash_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  await  Settings.init(cacheProvider : SharePreferenceCache(),);
-  runApp(const MyApp());
+
+  runZonedGuarded(() async{
+    await  Settings.init(cacheProvider : SharePreferenceCache(),);
+    BindingBase.debugZoneErrorsAreFatal = true;
+    WidgetsFlutterBinding.ensureInitialized();
+    runApp(const MyApp());
+  },(Object error, StackTrace stack) {
+    Fluttertoast.showToast(msg: error.toString() + "\n" + stack.toString(),toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+  });
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    // Log the error to your logging system
+    Fluttertoast.showToast(msg: details.exceptionAsString(),toastLength: Toast.LENGTH_LONG,backgroundColor:Colors.red );
+  };
+
 }
 
 class MyApp extends StatelessWidget {

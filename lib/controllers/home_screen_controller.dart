@@ -492,15 +492,15 @@ class HomeScreenController extends GetxController
              switch (key)
              {
                case "Top Movies":
-                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Movies.name] = SourceUtils.getM4UList(rowList[i+1]);
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Movies.name] = SourceUtils.getM4UFreeList(rowList[i+1]);
                case "Top TV Series":
-                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Tv_Shows.name] = SourceUtils.getM4UList(rowList[i+1]);
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Top_Tv_Shows.name] = SourceUtils.getM4UFreeList(rowList[i+1]);
                case "2024 Movies":
-                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Featured.name] = SourceUtils.getM4UList(rowList[i+1]);
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.Featured.name] = SourceUtils.getM4UFreeList(rowList[i+1]);
                case "New Movies":
-                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Movies.name] = SourceUtils.getM4UList(rowList[i+1]);
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Movies.name] = SourceUtils.getM4UFreeList(rowList[i+1]);
                case "Tvshows":
-                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Tv_Shows.name] = SourceUtils.getM4UList(rowList[i+1]);
+                 mp4ufreeCategoryListMap[M4UFreeHomeCategoryEnum.New_Tv_Shows.name] = SourceUtils.getM4UFreeList(rowList[i+1]);
              }
            }
        }

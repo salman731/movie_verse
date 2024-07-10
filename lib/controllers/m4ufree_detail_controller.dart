@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:Movieverse/enums/video_hoster_enum.dart';
 import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
 import 'package:Movieverse/models/m4u_free/m4ufree_detail.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_episode.dart';
 import 'package:Movieverse/utils/local_utils.dart';
 import 'package:Movieverse/utils/video_host_provider_utils.dart';
 import 'package:Movieverse/utils/web_utils.dart';
@@ -15,7 +16,10 @@ class M4UFreeDetailController extends GetxController
 {
   late dom.Document pageDocument;
   String M4UFreeAjaxURL = "https://ww2.m4ufree.com/ajax";
+  String M4UFreeAjaxTVURL = "https://ww2.m4ufree.com/ajaxtv";
   late String cookieStr;
+  Rx<M4UFreeEpisode> selectedEpisode = M4UFreeEpisode().obs;
+  bool isTvShow  = false;
   Future<M4UFreeDetail> getMovieDetail (M4UFreeCover m4uFreeCover) async
   {
     pageDocument = await WebUtils.getDomFromURL_Get(m4uFreeCover.url!,onCookie: (cookie) {
@@ -59,7 +63,19 @@ class M4UFreeDetailController extends GetxController
         }
       }
 
-    return M4UFreeDetail(url: m4uFreeCover.url,title: m4uFreeCover.title,actors: actors,country: country,coverUrl: m4uFreeCover.imageURL,description: description,director: director,genre: genre,quality: quality,released: released,runtime: runtime,);
+    List<M4UFreeEpisode> eList = [];
+    if(m4uFreeCover.url!.contains("tvshow"))
+      {
+        isTvShow = true;
+        eList = getTvShowEpisodeList();
+        selectedEpisode.value = eList.first;
+      }
+    else
+      {
+        isTvShow = false;
+      }
+
+    return M4UFreeDetail(url: m4uFreeCover.url,title: m4uFreeCover.title,actors: actors,country: country,coverUrl: m4uFreeCover.imageURL,description: description,director: director,genre: genre,quality: quality,released: released,runtime: runtime,episodeList: eList);
 
   }
 
@@ -68,8 +84,19 @@ class M4UFreeDetailController extends GetxController
   {
     Map<String,Map<String,String>> linksMap = Map();
     String? csrfToken = pageDocument.querySelector("meta[name=\"csrf-token\"]")!.attributes["content"];
-
-    List<dom.Element> serverElementList = pageDocument.querySelectorAll(".le-server");
+    List<dom.Element> serverElementList = [];
+    if(isTvShow)
+      {
+        var map =  {"idepisode":selectedEpisode.value.id,"_token":csrfToken};
+        String? response = await WebUtils.makePostRequest(M4UFreeAjaxTVURL, map,headers: {"X-Requested-With":"XMLHttpRequest","Cookie":cookieStr,"Referer":referer});
+        dom.Document? episodeDocument;
+        episodeDocument = WebUtils.getDomfromHtml(response);
+        serverElementList = episodeDocument.querySelectorAll(".le-server");
+      }
+    else
+      {
+        serverElementList = pageDocument.querySelectorAll(".le-server");
+      }
 
     for (dom.Element serverElement in  serverElementList)
       {
@@ -84,29 +111,68 @@ class M4UFreeDetailController extends GetxController
 
               if(iframeSrc!.contains("playm4u.xyz"))
                 {
-                  Map<String,String> serverMap = Map();
-                  String finalUrl = await VideoHostProviderUtils.getPlaym4UM3U8Links(iframeSrc,headers: {"Referer":"https://ww2.m4ufree.com"});
-                  serverMap["HD"] = finalUrl;
-                  linksMap[VideoHosterEnum.Playm4U.name] = serverMap;
+                  try {
+                    Map<String,String> serverMap = Map();
+                    String finalUrl = await VideoHostProviderUtils.getPlaym4UM3U8Links(iframeSrc,headers: {"Referer":"https://ww2.m4ufree.com"});
+                    serverMap["HD"] = finalUrl;
+                    linksMap[VideoHosterEnum.Playm4U.name] = serverMap;
+                  } catch (e) {
+                    print(e);
+                  }
                 }
               else if(iframeSrc.contains("hihihaha1.xyz"))
                 {
-                  Map<String,Map<String,String>> serverMap = Map();
-                  serverMap = await VideoHostProviderUtils.getAbysscdnHihihaha1M3U8Links(iframeSrc, VideoHosterEnum.Hihihaha1.name);
-                  linksMap.addAll(serverMap);
+                  try {
+                    Map<String,Map<String,String>> serverMap = Map();
+                    serverMap = await VideoHostProviderUtils.getAbysscdnHihihaha1M3U8Links(iframeSrc, VideoHosterEnum.Hihihaha1.name);
+                    linksMap.addAll(serverMap);
+                  } catch (e) {
+                    print(e);
+                  }
                 }
               else if (iframeSrc.contains("vidsrc.to"))
                 {
-                  Map<String,Map<String,String>> serverMap = Map();
-                  serverMap = await VideoHostProviderUtils.getVidSrcToM3U8Links(iframeSrc!,isWithServerName: false);
-                  linksMap.addAll(serverMap);
+                  try {
+                    Map<String,Map<String,String>> serverMap = Map();
+                    serverMap = await VideoHostProviderUtils.getVidSrcToM3U8Links(iframeSrc!,isWithServerName: false);
+                    linksMap.addAll(serverMap);
+                  } catch (e) {
+                    print(e);
+                  }
                 }
 
            }
+         else
+           {
+             String? txt = iframeDocument.querySelector("#myElement")!.text;
+             if(txt == "Loading the player...")
+               {
+                  String? javaScriptText = iframeDocument.querySelectorAll("script").where((value)=>value.text.contains("playerInstance")).first.text;
+                  String? directUrl = LocalUtils.getStringBetweenTwoStrings("file: \"", "\",", javaScriptText);
+                  linksMap.addAll({"Direct Link": {"HD":directUrl}});
+               }
+           }
       }
-
-
 
     return linksMap;
   }
+
+
+  List<M4UFreeEpisode> getTvShowEpisodeList ()
+  {
+    List<M4UFreeEpisode> episodeList = [];
+
+    List<dom.Element> episodeElementList = pageDocument.querySelectorAll("p .episode");
+
+    for(dom.Element episodeElement in episodeElementList)
+      {
+         String? title = episodeElement.text;
+         String? id = episodeElement.attributes["idepisode"];
+         episodeList.add(M4UFreeEpisode(id: id,title: title));
+      }
+
+    return episodeList;
+
+  }
+
 }

@@ -9,6 +9,7 @@ import 'package:Movieverse/widgets/custom_text.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class LandscapePlayerControls extends StatelessWidget {
@@ -138,6 +139,7 @@ class LandscapePlayerControls extends StatelessWidget {
                           }
                         videoPlayerScreenController.flickVideoPlayerBoxfit.value = BoxFit.values[nextBoxFitIndex];
                         videoPlayerScreenController.flickManager.flickControlManager!.play();
+                        Fluttertoast.showToast(msg: BoxFit.values[nextBoxFitIndex].name.toUpperCase(),toastLength: Toast.LENGTH_SHORT,backgroundColor:Colors.grey );
                       },child: Icon(Icons.fit_screen))
                     ],
                   ),
@@ -147,22 +149,24 @@ class LandscapePlayerControls extends StatelessWidget {
           ),
         ),
         Positioned(
+            right: 20,
+            top: 30,
+            child: FlickAutoHideChild(
+              child: GestureDetector(onTap: () {
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+                SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                Navigator.pop(context);
+              },child: Icon(Icons.close),),
+            )
+        ),
+        Positioned(
           left: 20,
           top: 30,
           child: FlickAutoHideChild(
-            child: GestureDetector(
-              onTap: () {
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                    overlays: SystemUiOverlay.values);
-                SystemChrome.setPreferredOrientations(
-                    [DeviceOrientation.portraitUp]);
-                Navigator.pop(context);
-              },
               child: CustomText(
                 title: title,
                 size: 12,
               ),
-            ),
           ),
         ),
       ],

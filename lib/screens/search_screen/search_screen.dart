@@ -93,8 +93,14 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     searchScreenController.gokuScrollController.addListener(() {
-      if (searchScreenController.cineZoneScrollController.position.extentAfter == 0) {
+      if (searchScreenController.gokuScrollController.position.extentAfter == 0) {
         searchScreenController.loadGokuSearchList(searchEditingController.text,isLoadMore: true);
+      }
+    });
+
+    searchScreenController.m4UFreeScrollController.addListener(() {
+      if (searchScreenController.m4UFreeScrollController.position.extentAfter == 0) {
+        searchScreenController.loadM4UFreeSearchList(searchEditingController.text,isLoadMore: true);
       }
     });
   }
@@ -180,6 +186,13 @@ class _SearchScreenState extends State<SearchScreen> {
             } catch (e) {
               searchScreenController.isGokuSourceLoading.value = false;
               LocalUtils.showExceptionToast("${SourceEnum.Goku.name} : " + e.toString());
+            }
+
+            try {
+              await searchScreenController.loadM4UFreeSearchList(searchEditingController.text);
+            } catch (e) {
+              searchScreenController.isM4UFreeSourceLoading.value = false;
+              LocalUtils.showExceptionToast("${SourceEnum.M4UFree.name} : " + e.toString());
             }
 
           },
@@ -436,6 +449,30 @@ class _SearchScreenState extends State<SearchScreen> {
                                   moviesList:  searchScreenController.gokuSearchList,
                                   hasReachedMax: searchScreenController.isGokuMoviesLoading.value,
                                   sourceEnum: SourceEnum.Goku,
+                                ),
+                              ),
+                            ],
+                          ),),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          const CustomText(
+                            title: "M4UFree",
+                            size: 12,
+                          ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          Obx(() => searchScreenController.isM4UFreeSourceLoading.value ? Center(child: CupertinoActivityIndicator(radius: 12,color: Colors.white),) :
+                          Row(
+                            children: [
+                              Expanded(
+                                flex:8,
+                                child: MovieListView(
+                                  controller: searchScreenController.m4UFreeScrollController,
+                                  moviesList:  searchScreenController.m4UFreeSearchList,
+                                  hasReachedMax: searchScreenController.isM4UFreeMoviesLoading.value,
+                                  sourceEnum: SourceEnum.M4UFree,
                                 ),
                               ),
                             ],

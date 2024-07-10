@@ -9,6 +9,7 @@ import 'package:Movieverse/models/film_1k/film_1k_cover.dart';
 import 'package:Movieverse/models/film_1k/film_1k_detail.dart';
 import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
 import 'package:Movieverse/models/m4u_free/m4ufree_detail.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_episode.dart';
 import 'package:Movieverse/models/up_movies/up_movie_detail.dart';
 import 'package:Movieverse/screens/details_screen/film1k/film1k_custom_flexible_spacebar.dart';
 import 'package:Movieverse/screens/details_screen/m4ufree/m4ufree_custom_flexible_spacebar.dart';
@@ -126,6 +127,55 @@ class _M4UFreeDetailScreenState extends State<M4UFreeDetailScreen> {
                                     ],
                                   ),
                                 ),
+                                if(m4uFreeDetailController.isTvShow)...[
+                                  SizedBox(height: 2.h),
+                                  RichText(
+                                    maxLines: 15,
+                                    overflow: TextOverflow.ellipsis,
+                                    text: TextSpan(
+                                      text: 'Select Episode ',
+                                      style:
+                                      Theme.of(context).textTheme.titleMedium!.copyWith(
+                                        color: Colors.amber,
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Obx(()=>Center(
+                                    child: Container(
+                                      width: 80.w,
+                                      height: 7.h,
+                                      padding: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black, // Background color
+                                        borderRadius: BorderRadius.circular(5.0),
+                                        border: Border.all(
+                                          color: AppColors.red, // Border color
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: DropdownButton<M4UFreeEpisode>(
+                                        isExpanded: true,
+                                        iconEnabledColor: AppColors.red,
+                                        value: m4uFreeDetailController.selectedEpisode.value,
+                                        onChanged: (M4UFreeEpisode? newValue) {
+                                          m4uFreeDetailController.selectedEpisode.value = newValue!;
+                                        },
+                                        items: snapshot.data!.episodeList!.map((M4UFreeEpisode value) {
+                                          return DropdownMenuItem<M4UFreeEpisode>(
+                                            value: value,
+                                            child: Text("${value.title}"),
+                                          );
+                                        }).toList(),
+                                        dropdownColor: Colors.black, // Dropdown background color
+                                        underline: SizedBox(), // Remove default underline
+                                      ),
+                                    ),
+                                  ),
+                                  ),
+                                ],
                                 SizedBox(height: 2.h),
                                 Center(
                                   child: CustomButton(func: () async {

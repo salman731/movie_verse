@@ -232,6 +232,32 @@ class LocalUtils
 
   }
 
+  static String getM4UFreeSearchUrl(String movieName,{int? pageNo,bool isLoadMore = false})
+  {
+    StringBuffer queryMovieName = StringBuffer();
+    String encodedMovieName = Uri.encodeComponent(movieName);
+    for(int i = 0;i<movieName.length;i++)
+    {
+      if(movieName[i] == " ")
+      {
+        queryMovieName.write("-");
+      }
+      else
+      {
+        queryMovieName.write(movieName[i]);
+      }
+    }
+    if(isLoadMore)
+    {
+      return "https://ww2.m4ufree.com/search/${encodedMovieName}/page/${pageNo}";
+    }
+    else
+    {
+      return "https://ww2.m4ufree.com/search/${queryMovieName}.html";
+    }
+
+  }
+
   static Future<String> decodeUpMoviesIframeEmbedUrl(String pageUrl) async
   {
     dom.Document document = await WebUtils.getDomFromURL_Get(pageUrl);

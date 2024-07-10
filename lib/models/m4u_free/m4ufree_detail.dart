@@ -1,5 +1,6 @@
 
 import 'package:Movieverse/models/m4u_free/m4ufree_cover.dart';
+import 'package:Movieverse/models/m4u_free/m4ufree_episode.dart';
 
 class M4UFreeDetail extends M4UFreeCover
 {
@@ -20,10 +21,13 @@ class M4UFreeDetail extends M4UFreeCover
 
   String? quality;
 
+  List<M4UFreeEpisode>? episodeList;
+
   M4UFreeDetail(
   {String? title,
   String? url,
   String? coverUrl,
+  this.episodeList,
   this.genre,
   this.director,
   this.country,

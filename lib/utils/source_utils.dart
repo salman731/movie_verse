@@ -125,7 +125,7 @@ class SourceUtils
     return coverList;
   }
 
-  static List<M4UFreeCover> getM4UList (dom.Element rowElement)
+  static List<M4UFreeCover> getM4UFreeList (dom.Element rowElement)
   {
     List<M4UFreeCover> coverList = [];
     List<dom.Element> itemList = rowElement.querySelectorAll(".item");

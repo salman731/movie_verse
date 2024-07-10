@@ -8,6 +8,7 @@ import 'package:Movieverse/screens/details_screen/cine_zone/cinezone_detail_scre
 import 'package:Movieverse/screens/details_screen/film1k/film1k_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/goku/goku_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/hdmovie2/hd_movie2_detail_screen.dart';
+import 'package:Movieverse/screens/details_screen/m4ufree/m4ufree_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/pr_movies/pr_movies_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/primewire/primewire_detail_screen.dart';
 import 'package:Movieverse/screens/details_screen/up_movies/up_movies_detail_screen.dart';
@@ -73,9 +74,9 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                 case SourceEnum.Goku:
                   await searchScreenController.loadGokuSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
                   selectedSourceList = searchScreenController.gokuSearchList;
-
-          case SourceEnum.M4UFree:
-            // TODO: Handle this case.
+                case SourceEnum.M4UFree:
+                  await searchScreenController.loadM4UFreeSearchList(searchScreenController.homeSearchBarEditingController.text,isLoadMore: true);
+                  selectedSourceList = searchScreenController.m4UFreeSearchList;
             }
         isMoviesLoading.value = false;
       }
@@ -119,7 +120,8 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
         await searchScreenController.loadGokuSearchList(searchScreenController.homeSearchBarEditingController.text);
         selectedSourceList = searchScreenController.gokuSearchList;
       case SourceEnum.M4UFree:
-        // TODO: Handle this case.
+        await searchScreenController.loadM4UFreeSearchList(searchScreenController.homeSearchBarEditingController.text);
+        selectedSourceList = searchScreenController.m4UFreeSearchList;
     }
     isSourceLoading.value = false;
   }
@@ -158,7 +160,7 @@ class _SourceSearchBottomSheetWidgetState extends State<SourceSearchBottomSheetW
                           case SourceEnum.Goku:
                             Get.to(GokuDetailScreen(gokuCover: Get.find<SearchScreenController>().gokuSearchList[index]));
                           case SourceEnum.M4UFree:
-                            // TODO: Handle this case.
+                            Get.to(M4UFreeDetailScreen(m4uFreeCover: Get.find<SearchScreenController>().m4UFreeSearchList[index]));
                         }
                       },child: MovieCard(imgurl: selectedSourceList[index].imageURL!, title: selectedSourceList[index].title!,tag1: homeScreenController.selectedSource.value == SourceEnum.PrMovies ? selectedSourceList[index].tag! : homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag1 : "" ,tag2: homeScreenController.selectedSource.value == SourceEnum.HdMovie2 || homeScreenController.selectedSource.value == SourceEnum.WatchSeries ? selectedSourceList[index].tag2 : "",));
                     },childCount: selectedSourceList.length), gridDelegate:

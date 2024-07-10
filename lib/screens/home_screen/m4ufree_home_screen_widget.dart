@@ -36,7 +36,7 @@ class _M4UFreeHomeScreenWidgetState extends State<M4UFreeHomeScreenWidget> {
         child: Column(
           children: [
             CarouselWidget(
-              sourceEnum: SourceEnum.CineZone,
+              sourceEnum: SourceEnum.M4UFree,
               isTagAvailable: true,
               list: homeScreenController.mp4ufreeCategoryListMap![M4UFreeHomeCategoryEnum.Featured.name]!,
             ),

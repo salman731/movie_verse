@@ -103,6 +103,10 @@ class PrMoviesDetailController extends GetxController {
             Map<String,String> serverMap = await VideoHostProviderUtils.getMinoplresM3U8Links(element.attributes["src"]!, header:{"Referer":PRMOVIES_SERVER_URL}, );
             map.addAll(serverMap);
           }
+        else if (element.attributes["src"]!.contains("netu"))
+          {
+            //Map<String,String> serverMap = await VideoHostProviderUtils.getNetuM3U8Link(element.attributes["src"]!);
+          }
         else if (element.attributes["src"]!.contains("vidsrc.to"))
           {
             Map<String,String> serverMap = await VideoHostProviderUtils.getVidSrcToM3U8Links(element.attributes["src"]!);
